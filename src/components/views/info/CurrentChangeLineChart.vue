@@ -1,0 +1,139 @@
+<script setup lang="ts">
+import VChart from 'vue-echarts';
+import {ref} from "vue";
+import {EChartsOption} from "echarts";
+import {use} from "echarts/core";
+import {CanvasRenderer} from "echarts/renderers";
+import {LineChart} from "echarts/charts";
+import {DataZoomComponent, GridComponent, TooltipComponent} from "echarts/components";
+use([
+    CanvasRenderer,
+    LineChart,
+    GridComponent,
+    TooltipComponent,
+    DataZoomComponent,
+]);
+let base = +new Date(2024, 3, 9);
+let series1 = [[base, Math.random() * 30]];
+let series2 = [[base, Math.random() * 30]];
+for (let i = 1; i < 200; i++) {
+  let now = new Date((base += 900000));
+  series1.push([+now, Math.round((Math.random() - 0.5) * 20 + series1[i - 1][1])]);
+  series2.push([+now, Math.round((Math.random() - 0.5) * 20 + series1[i - 1][1])]);
+}
+const options = ref<EChartsOption>({
+  grid: {
+    top: 35,
+    right: 20,
+    left: '11%',
+    bottom: 80,
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+    },
+    position: (pos) => [pos[0] + 20, pos[1] - 60],
+  },
+  xAxis: {
+    type: 'time',
+    axisLine: {
+      lineStyle: {
+        color: 'rgba(110, 184, 229, 0.8)',
+      }
+    }
+  },
+  yAxis: {
+    type: 'value',
+    name: '电流',
+    axisLine: {
+      lineStyle: {
+        color: 'rgba(110, 184, 229, 0.8)',
+      },
+    },
+    axisLabel: {
+      formatter: '{value}A',
+    },
+  },
+  dataZoom: [
+    {
+      type: 'inside',
+      start: 0,
+      end: 20,
+    },
+    {
+      type: 'slider',
+      start: 0,
+      end: 100,
+      bottom: '10%',
+      textStyle: {
+        color: 'rgba(240, 240, 240, 0.8)',
+        textShadowColor: 'rgba(10, 10, 10, 0.4)',
+        textShadowOffsetX: 2,
+        textShadowOffsetY: 2,
+        overflow: 'break',
+      },
+    }
+  ],
+  series: [
+    {
+      type: 'line',
+      name: '预测值',
+      smooth: true,
+      clip: true,
+      symbol: 'none',
+      color: '#b2ebf2',
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(0, 255, 255, 0.5)',
+          }, {
+            offset: .6, color: 'rgba(1, 109, 255, 0.1)',
+          }, {
+            offset: 1, color: 'rgba(1, 109, 255, 0)',
+          }]
+        }
+      },
+      data: series1,
+    },
+    {
+      type: 'line',
+      name: '实际值',
+      smooth: true,
+      clip: true,
+      symbol: 'none',
+      color: '#ffecb3',
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(255, 235, 59, 0.5)',
+          }, {
+            offset: .6, color: 'rgba(255, 236, 179, 0.1)',
+          }, {
+            offset: 1, color: 'rgba(1, 109, 255, 0)',
+          }]
+        }
+      },
+      data: series2,
+    },
+  ],
+});
+</script>
+
+<template>
+  <VChart :option="options" autoresize/>
+</template>
+
+<style scoped>
+
+</style>

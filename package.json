@@ -1,0 +1,41 @@
+{
+  "name": "dev.exzh.visual-substation",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dataview/datav-vue3": "^0.0.0-test.1672506674342",
+    "@tweenjs/tween.js": "^23.1.2",
+    "d3-geo": "^3.1.1",
+    "echarts": "^5.5.0",
+    "element-plus": "^2.7.4",
+    "interactjs": "^1.10.27",
+    "pinia": "^2.1.7",
+    "three": "^0.165.0",
+    "three-mesh-bvh": "^0.7.6",
+    "uuid": "^10.0.0",
+    "vue": "^3.4.21",
+    "vue-echarts": "^6.7.3",
+    "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "@interactjs/types": "^1.10.27",
+    "@types/d3-geo": "^3.1.0",
+    "@types/js-cookie": "^3.0.6",
+    "@types/three": "^0.165.0",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "echarts-gl": "^2.0.9",
+    "js-cookie": "^3.0.5",
+    "sass": "^1.77.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vite-plugin-string": "^1.2.3",
+    "vue-tsc": "^2.0.6"
+  }
+}
