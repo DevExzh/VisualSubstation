@@ -38,8 +38,9 @@ const useUserStore = defineStore('user', {
                     resolve();
                 }).catch(error => {
                     reject(error);
-                })
-            })
+                });
+                this.getInfo();
+            });
         },
         // 获取用户信息
         async getInfo(): Promise<UserInfoResponse> {

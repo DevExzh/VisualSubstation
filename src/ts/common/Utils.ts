@@ -77,7 +77,6 @@ export function deepClone(target: any, ignored: string[] = [], base: any = {}, d
  * @param time 任意类型
  */
 export function parseTime(time: any): (string | undefined) {
-    console.log(time);
     if (arguments.length === 0 || !time) {
         return undefined;
     }
