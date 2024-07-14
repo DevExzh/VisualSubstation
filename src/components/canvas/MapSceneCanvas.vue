@@ -17,4 +17,10 @@ onBeforeUnmount(() => {
 
 <style scoped>
 @import url("../../common.css");
+.full-screen-canvas {
+  cursor: grab;
+}
+.full-screen-canvas:active {
+  cursor: grabbing;
+}
 </style>

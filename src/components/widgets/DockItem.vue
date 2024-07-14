@@ -4,10 +4,15 @@ import {iconSizeKey, offsetKey, scaleFactorKey} from "../../ts/widgets/Dock.ts";
 import Widget from "./Widget.vue";
 import {WindowState} from "../../ts/widgets/Widget.ts";
 
-defineProps<{
+withDefaults(defineProps<{
   name: string;
   icon: string;
-}>();
+  showWidgetTitle?: boolean;
+  showWidgetIcon?: boolean;
+}>(), {
+  showWidgetTitle: true,
+  showWidgetIcon: false
+});
 const emits = defineEmits<{
   widgetOpen: []
 }>();
@@ -25,7 +30,8 @@ const onClick = () => {
     switch (bindWidget.value?.widget.windowState) {
       case WindowState.Closed:
       case WindowState.Minimized: {
-        bindWidget.value.open();
+        bindWidget.value!.open();
+        bindWidget.value!.setActive();
         indicator.value!.style.opacity = '1';
         break;
       }
@@ -48,7 +54,7 @@ onMounted(() => {
   iconSize.value = inject(iconSizeKey)!;
   offset.value = inject(offsetKey)! + 'px';
   scale.value = inject(scaleFactorKey)!;
-  labelOffset.value = `calc(${iconSize.value} * ${scale.value} + ${offset.value})`;
+  labelOffset.value = `calc(${iconSize.value} * ${scale.value} + 1rem)`;
 });
 </script>
 
@@ -56,10 +62,11 @@ onMounted(() => {
   <teleport v-if="isOpen" to="#app">
     <Widget
         ref="bindWidget"
-        :window-title="$props.name"
+        :window-title="showWidgetTitle ? $props.name : ''"
+        :window-icon="showWidgetIcon ? $props.icon : ''"
         @closed="onWidgetClose"
     >
-      <slot />
+      <slot v-if="isOpen"/>
     </Widget>
   </teleport>
   <li
@@ -146,6 +153,7 @@ $nameLabelBgColor: #ebebeb;
     transition: all ease 0.3s;
     transform-origin: 50% 100%;
     user-select: none;
+    cursor: pointer;
   }
   &:hover {
     & .item-name {

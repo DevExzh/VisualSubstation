@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from "vue";
+import Cookies from "js-cookie";
 enum Step {
   Dolly = 0,
   Rotate = 1,
@@ -8,10 +9,10 @@ enum Step {
 }
 const step = ref<number>(0);
 const show = computed((): boolean => {
-  if (step.value < 4 && sessionStorage.getItem('tutorial-complete') !== 'yes') {
+  if (step.value < 4 && !Cookies.get('tutorial-complete')) {
     return true;
   } else {
-    sessionStorage.setItem('tutorial-complete', 'yes');
+    Cookies.set('tutorial-complete', 'yes');
     return false;
   }
 });
@@ -62,7 +63,7 @@ const keyUpEvent = (event: KeyboardEvent) => {
   }
 };
 onMounted(() => {
-  if(sessionStorage.getItem('tutorial-complete') !== 'yes') {
+  if(!!Cookies.get('tutorial-complete')) {
     window.addEventListener('wheel', wheelEvent, {passive: true});
     window.addEventListener('pointerdown', middleButtonEvent, {passive: true});
     window.addEventListener('pointerdown', rightButtonEvent, {passive: true});

@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import interact from 'interactjs';
-import {onBeforeUnmount, onMounted, ref} from "vue";
-import {useWidgetStore, WidgetState, WindowState} from "../../ts/widgets/Widget.ts";
+import {onBeforeUnmount, onMounted, provide, ref} from "vue";
+import {useWidgetStore, widgetKey, WidgetState, WindowState} from "../../ts/widgets/Widget.ts";
 import {Interactable} from "@interactjs/core/Interactable";
+import {pixels} from "../../ts/common/Utils.ts";
 const windowContainer = ref<HTMLElement>();
 const clientArea = ref<HTMLElement>();
 const props = withDefaults(
     defineProps<{
       controlButtons?: boolean,
       resizable?: boolean,
-      width?: number,
-      height?: number,
-      x?: number,
-      y?: number,
+      width?: number | string,
+      height?: number | string,
+      x?: number | 'center',
+      y?: number | 'center',
     }>(), {
       controlButtons: _ => true,
       resizable: _ => true,
-      width: _ => 480,
-      height: _ => 360,
+      width: _ => '45rem',
+      height: _ => '25.5rem',
       x: _ => 50,
       y: _ => 50,
     }
@@ -29,9 +30,33 @@ const emits = defineEmits<{
   minimized: [],
 }>();
 const windowTitle = defineModel<string>('windowTitle', {required: true});
+const windowIcon = defineModel<string>('windowIcon', {required: false, default: ''});
 const visible = defineModel<boolean>('isVisible');
 // 窗口左上角坐标、长宽
-const x = ref<number>(props.x), y = ref<number>(props.y), w = ref<number>(props.width), h = ref<number>(props.height);
+const w = ref<number>(
+    pixels(props.width)
+), h = ref<number>(
+    pixels(props.height)
+);
+const x = ref<number>(
+    props.x === 'center' ? (window.innerWidth - w.value) / 2 : props.x
+), y = ref<number>(
+    props.y === 'center' ? (window.innerHeight - h.value) / 2 : props.y
+);
+provide(widgetKey, {
+  windowTitle(): string {
+    return widget.windowTitle.value;
+  },
+  setWindowTitle(title: string): void {
+    windowTitle.value = widget.windowTitle.value = title;
+  },
+  windowIcon(): string {
+    return windowIcon.value;
+  },
+  setWindowIcon(icon: string): void {
+    windowIcon.value = icon;
+  }
+});
 let storedX = -1, storedY = -1, storedW = -1, storedH = -1;
 let minBtnPressed = ref<boolean>(false),
     maxBtnPressed = ref<boolean>(false),
@@ -54,13 +79,13 @@ const titleBarButtonsLeft = () => {
   if(closeBtn.value && maxBtn.value && minBtn.value)
     closeBtn.value.style.display = maxBtn.value.style.display = minBtn.value.style.display = 'none';
 };
-const onActive = () => {
+const setActive = () => {
   if(store.activeWidget === windId) return;
   focusLost.value = false;
   store.activeWidget = windId;
   widget.zIndex.value = 16;
 };
-const onInactive = () => {
+const setInactive = () => {
   focusLost.value = true;
   widget.zIndex.value = 10;
 };
@@ -84,7 +109,7 @@ const useInteract = () => {
         // 只允许点按标题栏以移动
         ignoreFrom: clientArea.value,
         listeners: {
-          start: _ => { onActive() },
+          start: _ => { setActive() },
           // 当前窗口被尝试移动时
           move: event => {
             x.value += event.dx;
@@ -168,7 +193,7 @@ const onMaximized = () => {
 store.widgets.push(widget);
 store.$subscribe((_, state) => {
   if(state.activeWidget !== windId) {
-    onInactive();
+    setInactive();
   }
 });
 onMounted(useInteract);
@@ -201,12 +226,13 @@ defineExpose({
       useInteract();
     }
   },
-  widget
+  widget,
+  setActive
 });
 </script>
 
 <template>
-  <!-- 可扩拽窗口容器 -->
+  <!-- 可拖拽窗口容器 -->
   <div
       ref="windowContainer"
       :class="[
@@ -222,7 +248,7 @@ defineExpose({
         transform: `translate(${x}px, ${y}px)`,
         zIndex: widget.zIndex.value
       }"
-      @mousedown="onActive"
+      @mousedown="setActive"
   >
     <!-- 标题栏 -->
     <div
@@ -280,7 +306,14 @@ defineExpose({
         </div>
       </div>
       <!-- 窗口标题 -->
-      <span class="title-name">{{widget.windowTitle.value}}</span>
+      <span class="title-name">
+        <span v-if="windowIcon">
+          <img style="height: 100%; width: 1rem; vertical-align: middle; margin-right: 0.5rem;" :src="windowIcon" alt="Window icon" />
+        </span>
+        <transition name="fade" mode="out-in">
+          <span class="window-title" :key="windowTitle">{{windowTitle}}</span>
+        </transition>
+      </span>
     </div>
     <!-- 窗口内容 -->
     <div
@@ -290,7 +323,10 @@ defineExpose({
         ]"
     >
       <div class="widget-client-area" ref="clientArea">
-        <slot v-if="shouldRender" class="widget-content"></slot>
+        <slot
+            v-if="shouldRender"
+            class="widget-content"
+        />
       </div>
     </div>
   </div>
@@ -304,6 +340,8 @@ defineExpose({
 }
 .window-container {
   position: absolute;
+  left: 0;
+  top: 0;
   width: 48rem;
   height: 36rem;
   border: 0.06rem solid #dadada;
@@ -312,7 +350,8 @@ defineExpose({
 }
 .window-container.maximized {
   border-radius: 0;
-  border-width: 0;
+  box-shadow: none;
+  border: none;
 }
 .button {
   position: relative;
@@ -414,5 +453,14 @@ defineExpose({
 .widget-client-area {
   width: 100%;
   height: 100%;
+  overflow: scroll;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease-in;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

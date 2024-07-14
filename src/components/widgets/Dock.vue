@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   spacing?: number | string;
 }>(), {
   autoHide: false,
-  iconSize: '5rem',
+  iconSize: '4rem',
   offset: 5,
   scaleFactor: 1.75,
   spacing: 20,

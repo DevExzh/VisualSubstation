@@ -1,29 +1,104 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import {ElForm, ElFormItem, ElInput, ElButton, ElIcon, ElCheckbox, ElLink} from 'element-plus';
 import {User, Lock} from '@element-plus/icons-vue';
 import Background from "./misc/LoginBackground.vue";
-import {useRouter} from "vue-router";
+import {LocationQuery, LocationQueryValue, useRoute, useRouter} from "vue-router";
+import useUserStore from "../ts/store/UserStore.ts";
+import Api from "../ts/common/Api.ts";
+import Cookies from "js-cookie";
+const userStore = useUserStore();
+const route = useRoute();
 const router = useRouter();
-const loginForm = ref({
+const loginRef = ref<InstanceType<typeof ElForm>>();
+const loginForm = ref<{
+  username: string;
+  password: string;
+  rememberMe: boolean;
+  code: string;
+  uuid: string;
+}>({
   username: "admin",
   password: "admin123",
   rememberMe: false,
   code: "",
   uuid: ""
 });
-const loading = ref(false);
 const loginRules = {
   username: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
   password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
   code: [{ required: true, trigger: "change", message: "请输入验证码" }]
 };
+const codeUrl = ref<string>("");
+const loading = ref<boolean>(false);
+// 验证码开关
+const captchaEnabled = ref<boolean>(true);
+// 注册开关
+const redirect = ref<string | LocationQuery | LocationQueryValue | LocationQueryValue[]>();
+
+watch(route, (newRoute) => {
+  redirect.value = newRoute.query && newRoute.query.redirect;
+}, { immediate: true });
+
 const handleLogin = () => {
-  sessionStorage.setItem('isLoggedIn', 'yes');
-  router.replace({
-    name: 'home'
+  loginRef.value!.validate(valid => {
+    if (valid) {
+      loading.value = true;
+      // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
+      if (loginForm.value.rememberMe) {
+        Cookies.set("username", loginForm.value.username, { expires: 30 });
+        Cookies.set("password", loginForm.value.password, { expires: 30 });
+        Cookies.set("rememberMe", String(loginForm.value.rememberMe), { expires: 30 });
+      } else {
+        // 否则移除
+        Cookies.remove("username");
+        Cookies.remove("password");
+        Cookies.remove("rememberMe");
+      }
+      // 调用action的登录方法
+      userStore.login(loginForm.value).then(() => {
+        const query = route.query;
+        const otherQueryParams = Object.keys(query).reduce((acc: LocationQuery, cur: string) => {
+          if (cur !== "redirect") {
+            acc[cur] = query[cur];
+          }
+          return acc;
+        }, {});
+        router.push({
+          path: redirect.value as string || "/view/map",
+          query: otherQueryParams
+        });
+      }).catch(() => {
+        loading.value = false;
+        // 重新获取验证码
+        if (captchaEnabled.value) {
+          getCode();
+        }
+      });
+    }
   });
 };
+const getCode = () => {
+  Api.getCodeImg().then(res => {
+    captchaEnabled.value = res.captchaEnabled === undefined ? true : res.captchaEnabled;
+    if (captchaEnabled.value) {
+      codeUrl.value = "data:image/gif;base64," + res.img;
+      loginForm.value.uuid = res.uuid;
+    }
+  });
+}
+const getCookie = () => {
+  const username = Cookies.get("username");
+  const password = Cookies.get("password");
+  const rememberMe = Cookies.get("rememberMe");
+  if(loginForm.value) {
+    loginForm.value.username = username === undefined ? loginForm.value.username : username;
+    loginForm.value.password = password === undefined ? loginForm.value.password : password;
+    loginForm.value.rememberMe = rememberMe === undefined ? false : Boolean(rememberMe);
+  }
+}
+getCode();
+getCookie();
 </script>
 
 <template>
@@ -65,6 +140,23 @@ const handleLogin = () => {
             </ElIcon>
           </template>
         </ElInput>
+      </ElFormItem>
+      <ElFormItem prop="code" v-if="captchaEnabled">
+        <ElInput
+            v-model="loginForm.code"
+            size="large"
+            auto-complete="off"
+            placeholder="验证码"
+            style="width: 63%"
+            @keyup.enter="handleLogin"
+        >
+          <template #prefix>
+            <img class="el-input__icon input-icon" src="/images/icons/validCode.svg" alt="captcha prefix"/>
+          </template>
+        </ElInput>
+        <div class="login-code">
+          <img :src="codeUrl" @click="getCode" class="login-code-img" alt="captcha image"/>
+        </div>
       </ElFormItem>
       <ElCheckbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</ElCheckbox>
       <ElFormItem style="width:100%;">

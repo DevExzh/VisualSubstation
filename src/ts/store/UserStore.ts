@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import {Api} from "../common/Api.ts";
 import { UserInfoResponse } from "../common/ApiTypes.ts";
 import {baseURL, tokenKey} from "../common/Request.ts";
+import {Encryptor} from "../common/Encryptor.ts";
 
 const useUserStore = defineStore('user', {
     state: (): {
@@ -30,7 +31,7 @@ const useUserStore = defineStore('user', {
         }): Promise<void> {
             return new Promise((resolve, reject) => {
                 Api.login(
-                    userInfo.username.trim(), userInfo.password, userInfo.code, userInfo.uuid
+                    userInfo.username.trim(), Encryptor.encrypt(userInfo.password), userInfo.code, userInfo.uuid
                 ).then(res => {
                     Cookies.set(tokenKey, res.token);
                     this.token = res.token;

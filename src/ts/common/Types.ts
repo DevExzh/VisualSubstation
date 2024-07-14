@@ -121,3 +121,5 @@ export function vector4FromColor4(color: Color4): Vector4 {
 export function mergeOptions<T>(options: T, patch?: Partial<T>): T {
     return {...options, ...patch} as T;
 }
+
+export type DateRange = number | string | Date | [Date, Date] | [string, string] | [];

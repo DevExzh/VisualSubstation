@@ -127,7 +127,7 @@ export default class HTTPService {
         const headers: HeadersInit = {
             'Content-Type': 'application/json;charset=utf-8'
         };
-        if (token && !isToken) {
+        if (token && isToken) {
             headers['Authorization'] = 'Bearer ' + token;
         }
         return headers;

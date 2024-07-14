@@ -1,5 +1,7 @@
 import {createRouter, createWebHistory, RouteComponent} from "vue-router";
 import Login from "./components/Login.vue";
+import Cookies from "js-cookie";
+import {tokenKey} from "./ts/common/Request.ts";
 
 export interface DynamicRoute {
     path: string;
@@ -73,7 +75,8 @@ const router = createRouter({
 router.beforeEach(({meta, name}, _, next) => {
     const { title, requiresAuth } = meta;
     if(title) document.title = title as string;
-    if(sessionStorage.getItem('isLoggedIn') !== 'yes' && name !== 'login' && requiresAuth) {
+    if(!Cookies.get(tokenKey) && name !== 'login' && requiresAuth) {
+        console.log(Cookies.get(tokenKey));
         next({ name: 'login' });
     } else {
         next();

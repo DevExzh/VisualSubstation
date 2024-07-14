@@ -153,3 +153,150 @@ export interface RegisterData {
     confirmPassword: string;
     code: string;
 }
+
+export interface CPUInfo {
+    cpuNum: number;
+    total: number;
+    sys: number;
+    used: number;
+    wait: number;
+    free: number;
+}
+
+export interface MemoryInfo {
+    total: number;
+    used: number;
+    free: number;
+    usage: number;
+}
+
+export interface JVMInfo {
+    total: number;
+    max: number;
+    free: number;
+    version: string;
+    home: string;
+    usage: number;
+    used: number;
+    startTime: string;
+    name: string;
+    runTime: string;
+    inputArgs: string;
+}
+
+export interface SystemInfo {
+    computerName: string;
+    computerIp: string;
+    userDir: string;
+    osName: string;
+    osArch: string;
+}
+
+export interface SystemVolumeInfo {
+    dirName: string;
+    sysTypeName: string;
+    typeName: string;
+    total: string;
+    free: string;
+    used: string;
+    usage: number;
+}
+
+export type SystemVolumeInfoList = SystemVolumeInfo[];
+
+export interface ServerInfo {
+    cpu: CPUInfo;
+    mem: MemoryInfo;
+    jvm: JVMInfo;
+    sys: SystemInfo;
+    sysFiles: SystemVolumeInfoList;
+}
+
+export interface ServerInfoResponse extends Response {
+    data: ServerInfo;
+}
+
+export interface OperationLogInfo extends MetaData {
+    operId: number;
+    title: string;
+    businessType: number;
+    businessTypes?: string;
+    method: string;
+    requestMethod: string;
+    operatorType: number;
+    operName: string;
+    deptName: string;
+    operUrl: string;
+    operIp: string;
+    operLocation: string;
+    operParam: string;
+    jsonResult: string;
+    status: number;
+    errorMsg?: string;
+    operTime: string;
+    costTime: number;
+}
+
+export interface OperationLogInfoListResponse extends Response {
+    total: number;
+    rows: OperationLogInfo[];
+}
+
+export interface CacheInfo {
+    commandStats: {
+        name: string;
+        value: string;
+    }[];
+    info: Record<string, string>;
+    dbSize: number;
+}
+
+export interface CacheInfoResponse extends Response {
+    data: CacheInfo;
+}
+
+export interface CacheNameListResponse extends Response {
+    data: {
+        cacheName: string;
+        cacheKey: string;
+        cacheValue: string;
+        remark: string;
+    }[];
+}
+
+export interface JobInfo extends MetaData {
+    jobId: number;
+    jobName: string;
+    jobGroup: string;
+    invokeTarget: string;
+    cronExpression: string;
+    misfirePolicy: string;
+    concurrent: string;
+    status: string;
+    nextValidTime: string;
+}
+
+export interface JobInfoListResponse extends Response {
+    total: number;
+    rows: JobInfo[];
+}
+
+export interface PublicKeyResponse extends Response {
+    publicKey: string;
+}
+
+export interface UserOnline {
+    tokenId: string;
+    deptName: string;
+    userName: string;
+    ipaddr: string;
+    loginLocation: string;
+    browser: string;
+    os: string;
+    loginTime: number;
+}
+
+export interface UserOnlineListResponse extends Response {
+    total: number;
+    rows: UserOnline[];
+}

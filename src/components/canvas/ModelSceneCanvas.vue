@@ -88,6 +88,10 @@ onBeforeUnmount(() => {
   opacity: 0;
   transition: all 1s ease;
   z-index: 2;
+  cursor: grab;
+}
+.full-screen-canvas:active {
+  cursor: grabbing;
 }
 .mount-point {
   position: absolute;

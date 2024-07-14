@@ -15,6 +15,7 @@
     "echarts": "^5.5.0",
     "element-plus": "^2.7.4",
     "interactjs": "^1.10.27",
+    "jsencrypt": "^3.3.2",
     "pinia": "^2.1.7",
     "three": "^0.165.0",
     "three-mesh-bvh": "^0.7.6",

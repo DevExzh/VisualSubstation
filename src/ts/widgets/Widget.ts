@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ref, Ref} from "vue";
+import {InjectionKey, ref, Ref} from "vue";
 
 /**
  * 窗口状态
@@ -25,3 +25,10 @@ export const useWidgetStore = defineStore('widget', {
         widgets: [],
     }),
 });
+
+export const widgetKey: InjectionKey<{
+    windowTitle: () => string;
+    setWindowTitle: (windowTitle: string) => void;
+    windowIcon: () => string;
+    setWindowIcon: (windowIcon: string) => void;
+}> = Symbol();
