@@ -73,6 +73,8 @@ router.beforeEach(({meta, name}, _, next) => {
     if(title) document.title = title as string;
     if(!Cookies.get(tokenKey) && name !== 'login' && requiresAuth) {
         next({ name: 'login' });
+    } else if(name === 'login' || !requiresAuth) {
+        next();
     } else {
         const userStore = useUserStore();
         if(userStore.permissions.length == 0 || userStore.roles.length == 0) {

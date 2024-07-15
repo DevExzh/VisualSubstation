@@ -1,7 +1,5 @@
 import * as Types from "./ApiTypes.ts";
 import HTTPService from "./Request.ts";
-import {UserOnlineListResponse} from "./ApiTypes.ts";
-
 export namespace Api {
   /**
    * 登录
@@ -116,7 +114,7 @@ export namespace Api {
       }
 
       // 删除定时任务调度
-      export async function delJob(jobId: string): Promise<Types.Response> {
+      export async function deleteJob(jobId: string): Promise<Types.Response> {
         return HTTPService.delete(`/monitor/job/${jobId}`);
       }
 
@@ -156,22 +154,22 @@ export namespace Api {
 
     export namespace LoginInfo {
       // 查询登录日志列表
-      export async function list(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function list(query: Types.QueryOptions): Promise<Types.LoginInfoResponse> {
         return HTTPService.get('/monitor/logininfor/list', query);
       }
 
       // 删除登录日志
-      export async function delLogininfor(infoId: string): Promise<Types.Response> {
+      export async function deleteLoginInfo(infoId: string): Promise<Types.Response> {
         return HTTPService.delete(`/monitor/logininfor/${infoId}`);
       }
 
       // 解锁用户登录状态
-      export async function unlockLogininfor(userName: string): Promise<Types.Response> {
+      export async function unlockLoginInfo(userName: string): Promise<Types.Response> {
         return HTTPService.get(`/monitor/logininfor/unlock/${userName}`);
       }
 
       // 清空登录日志
-      export async function cleanLogininfor(): Promise<Types.Response> {
+      export async function cleanLoginInfo(): Promise<Types.Response> {
         return HTTPService.delete('/monitor/logininfor/clean');
       }
     }

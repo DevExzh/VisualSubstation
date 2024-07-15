@@ -300,3 +300,20 @@ export interface UserOnlineListResponse extends Response {
     total: number;
     rows: UserOnline[];
 }
+
+export interface LoginInfo extends MetaData {
+    infoId: number;
+    userName: string;
+    status: string;
+    ipaddr: string;
+    loginLocation: string;
+    browser: string;
+    os: string;
+    msg: string;
+    loginTime: string;
+}
+
+export interface LoginInfoResponse extends Response {
+    total: number;
+    rows: LoginInfo[];
+}

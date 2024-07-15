@@ -57,14 +57,14 @@ const handleArray = (array: any[]) => {
             :key="item.value"
             :class="item.elTagClass"
         >{{ item.label + " " }}</span>
-        <el-tag
+        <ElTag
             v-else
             :disable-transitions="true"
-            :key="item.value + ''"
+            :key="item.value"
             :index="index"
-            :type="item.elTagType === 'primary' ? '' : item.elTagType"
+            :type="item.elTagType ?? 'info'"
             :class="item.elTagClass"
-        >{{ item.label + " " }}</el-tag>
+        >{{ item.label + " " }}</ElTag>
       </template>
     </template>
     <template v-if="mismatch && showValue">

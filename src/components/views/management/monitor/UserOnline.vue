@@ -5,7 +5,7 @@ import Pagination from "../../../widgets/Pagination.vue";
 import {parseTime} from "../../../../ts/common/Utils.ts";
 import {ElForm, ElMessage, ElMessageBox} from "element-plus";
 import {UserOnline} from "../../../../ts/common/ApiTypes.ts";
-import {Search, Refresh} from "@element-plus/icons-vue";
+import {Search, Refresh, Delete} from "@element-plus/icons-vue";
 
 const onlineList = ref<UserOnline[]>([]);
 const loading = ref<boolean>(true);
@@ -106,7 +106,7 @@ onMounted(getList);
         <template #default="scope">
           <ElButton
               link type="primary"
-              icon="Delete"
+              :icon="Delete"
               @click="handleForceLogout(scope.row)"
               v-has-permission="['monitor:online:forceLogout']"
           >

@@ -2,6 +2,7 @@ import { ElNotification, ElMessageBox, ElMessage } from "element-plus";
 import Cookies from 'js-cookie';
 import { stringifyParams } from "./Utils.ts";
 import useUserStore from "../store/UserStore.ts";
+import router from "../../routes.ts";
 
 // 是否显示重新登录
 export const requiredToLogin = { show: false };
@@ -108,6 +109,9 @@ export default class HTTPService {
                 message = "系统接口请求超时";
             } else if (message.includes("Request failed with status code")) {
                 message = "系统接口" + message.substring(message.length - 3) + "异常";
+            } else {
+                await router.push({name: 'login', replace: true});
+                return Promise.reject(error);
             }
             ElMessage({ message: message, type: 'error', duration: 5 * 1000 });
             return Promise.reject(error);
