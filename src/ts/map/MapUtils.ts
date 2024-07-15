@@ -44,7 +44,9 @@ export async function object3DFromGeoJson(
     options?: Partial<GeoJsonOptions>
 ): Promise<Object3D[]> {
     const meshes: Object3D[] = [];
-    const response: Response = await fetch(url);
+    const response: Response = await fetch(url, {
+        cache: 'force-cache'
+    });
     const json: FeatureCollection = await response.json() as FeatureCollection;
     const opts: GeoJsonOptions = mergeOptions(defaultOptions, options);
     const proj: GeoProjection = opts.projection

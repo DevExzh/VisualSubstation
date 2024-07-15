@@ -61,7 +61,9 @@ export class MapRenderer extends CanvasRenderer {
             this.add(...objects, this._mainLight, this._ambientLight);
             this.compile().then(_ => this.render());
         });
-        fetch('/map/china_mappings.json').then(async resp => {
+        fetch('/map/china_mappings.json', {
+            cache: 'force-cache'
+        }).then(async resp => {
             return await resp.json() as Record<string, string>;
         }).then(mappings => {
             this._mappings = mappings;

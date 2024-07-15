@@ -1,4 +1,7 @@
-import {CanvasTexture, ImageBitmapLoader, Texture} from "three";
+import {CanvasTexture, ImageBitmapLoader, Texture, Cache} from "three";
+
+// 启用缓存
+Cache.enabled = true;
 
 /**
  * 材质加载器

@@ -24,7 +24,14 @@
 </template>
 
 <style scoped>
-@import url("/fonts/fonts.css");
+@font-face {
+  font-family: 'YouSheBiaoTiHei';
+  src: url('/fonts/YouSheBiaoTiHei.woff2') format('woff2'),
+  url('/fonts/YouSheBiaoTiHei.woff') format('woff'),
+  url('/fonts/YouSheBiaoTiHei.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 .top-decoration {
   height: 8rem;
 }

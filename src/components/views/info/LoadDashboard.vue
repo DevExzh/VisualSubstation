@@ -100,7 +100,14 @@ setTimeout(changeValue, 500);
 </template>
 
 <style scoped>
-@import url("/fonts/fonts.css");
+@font-face {
+  font-family: 'Digital';
+  src: url('/fonts/DS-Digital-BoldItalic.woff2') format('woff2'),
+  url('/fonts/DS-Digital-BoldItalic.woff') format('woff'),
+  url('/fonts/DS-Digital-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
 .left-part {
   position: absolute;
   top: 0;
