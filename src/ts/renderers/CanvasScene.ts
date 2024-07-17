@@ -102,7 +102,7 @@ export abstract class CanvasScene extends EventTarget implements Disposable {
             }
             case 'route-switch': {
                 try {
-                    await this._router.push({
+                    await this._router.replace({
                         name: (event as RouteSwitchEvent).routeName
                     });
                 } catch (e) {

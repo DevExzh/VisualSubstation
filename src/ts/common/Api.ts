@@ -507,7 +507,7 @@ export namespace Api {
 
       // 查询用户详细
       export async function getUser(userId?: number): Promise<Types.UserDetailedInfoResponse> {
-        return HTTPService.get('/system/user/' + userId ?? '');
+        return HTTPService.get('/system/user/' + (userId ?? ''));
       }
 
       // 新增用户
