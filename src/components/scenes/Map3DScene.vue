@@ -4,6 +4,7 @@ import SceneTutorial from "../misc/SceneTutorial.vue";
 import DockItem from "../widgets/DockItem.vue";
 import Dock from "../widgets/Dock.vue";
 import MonitorPanel from "../views/management/monitor/MonitorPanel.vue";
+import SystemPanel from "../views/management/system/SystemPanel.vue";
 </script>
 
 <template>
@@ -11,6 +12,7 @@ import MonitorPanel from "../views/management/monitor/MonitorPanel.vue";
   <MapSceneCanvas />
   <Dock>
     <DockItem name="系统管理" icon="/images/system-management.png">
+      <SystemPanel />
     </DockItem>
     <DockItem name="系统监控" icon="/images/server-monitor.png">
       <MonitorPanel />

@@ -2,7 +2,6 @@
 import interact from 'interactjs';
 import {onBeforeUnmount, onMounted, provide, ref} from "vue";
 import {useWidgetStore, widgetKey, WidgetState, WindowState} from "../../ts/widgets/Widget.ts";
-import {Interactable} from "@interactjs/core/Interactable";
 import {pixels} from "../../ts/common/Utils.ts";
 const windowContainer = ref<HTMLElement>();
 const clientArea = ref<HTMLElement>();
@@ -64,7 +63,7 @@ let minBtnPressed = ref<boolean>(false),
     focusLost = ref<boolean>(false),
     shouldRender = ref<boolean>(true)
 ;
-let interactable: Interactable;
+let interactable: any;
 const closeBtn = ref<HTMLElement>(), minBtn = ref<HTMLElement>(), maxBtn = ref<HTMLElement>();
 const store = useWidgetStore();
 const widget = new WidgetState(); // 当前窗口的状态

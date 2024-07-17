@@ -11,6 +11,7 @@
   "dependencies": {
     "@dataview/datav-vue3": "^0.0.0-test.1672506674342",
     "@tweenjs/tween.js": "^23.1.2",
+    "@vueup/vue-quill": "^1.2.0",
     "d3-geo": "^3.1.1",
     "echarts": "^5.5.0",
     "element-plus": "^2.7.4",
@@ -28,6 +29,7 @@
     "@interactjs/types": "^1.10.27",
     "@types/d3-geo": "^3.1.0",
     "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20.14.11",
     "@types/three": "^0.165.0",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-vue": "^5.0.5",

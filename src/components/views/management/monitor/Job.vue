@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, reactive, Ref, ref, toRefs} from "vue";
+import {onMounted, reactive, ref, toRefs} from "vue";
 import {ElForm, ElMessage, ElMessageBox} from "element-plus";
 import {
   QuestionFilled, Search, Refresh, Plus,
@@ -9,7 +9,7 @@ import Api from "../../../../ts/common/Api.ts";
 import RightToolBar from "../../../widgets/RightToolBar.vue";
 import DictTag from "../../../widgets/DictTag.vue";
 import Pagination from "../../../widgets/Pagination.vue";
-import {useDict} from "../../../../ts/store/DictStore.ts";
+import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {parseTime, selectDictLabel} from "../../../../ts/common/Utils.ts";
 import {JobInfo} from "../../../../ts/common/ApiTypes.ts";
 import CronTab from "../../../widgets/CronTab.vue";
@@ -25,10 +25,24 @@ const total = ref<number>(0);
 const title = ref<string>("");
 const openView = ref<boolean>(false);
 const openCron = ref<boolean>(false);
-const expression = ref<string>("");
+const expression = ref<string | undefined>("");
 const jobRef = ref<InstanceType<typeof ElForm>>();
 const queryRef = ref<InstanceType<typeof ElForm>>();
-const data = reactive({
+const data = reactive<{
+  form: Partial<JobInfo>;
+  queryParams: {
+    pageNum: number;
+    pageSize: number;
+    jobName?: string;
+    jobGroup?: string;
+    status?: string;
+  };
+  rules: {
+    jobName: {required: boolean, message: string, trigger: string}[];
+    invokeTarget: {required: boolean, message: string, trigger: string}[];
+    cronExpression: {required: boolean, message: string, trigger: string}[];
+  }
+}>({
   form: {},
   queryParams: {
     pageNum: 1,
@@ -70,8 +84,8 @@ const reset = () => {
     jobGroup: undefined,
     invokeTarget: undefined,
     cronExpression: undefined,
-    misfirePolicy: 1,
-    concurrent: 1,
+    misfirePolicy: '1',
+    concurrent: '1',
     status: "0"
   };
   jobRef.value?.resetFields();
@@ -129,11 +143,11 @@ const handleShowCron = () => {
 };
 /** 确定后回传值 */
 const crontabFill = (value: string) => {
-  (form as Ref<JobInfo>).value.cronExpression = value;
+  form.value.cronExpression = value;
 };
 /** 任务日志列表查询 */
-const handleJobLog = (row: JobInfo) => {
-  const jobId = row.jobId || 0;
+const handleJobLog = (_: JobInfo) => {
+  // const jobId = row.jobId || 0;
   //router.push('/monitor/job-log/index/' + jobId)
 }
 /** 新增按钮操作 */
@@ -145,7 +159,7 @@ const handleAdd = () => {
 /** 修改按钮操作 */
 const handleUpdate = (row: JobInfo) => {
   reset();
-  const jobId = row.jobId || ids.value;
+  const jobId = row.jobId || ids.value[0];
   Api.Monitor.Job.getJob(jobId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -158,29 +172,33 @@ const submitForm = () => {
     if (valid) {
       if (form.value.jobId != undefined) {
         Api.Monitor.Job.updateJob(form.value).then(response => {
-          ElMessage.success("修改成功");
-          open.value = false;
-          getList();
+          if(response.code == 200) {
+            ElMessage.success("修改成功");
+            open.value = false;
+            getList();
+          }
         });
       } else {
         Api.Monitor.Job.addJob(form.value).then(response => {
-          ElMessage.success("新增成功");
-          open.value = false;
-          getList();
+          if(response.code == 200) {
+            ElMessage.success("新增成功");
+            open.value = false;
+            getList();
+          }
         });
       }
     }
   });
 };
 /** 删除按钮操作 */
-const handleDelete = (row) => {
+const handleDelete = (row: JobInfo) => {
   const jobIds = row.jobId || ids.value;
   ElMessageBox.confirm(`是否确认删除定时任务编号为"${jobIds}"的数据项?`, "系统提示", {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: "warning",
   })
-      .then(() => Api.Monitor.Job.deleteJob(jobIds))
+      .then(() => Api.Monitor.Job.deleteJob(jobIds as number))
       .then(() => {
         getList();
         ElMessage.success("删除成功");
@@ -208,9 +226,9 @@ onMounted(getList);
         <ElSelect v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable style="width: 200px">
           <ElOption
               v-for="dict in sys_job_group"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+              :key="dict['value']"
+              :label="dict['label']"
+              :value="dict['value']"
           />
         </ElSelect>
       </ElFormItem>
@@ -218,9 +236,9 @@ onMounted(getList);
         <ElSelect v-model="queryParams.status" placeholder="请选择任务状态" clearable style="width: 200px">
           <ElOption
               v-for="dict in sys_job_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+              :key="dict['value']"
+              :label="dict['label']"
+              :value="dict['value']"
           />
         </ElSelect>
       </ElFormItem>
@@ -287,7 +305,7 @@ onMounted(getList);
       <ElTableColumn label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
       <ElTableColumn label="任务组名" align="center" prop="jobGroup">
         <template #default="scope">
-          <DictTag :options="sys_job_group" :value="scope.row.jobGroup" />
+          <DictTag :options="sys_job_group as DictValue[]" :value="scope.row.jobGroup" />
         </template>
       </ElTableColumn>
       <ElTableColumn label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
@@ -345,9 +363,9 @@ onMounted(getList);
               <ElSelect v-model="form.jobGroup" placeholder="请选择">
                 <ElOption
                     v-for="dict in sys_job_group"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
+                    :key="dict['value']"
+                    :label="dict['label']"
+                    :value="dict['value']"
                 ></ElOption>
               </ElSelect>
             </ElFormItem>
@@ -389,9 +407,9 @@ onMounted(getList);
               <ElRadioGroup v-model="form.status">
                 <ElRadio
                     v-for="dict in sys_job_status"
-                    :key="dict.value"
-                    :value="dict.value"
-                >{{ dict.label }}</ElRadio>
+                    :key="dict['value']"
+                    :value="dict['value']"
+                >{{ dict['label'] }}</ElRadio>
               </ElRadioGroup>
             </ElFormItem>
           </ElCol>
@@ -435,7 +453,7 @@ onMounted(getList);
             <ElFormItem label="任务名称：">{{ form.jobName }}</ElFormItem>
           </ElCol>
           <ElCol :span="12">
-            <ElFormItem label="任务分组：">{{ jobGroupFormat(form) }}</ElFormItem>
+            <ElFormItem label="任务分组：">{{ jobGroupFormat(form as JobInfo) }}</ElFormItem>
             <ElFormItem label="创建时间：">{{ form.createTime }}</ElFormItem>
           </ElCol>
           <ElCol :span="12">
@@ -449,22 +467,22 @@ onMounted(getList);
           </ElCol>
           <ElCol :span="12">
             <ElFormItem label="任务状态：">
-              <div v-if="form.status == 0">正常</div>
-              <div v-else-if="form.status == 1">暂停</div>
+              <div v-if="+form.status! == 0">正常</div>
+              <div v-else-if="+form.status! == 1">暂停</div>
             </ElFormItem>
           </ElCol>
           <ElCol :span="12">
             <ElFormItem label="是否并发：">
-              <div v-if="form.concurrent == 0">允许</div>
-              <div v-else-if="form.concurrent == 1">禁止</div>
+              <div v-if="+form.concurrent! == 0">允许</div>
+              <div v-else-if="+form.concurrent! == 1">禁止</div>
             </ElFormItem>
           </ElCol>
           <ElCol :span="12">
             <ElFormItem label="执行策略：">
-              <div v-if="form.misfirePolicy == 0">默认策略</div>
-              <div v-else-if="form.misfirePolicy == 1">立即执行</div>
-              <div v-else-if="form.misfirePolicy == 2">执行一次</div>
-              <div v-else-if="form.misfirePolicy == 3">放弃执行</div>
+              <div v-if="+form.misfirePolicy! == 0">默认策略</div>
+              <div v-else-if="+form.misfirePolicy! == 1">立即执行</div>
+              <div v-else-if="+form.misfirePolicy! == 2">执行一次</div>
+              <div v-else-if="+form.misfirePolicy! == 3">放弃执行</div>
             </ElFormItem>
           </ElCol>
         </ElRow>

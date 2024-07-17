@@ -75,6 +75,11 @@ export interface UserInfoResponse extends Response {
     user: UserInfo;
 }
 
+export interface UserInfoListResponse extends Response {
+    total: number;
+    rows: UserInfo[];
+}
+
 export interface LoginResponse extends Response {
     token: string;
 }
@@ -281,6 +286,10 @@ export interface JobInfoListResponse extends Response {
     rows: JobInfo[];
 }
 
+export interface JobInfoResponse extends Response {
+    data: JobInfo;
+}
+
 export interface PublicKeyResponse extends Response {
     publicKey: string;
 }
@@ -316,4 +325,99 @@ export interface LoginInfo extends MetaData {
 export interface LoginInfoResponse extends Response {
     total: number;
     rows: LoginInfo[];
+}
+
+export interface AnnouncementInfo extends MetaData {
+    noticeId: number;
+    noticeTitle: string;
+    noticeType: string;
+    noticeContent: string;
+    status: string;
+}
+
+export interface AnnouncementInfoListResponse extends Response {
+    total: number;
+    rows: AnnouncementInfo[];
+}
+
+export interface AnnouncementInfoResponse extends Response {
+    data: AnnouncementInfo;
+}
+
+export interface DepartmentInfo extends MetaData {
+    deptId: number;
+    parentId: number;
+    ancestors: string;
+    deptName: string;
+    orderNum: number;
+    leader: string;
+    phone: string;
+    email: string;
+    status: string;
+    delFlag: string;
+    parentName?: string;
+    children: DepartmentInfo[];
+}
+
+export interface DepartmentInfoListResponse extends Response {
+    data: DepartmentInfo[];
+}
+
+export interface DepartmentInfoResponse extends Response {
+    data: DepartmentInfo;
+}
+
+export interface PostInfo extends MetaData {
+    postId: number;
+    postCode: string;
+    postName: string;
+    postSort: number;
+    status: string;
+    flag: boolean;
+}
+
+export interface PostInfoListResponse extends Response {
+    total: number;
+    rows: PostInfo[];
+}
+
+export interface PostInfoResponse extends Response {
+    data: PostInfo;
+}
+
+export interface RoleInfoListResponse extends Response {
+    total: number;
+    rows: RoleInfo[];
+}
+
+export interface RoleInfoResponse extends Response {
+    data: RoleInfo;
+}
+
+export interface Menu {
+    id: number;
+    label: string;
+    children?: Menu[];
+}
+
+export interface RoleMenuResponse extends Response {
+    menus: Menu[];
+    checkedKeys: number[];
+}
+
+export interface DeptMenuResponse extends Response {
+    depts: Menu[];
+    checkedKeys: number[];
+}
+
+export interface MenuResponse extends Response {
+    data: Menu[];
+}
+
+export interface UserDetailedInfoResponse extends Response {
+    roleIds: number[];
+    data: UserInfo;
+    postIds: number[];
+    roles: RoleInfo[];
+    posts: PostInfo[];
 }

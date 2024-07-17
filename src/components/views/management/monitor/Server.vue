@@ -21,12 +21,12 @@ onMounted(() => {
       v-loading="loading"
       element-loading-text="正在加载服务监控数据，请稍候！"
   >
-    <ElRow v-if="server">
+    <ElRow :gutter="10" v-if="server">
       <ElCol :span="12" class="card-box">
         <ElCard>
           <template #header>
             <Cpu style="width: 1em; height: 1em; vertical-align: middle;" />
-            <span style="vertical-align: middle;">CPU</span>
+            <span class="icon-name">中央处理器</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table style="width: 100%; border-spacing: 0;">
@@ -66,12 +66,11 @@ onMounted(() => {
           </div>
         </ElCard>
       </ElCol>
-
       <ElCol :span="12" class="card-box">
         <ElCard>
           <template #header>
             <Tickets style="width: 1em; height: 1em; vertical-align: middle;" />
-            <span style="vertical-align: middle;">内存</span>
+            <span class="icon-name">内存</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table style="width: 100%; border-spacing: 0;">
@@ -130,12 +129,13 @@ onMounted(() => {
           </div>
         </ElCard>
       </ElCol>
-
+    </ElRow>
+    <ElRow class="row" v-if="server">
       <ElCol :span="24" class="card-box">
         <ElCard>
           <template #header>
             <Monitor style="width: 1em; height: 1em; vertical-align: middle;" />
-            <span style="vertical-align: middle;">服务器信息</span>
+            <span class="icon-name">服务器信息</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table style="width: 100%; border-spacing: 0;">
@@ -165,12 +165,13 @@ onMounted(() => {
           </div>
         </ElCard>
       </ElCol>
-
+    </ElRow>
+    <ElRow class="row" v-if="server">
       <ElCol :span="24" class="card-box">
         <ElCard>
           <template #header>
             <CoffeeCup style="width: 1em; height: 1em; vertical-align: middle;" />
-            <span style="vertical-align: middle;">Java虚拟机信息</span>
+            <span class="icon-name">Java 虚拟机信息</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table style="width: 100%; border-spacing: 0; table-layout:fixed;">
@@ -218,12 +219,13 @@ onMounted(() => {
           </div>
         </ElCard>
       </ElCol>
-
+    </ElRow>
+    <ElRow class="row" v-if="server">
       <ElCol :span="24" class="card-box">
         <ElCard>
           <template #header>
             <MessageBox style="width: 1em; height: 1em; vertical-align: middle;" />
-            <span style="vertical-align: middle;">磁盘状态</span>
+            <span class="icon-name">磁盘状态</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table style="width: 100%; border-spacing: 0;">
@@ -265,5 +267,13 @@ onMounted(() => {
 }
 :global(.loading-area) {
   cursor: wait;
+}
+.row {
+  margin-top: 1rem;
+}
+.icon-name {
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  font-weight: bolder;
 }
 </style>

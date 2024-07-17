@@ -99,7 +99,7 @@ export namespace Api {
       }
 
       // 查询定时任务调度详细
-      export async function getJob(jobId: string): Promise<Types.Response> {
+      export async function getJob(jobId: number): Promise<Types.JobInfoResponse> {
         return HTTPService.get(`/monitor/job/${jobId}`);
       }
 
@@ -114,12 +114,12 @@ export namespace Api {
       }
 
       // 删除定时任务调度
-      export async function deleteJob(jobId: string): Promise<Types.Response> {
+      export async function deleteJob(jobId: number): Promise<Types.Response> {
         return HTTPService.delete(`/monitor/job/${jobId}`);
       }
 
       // 任务状态修改
-      export async function changeJobStatus(jobId: string, status: string): Promise<Types.Response> {
+      export async function changeJobStatus(jobId: number, status: string): Promise<Types.Response> {
         return HTTPService.put('/monitor/job/changeStatus', {
           jobId,
           status
@@ -127,7 +127,7 @@ export namespace Api {
       }
 
       // 定时任务立即执行一次
-      export async function runJob(jobId: string, jobGroup: string): Promise<Types.Response> {
+      export async function runJob(jobId: number, jobGroup: string): Promise<Types.Response> {
         return HTTPService.put('/monitor/job/run', {
           jobId,
           jobGroup
@@ -308,17 +308,17 @@ export namespace Api {
 
     export namespace Dept {
       // 查询部门列表
-      export async function listDept(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function listDept(query: Types.QueryOptions): Promise<Types.DepartmentInfoListResponse> {
         return HTTPService.get('/system/dept/list', query);
       }
 
       // 查询部门列表（排除节点）
-      export async function listDeptExcludeChild(deptId: string): Promise<Types.Response> {
+      export async function listDeptExcludeChild(deptId: string): Promise<Types.DepartmentInfoListResponse> {
         return HTTPService.get(`/system/dept/list/exclude/${deptId}`);
       }
 
       // 查询部门详细
-      export async function getDept(deptId: string): Promise<Types.Response> {
+      export async function getDept(deptId: string): Promise<Types.DepartmentInfoResponse> {
         return HTTPService.get(`/system/dept/${deptId}`);
       }
 
@@ -333,7 +333,7 @@ export namespace Api {
       }
 
       // 删除部门
-      export async function delDept(deptId: string): Promise<Types.Response> {
+      export async function deleteDept(deptId: number): Promise<Types.Response> {
         return HTTPService.delete(`/system/dept/${deptId}`);
       }
     }
@@ -350,12 +350,12 @@ export namespace Api {
       }
 
       // 查询菜单下拉树结构
-      export async function treeselect(): Promise<Types.Response> {
+      export async function treeSelect(): Promise<Types.MenuResponse> {
         return HTTPService.get('/system/menu/treeselect');
       }
 
       // 根据角色ID查询菜单下拉树结构
-      export async function roleMenuTreeselect(roleId: string): Promise<Types.Response> {
+      export async function roleMenuTreeSelect(roleId: number): Promise<Types.RoleMenuResponse> {
         return HTTPService.get(`/system/menu/roleMenuTreeselect/${roleId}`);
       }
 
@@ -377,12 +377,12 @@ export namespace Api {
 
     export namespace Notice {
       // 查询公告列表
-      export async function listNotice(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function listNotice(query: Types.QueryOptions): Promise<Types.AnnouncementInfoListResponse> {
         return HTTPService.get('/system/notice/list', query);
       }
 
       // 查询公告详细
-      export async function getNotice(noticeId: number): Promise<Types.Response> {
+      export async function getNotice(noticeId: number): Promise<Types.AnnouncementInfoResponse> {
         return HTTPService.get(`/system/notice/${noticeId}`);
       }
 
@@ -397,19 +397,19 @@ export namespace Api {
       }
 
       // 删除公告
-      export async function delNotice(noticeId: number): Promise<Types.Response> {
+      export async function deleteNotice(noticeId: number): Promise<Types.Response> {
         return HTTPService.delete(`/system/notice/${noticeId}`);
       }
     }
 
     export namespace Post {
       // 查询岗位列表
-      export async function listPost(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function listPost(query: Types.QueryOptions): Promise<Types.PostInfoListResponse> {
         return HTTPService.get('/system/post/list', query);
       }
 
       // 查询岗位详细
-      export async function getPost(postId: number): Promise<Types.Response> {
+      export async function getPost(postId: number): Promise<Types.PostInfoResponse> {
         return HTTPService.get(`/system/post/${postId}`);
       }
 
@@ -424,19 +424,19 @@ export namespace Api {
       }
 
       // 删除岗位
-      export async function delPost(postId: number): Promise<Types.Response> {
+      export async function deletePost(postId: number): Promise<Types.Response> {
         return HTTPService.delete(`/system/post/${postId}`);
       }
     }
 
     export namespace Role {
       // 查询角色列表
-      export async function listRole(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function listRole(query: Types.QueryOptions): Promise<Types.RoleInfoListResponse> {
         return HTTPService.get('/system/role/list', query);
       }
 
       // 查询角色详细
-      export async function getRole(roleId: number): Promise<Types.Response> {
+      export async function getRole(roleId: number): Promise<Types.RoleInfoResponse> {
         return HTTPService.get(`/system/role/${roleId}`);
       }
 
@@ -464,7 +464,7 @@ export namespace Api {
       }
 
       // 删除角色
-      export async function delRole(roleId: number): Promise<Types.Response> {
+      export async function deleteRole(roleId: number): Promise<Types.Response> {
         return HTTPService.delete(`/system/role/${roleId}`);
       }
 
@@ -494,20 +494,20 @@ export namespace Api {
       }
 
       // 根据角色ID查询部门树结构
-      export async function deptTreeSelect(roleId: number): Promise<Types.Response> {
+      export async function deptTreeSelect(roleId: number): Promise<Types.DeptMenuResponse> {
         return HTTPService.get(`/system/role/deptTree/${roleId}`);
       }
     }
 
     export namespace User {
       // 查询用户列表
-      export async function listUser(query: Types.QueryOptions): Promise<Types.Response> {
+      export async function listUser(query: Types.QueryOptions): Promise<Types.UserInfoListResponse> {
         return HTTPService.get('/system/user/list', query);
       }
 
       // 查询用户详细
-      export async function getUser(userId: number): Promise<Types.Response> {
-        return HTTPService.get('/system/user/' + userId);
+      export async function getUser(userId?: number): Promise<Types.UserDetailedInfoResponse> {
+        return HTTPService.get('/system/user/' + userId ?? '');
       }
 
       // 新增用户
@@ -521,7 +521,7 @@ export namespace Api {
       }
 
       // 删除用户
-      export async function delUser(userId: number): Promise<Types.Response> {
+      export async function deleteUser(userId: number): Promise<Types.Response> {
         return HTTPService.delete('/system/user/' + userId);
       }
 
@@ -575,7 +575,7 @@ export namespace Api {
       }
 
       // 查询部门下拉树结构
-      export async function deptTreeSelect(): Promise<Types.Response> {
+      export async function deptTreeSelect(): Promise<Types.Response & { data: Types.Menu[] }> {
         return HTTPService.get('/system/user/deptTree');
       }
     }
@@ -626,12 +626,7 @@ export namespace Api {
         }
 
         // 新增字典类型
-        export async function addType(data: {
-          dictName: string;
-          dictType: string;
-          status: Types.DictStatus;
-          remark: string;
-        }): Promise<Response> {
+        export async function addType(data: any): Promise<Response> {
           return HTTPService.post('/system/dict/type', data);
         }
 
@@ -641,7 +636,7 @@ export namespace Api {
         }
 
         // 删除字典类型
-        export async function delType(dictId: number): Promise<Response> {
+        export async function deleteType(dictId: number): Promise<Response> {
           return HTTPService.delete('/system/dict/type/' + dictId);
         }
 

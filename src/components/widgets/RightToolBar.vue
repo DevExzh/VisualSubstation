@@ -12,7 +12,7 @@ const props = defineProps({
   /* 显隐列信息 */
   columns: {
     type: Array<{
-      key: string;
+      key: string | number;
       visible: boolean;
       label: string;
     }>,

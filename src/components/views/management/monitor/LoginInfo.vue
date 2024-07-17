@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useDict} from "../../../../ts/store/DictStore.ts";
+import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {onMounted, ref} from "vue";
 import {ElForm, ElMessage, ElMessageBox, ElTable, Sort} from "element-plus";
 import Api from "../../../../ts/common/Api.ts";
@@ -18,7 +18,7 @@ const showSearch = ref<boolean>(true);
 const ids = ref<number[]>([]);
 const single = ref<boolean>(true);
 const multiple = ref<boolean>(true);
-const selectName = ref<string>("");
+const selectName = ref<string | string[]>('');
 const total = ref<number>(0);
 const dateRange = ref<DateRange>([]);
 const defaultSort = ref<Sort>({ prop: "loginTime", order: "descending" });
@@ -55,17 +55,17 @@ const resetQuery = () => {
   dateRange.value = [];
   queryRef.value?.resetFields();
   queryParams.value.pageNum = 1;
-  loginInfoRef.value.sort(defaultSort.value.prop, defaultSort.value.order);
+  loginInfoRef.value!.sort(defaultSort.value.prop, defaultSort.value.order);
 };
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: LoginInfo[]) => {
   ids.value = selection.map(item => item.infoId);
   multiple.value = !selection.length;
   single.value = selection.length != 1;
-  selectName.value = selection.map(item => item.userName);
+  selectName.value! = selection.map(item => item.userName);
 };
 /** 排序触发事件 */
-const handleSortChange = (column: any, prop: string, order: any) => {
+const handleSortChange = (column: any, _: string, __: any) => {
   queryParams.value.orderByColumn = column.prop;
   queryParams.value.isAsc = column.order;
   getList();
@@ -78,7 +78,7 @@ const handleDelete = (row: LoginInfo) => {
     cancelButtonText: '取消',
     type: "warning",
   })
-      .then(() => Api.Monitor.LoginInfo.deleteLoginInfo(infoIds))
+      .then(() => Api.Monitor.LoginInfo.deleteLoginInfo(String(infoIds)))
       .then(() => {
         getList();
         ElMessage.success("删除成功");
@@ -105,7 +105,7 @@ const handleUnlock = () => {
     cancelButtonText: '取消',
     type: "warning",
   })
-      .then(() => Api.Monitor.LoginInfo.unlockLoginInfo(username))
+      .then(() => Api.Monitor.LoginInfo.unlockLoginInfo(String(username)))
       .then(() => ElMessage.success("用户" + username + "解锁成功"));
 };
 /** 导出按钮操作 */
@@ -143,9 +143,9 @@ onMounted(getList);
         >
           <ElOption
               v-for="dict in sys_common_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
+              :key="dict['value']"
+              :label="dict['label']"
+              :value="dict['value']"
           />
         </ElSelect>
       </ElFormItem>
@@ -226,7 +226,7 @@ onMounted(getList);
       <ElTableColumn label="浏览器" align="center" prop="browser" :show-overflow-tooltip="true" />
       <ElTableColumn label="登录状态" align="center" prop="status">
         <template #default="scope">
-          <DictTag :options="sys_common_status" :value="scope.row.status" />
+          <DictTag :options="sys_common_status as DictValue[]" :value="scope.row.status" />
         </template>
       </ElTableColumn>
       <ElTableColumn label="描述" align="center" prop="msg" :show-overflow-tooltip="true" />

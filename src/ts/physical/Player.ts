@@ -71,8 +71,10 @@ export class Player extends THREE.Object3D {
             // 计算长宽高的大小
             const delta: THREE.Vector3 = boundingBox.max.clone().sub(boundingBox.min);
             // 计算包围胶囊体的半径
-            this._radius = Math.max(Math.abs(delta.x), Math.abs(delta.z));
-            this._segment.end.y = -Math.abs(delta.y);
+            this._radius = Math.min(Math.abs(delta.x) / 2, Math.abs(delta.z) / 2);
+            this._segment.start.y = (boundingBox.max.y - this._radius) / 1.75;
+            this._segment.end.y = (boundingBox.min.y + this._radius) / 1.75;
+            this._radius /= 1.75;
         }).catch((error: Error) => {
             console.error(error);
         });

@@ -43,24 +43,28 @@ const onTabChange = (name: string | number) => {
 </script>
 
 <template>
-  <ElTabs v-model="activeName" @tabChange="onTabChange" type="border-card">
-    <ElTabPane label="服务器监控" name="server">
-      <Server v-if="activeName === 'server'"/>
+  <ElTabs
+      v-model="activeName"
+      @tabChange="onTabChange"
+      type="border-card"
+  >
+    <ElTabPane lazy label="服务器监控" name="server">
+      <Server/>
     </ElTabPane>
-    <ElTabPane label="缓存监控" name="cache">
-      <Cache v-if="activeName === 'cache'"/>
+    <ElTabPane lazy label="缓存监控" name="cache">
+      <Cache/>
     </ElTabPane>
-    <ElTabPane label="定时任务" name="job">
-      <Job v-if="activeName === 'job'"/>
+    <ElTabPane lazy label="定时任务" name="job">
+      <Job/>
     </ElTabPane>
-    <ElTabPane label="在线用户" name="userOnline">
-      <UserOnline v-if="activeName === 'userOnline'"/>
+    <ElTabPane lazy label="在线用户" name="userOnline">
+      <UserOnline/>
     </ElTabPane>
-    <ElTabPane label="登录信息" name="loginInfo">
-      <LoginInfo v-if="activeName === 'loginInfo'"/>
+    <ElTabPane lazy label="登录信息" name="loginInfo">
+      <LoginInfo/>
     </ElTabPane>
-    <ElTabPane label="操作记录" name="operationLog">
-      <OperationLog v-if="activeName === 'operationLog'"/>
+    <ElTabPane lazy label="操作记录" name="operationLog">
+      <OperationLog/>
     </ElTabPane>
   </ElTabs>
 </template>
