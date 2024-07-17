@@ -22,36 +22,33 @@ export class ModelScene extends CanvasScene {
     }
 
     protected override async eventHandler(event: EventObject): Promise<boolean> {
-        const handled = await super.eventHandler(event);
-        if(!handled) {
-            switch (event.type) {
-                case 'scene-object-change': {
-                    const converted = event as SceneObjectChangeEvent;
-                    this.dispatchEvent(new SceneObjectChangeEvent(converted.eventType, ...converted.objects));
-                    break;
-                }
-                // 相机位置/视角发生变化，对于协调多个组件共同渲染非常重要
-                case 'camera-change': {
-                    const converted = event as CameraChangeEvent;
-                    this.dispatchEvent(new CameraChangeEvent(converted.camera));
-                    break;
-                }
-                case 'load': {
-                    const converted = event as LoadEvent;
-                    this.dispatchEvent(new LoadEvent(converted.state));
-                    break;
-                }
-                case 'object-selection': {
-                    const converted = event as ObjectSelectionEvent;
-                    this.dispatchEvent(
-                        new ObjectSelectionEvent(converted.selected, converted.camera, ...converted.objects)
-                    );
-                    break;
-                }
-                default: break;
+        if(await super.eventHandler(event)) return true;
+        switch (event.type) {
+            case 'scene-object-change': {
+                const converted = event as SceneObjectChangeEvent;
+                this.dispatchEvent(new SceneObjectChangeEvent(converted.eventType, ...converted.objects));
+                return true;
             }
+            // 相机位置/视角发生变化，对于协调多个组件共同渲染非常重要
+            case 'camera-change': {
+                const converted = event as CameraChangeEvent;
+                this.dispatchEvent(new CameraChangeEvent(converted.camera));
+                return true;
+            }
+            case 'load': {
+                const converted = event as LoadEvent;
+                this.dispatchEvent(new LoadEvent(converted.state));
+                return true;
+            }
+            case 'object-selection': {
+                const converted = event as ObjectSelectionEvent;
+                this.dispatchEvent(
+                    new ObjectSelectionEvent(converted.selected, converted.camera, ...converted.objects)
+                );
+                return true;
+            }
+            default: return false;
         }
-        return true;
     }
 
     protected override initRenderer(): CanvasRenderer {

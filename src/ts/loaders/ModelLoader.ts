@@ -6,18 +6,27 @@ import {FBXLoader} from "three/examples/jsm/loaders/FBXLoader.js";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader.js";
 import {ThreeContext, LoadedModel} from "../common/Types.ts";
 
-export type ModelManifest = {
+export interface ModelManifest {
     type: string,
     prefix: string,
     models: string[],
-    exclusions: string[]
-};
+    exclusions: string[],
+    positions: Record<string, [number, number, number]>,
+}
+
+export interface LoadedObject extends THREE.Object3D {
+    userData: {
+        isLoadedModel: boolean;
+        originalName: string;
+        initialPosition: [number, number, number];
+    }
+}
 
 export class ModelObjectLoadEvent extends Event {
-    public readonly object: THREE.Object3D;
+    public readonly object: LoadedObject
     public readonly name: string;
 
-    constructor(object: THREE.Object3D, name: string) {
+    constructor(object: LoadedObject, name: string) {
         super('model-object-loaded');
         this.object = object;
         this.name = name;
@@ -36,6 +45,7 @@ export class ModelLoader extends EventTarget implements Disposable {
     private dracoLoader: DRACOLoader | null = null;
     private context: ThreeContext;
     public exclusions: string[] = [];
+    public initialPositions: ModelManifest['positions'] = {};
     public readonly models: THREE.Object3D[] = [];
 
     /**
@@ -86,6 +96,7 @@ export class ModelLoader extends EventTarget implements Disposable {
             const response: Response = await fetch(manifestPath);
             const modelConfig: ModelManifest = await response.json();
             this.exclusions = modelConfig.exclusions;
+            this.initialPositions = modelConfig.positions;
             for(let i = 0; i < modelConfig.models.length; ++i) {
                 const modelPath = (modelConfig.prefix ?? '/') + modelConfig.models[i];
                 this.modelPromises.push(this.loadSingle3DModel(modelPath, true));
@@ -119,6 +130,8 @@ export class ModelLoader extends EventTarget implements Disposable {
             if((model as LoadedModel)?.scene !== undefined && typeof (model as LoadedModel)?.scene === "object") {
                 const obj = (model as LoadedModel).scene;
                 obj.userData['isLoadedModel'] = true;
+                obj.userData['originalName'] = path.nameWithoutExt;
+                obj.userData['initialPosition'] = this.initialPositions?.[path.fullFileName] ?? [];
                 if(!!obj.traverse) {
                     obj.traverse((o) => {
                         if(o.type === 'Mesh') {
@@ -132,7 +145,7 @@ export class ModelLoader extends EventTarget implements Disposable {
                 }
                 this.models.push(obj);
                 this.context.scene.add(obj);
-                this.dispatchEvent(new ModelObjectLoadEvent(obj, path.nameWithoutExt));
+                this.dispatchEvent(new ModelObjectLoadEvent(obj as unknown as LoadedObject, path.nameWithoutExt));
             }
         } catch (e) {
             console.error(`Error occurred on model: ${path.fullFileName}`);

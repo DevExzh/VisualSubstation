@@ -1,0 +1,71 @@
+.placeholder {
+    height: 3rem;
+    margin: 0;
+    padding: 0;
+}
+.stylized-container > * {
+    animation: 1s ease-out 0s item-appear;
+    pointer-events: visible;
+}
+.decorated-container {
+    position: absolute;
+    top: 3.2rem;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 3.2rem);
+}
+.panel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    pointer-events: none;
+}
+.right-panel {
+    position: absolute;
+    max-width: 30rem;
+    width: 25%;
+    right: 0;
+    padding-right: 0.5rem;
+    height: 100%;
+    z-index: 5;
+    background: linear-gradient(to left, rgba(20, 20, 20, 0.8), transparent);
+    animation: 1s ease-out 0s right-panel-move;
+}
+.left-panel {
+    position: absolute;
+    max-width: 30rem;
+    width: 25%;
+    left: 0;
+    padding-left: 0.5rem;
+    height: 100%;
+    z-index: 5;
+    background: linear-gradient(to right, rgba(20, 20, 20, 0.8), transparent);
+    animation: 1s ease-out 0s left-panel-move;
+}
+@keyframes item-appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes right-panel-move {
+    from {
+        right: -25%;
+    }
+    to {
+        right: 0;
+    }
+}
+@keyframes left-panel-move {
+    from {
+        left: -25%;
+    }
+    to {
+        left: 0;
+    }
+}

@@ -7,6 +7,9 @@ import LoadDashboard from "../views/info/LoadDashboard.vue";
 import {BorderBox11} from "@dataview/datav-vue3";
 import {ref} from "vue";
 import LoadingView from "../views/info/LoadingView.vue";
+import DockItem from "../widgets/DockItem.vue";
+import Dock from "../widgets/Dock.vue";
+import ModelDismantleCanvas from "../canvas/ModelDismantleCanvas.vue";
 
 // 属性
 withDefaults(defineProps<{
@@ -23,6 +26,33 @@ const loadCompleted = ref<boolean>(false);
   <Transition name="fade" mode="in-out">
     <LoadingView v-if="!loadCompleted"/>
   </Transition>
+  <Dock style="z-index: 20">
+    <DockItem name="设备拆解" icon="/images/dismantle.png">
+      <ElTabs tab-position="left" style="height: 100%; width: 100%;">
+        <ElTabPane lazy label="变压器" name="transformer">
+          <ModelDismantleCanvas
+              manifest-path="/models/dismantled/transformer.dismantled.json"
+              :dismantle-action="[
+                  {modelName: 'transformer.part1', component: 'y', distance: 3},
+                  {modelName: 'transformer.part2', component: 'x', distance: 3},
+                  {modelName: 'transformer.part3', component: 'x', distance: -3},
+              ]"
+          />
+        </ElTabPane>
+        <ElTabPane lazy label="隔离开关" name="isolator">
+          <ModelDismantleCanvas
+              manifest-path="/models/dismantled/isolator-switch.dismantled.json"
+              :dismantle-action="[
+                  {modelName: 'isolator.part1', component: 'y', distance: 3},
+                  {modelName: 'isolator.part2', component: 'x', distance: 3},
+                  {modelName: 'isolator.part3', component: 'x', distance: 3},
+                  {modelName: 'isolator.part4', component: 'x', distance: 3},
+              ]"
+          />
+        </ElTabPane>
+      </ElTabs>
+    </DockItem>
+  </Dock>
   <SkySceneCanvas
       v-if="$props.sky"
   />
@@ -34,7 +64,7 @@ const loadCompleted = ref<boolean>(false);
   <div class="panel-container">
     <!--  右侧面板  -->
     <div
-        id="right-panel"
+        class="right-panel"
         v-if="loadCompleted"
     >
       <div class="placeholder"/>
@@ -71,7 +101,7 @@ const loadCompleted = ref<boolean>(false);
     </div>
     <!--  左侧面板  -->
     <div
-        id="left-panel"
+        class="left-panel"
         v-if="loadCompleted"
     >
       <div class="placeholder"/>
@@ -111,74 +141,9 @@ const loadCompleted = ref<boolean>(false);
 </template>
 
 <style scoped>
-.placeholder {
-  height: 3rem;
-  margin: 0;
-  padding: 0;
-}
-.stylized-container > * {
-  animation: 1s ease-out 0s item-appear;
-}
-.decorated-container {
-  position: absolute;
-  top: 3.2rem;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 3.2rem);
-}
-.panel-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-}
-#right-panel {
-  position: absolute;
-  max-width: 30rem;
-  width: 25%;
-  right: 0;
-  padding-right: 0.5rem;
+@import "../../css/scene.style.css";
+:deep(.el-tabs__content), :deep(.el-tab-pane) {
   height: 100%;
-  z-index: 5;
-  background: linear-gradient(to left, rgba(20, 20, 20, 0.8), transparent);
-  animation: 1s ease-out 0s right-panel-move;
-}
-#left-panel {
-  position: absolute;
-  max-width: 30rem;
-  width: 25%;
-  left: 0;
-  padding-left: 0.5rem;
-  height: 100%;
-  z-index: 5;
-  background: linear-gradient(to right, rgba(20, 20, 20, 0.8), transparent);
-  animation: 1s ease-out 0s left-panel-move;
-}
-@keyframes item-appear {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes right-panel-move {
-  from {
-    right: -25%;
-  }
-  to {
-    right: 0;
-  }
-}
-@keyframes left-panel-move {
-  from {
-    left: -25%;
-  }
-  to {
-    left: 0;
-  }
 }
 .fade-leave-active {
   transition: opacity 0.3s ease-in;

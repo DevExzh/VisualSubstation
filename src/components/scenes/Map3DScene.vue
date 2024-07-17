@@ -9,17 +9,21 @@ import SystemPanel from "../views/management/system/SystemPanel.vue";
 
 <template>
   <SceneTutorial/>
-  <MapSceneCanvas />
+  <MapSceneCanvas/>
   <Dock>
     <DockItem name="系统管理" icon="/images/system-management.png">
-      <SystemPanel />
+      <SystemPanel/>
     </DockItem>
     <DockItem name="系统监控" icon="/images/server-monitor.png">
-      <MonitorPanel />
+      <MonitorPanel/>
     </DockItem>
   </Dock>
+  <div class="panel-container">
+    <div class="left-panel"></div>
+    <div class="right-panel"></div>
+  </div>
 </template>
 
 <style scoped>
-
+@import "../../css/scene.style.css";
 </style>

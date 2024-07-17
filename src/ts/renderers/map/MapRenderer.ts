@@ -7,6 +7,8 @@ import {TextureLoader} from "../../loaders/TextureLoader.ts";
 import {RouteSwitchEvent} from "../../events/RouterEvents.ts";
 import {Animations} from "../../common/Animations.ts";
 import {Anchor} from "../../meshes/Anchor.ts";
+import {RegionClickEvent} from "../../events/MapEvents.ts";
+import {FeatureProperties} from "../../map/GeoJson.ts";
 
 const textureLoader = new TextureLoader();
 
@@ -280,6 +282,7 @@ export class MapRenderer extends CanvasRenderer {
             // 点击了某个区域
             if(region) {
                 this.animateCameraTo(region);
+                this.dispatchEvent(new RegionClickEvent(region.userData as FeatureProperties));
             }
         }
         return super.pointerDownEvent(event);

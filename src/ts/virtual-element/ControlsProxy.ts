@@ -98,6 +98,22 @@ export class ControlsProxy extends WorkerProxy {
         }
     }
 
+    mouseLeaveEvent(event: MouseEvent): void {
+        event.preventDefault();
+        this.postEvent(ControlsProxy.copyProperties(event, PropertyConstraints.MouseEventProperties));
+    }
+
+    pointerLeaveEvent(event: PointerEvent): void {
+        event.preventDefault();
+        switch (event.pointerType) {
+            case 'mouse': case 'pen': case 'touch': {
+                this.mouseLeaveEvent(event);
+                break;
+            }
+            default: break;
+        }
+    }
+
     mouseUpEvent(event: MouseEvent): void {
         event.preventDefault();
         this.postEvent(ControlsProxy.copyProperties(event, PropertyConstraints.MouseEventProperties));
@@ -150,13 +166,14 @@ export class ControlsProxy extends WorkerProxy {
     setupEventListeners() {
         this.resizeEvent();
         const listenerOptions = {capture: true, passive: false};
-        window.addEventListener('resize', this.resizeEvent.bind(this), listenerOptions);
+        new ResizeObserver(this.resizeEvent.bind(this)).observe(this.htmlElement);
         window.addEventListener('keydown', this.keyboardEvent.bind(this), listenerOptions);
         window.addEventListener('keyup', this.keyboardEvent.bind(this), listenerOptions);
         window.addEventListener('pointerup', this.pointerUpEvent.bind(this));
         this.htmlElement.addEventListener('contextmenu', this.contextMenuEvent.bind(this));
         this.htmlElement.addEventListener('pointerdown', this.pointerDownEvent.bind(this), listenerOptions);
         this.htmlElement.addEventListener('pointermove', this.pointerMoveEvent.bind(this), listenerOptions);
+        this.htmlElement.addEventListener('pointerleave', this.pointerLeaveEvent.bind(this), listenerOptions);
         this.htmlElement.addEventListener('wheel', this.wheelEvent.bind(this), listenerOptions);
         this.htmlElement.addEventListener('touchstart', this.touchEvent.bind(this), listenerOptions);
         this.htmlElement.addEventListener('touchend', this.touchEvent.bind(this), listenerOptions);
