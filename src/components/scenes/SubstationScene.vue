@@ -4,12 +4,12 @@ import ModelSceneCanvas from "../canvas/ModelSceneCanvas.vue";
 import EventScrollView from "../views/info/EventScrollView.vue";
 import CurrentChangeLineChart from "../views/info/CurrentChangeLineChart.vue";
 import LoadDashboard from "../views/info/LoadDashboard.vue";
-import {BorderBox11} from "@dataview/datav-vue3";
 import {ref} from "vue";
 import LoadingView from "../views/info/LoadingView.vue";
 import DockItem from "../widgets/DockItem.vue";
 import Dock from "../widgets/Dock.vue";
 import ModelDismantleCanvas from "../canvas/ModelDismantleCanvas.vue";
+import DecoratedContainer from "../widgets/DecoratedContainer.vue";
 
 // 属性
 withDefaults(defineProps<{
@@ -68,36 +68,26 @@ const loadCompleted = ref<boolean>(false);
         v-if="loadCompleted"
     >
       <div class="placeholder"/>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+      <DecoratedContainer
           class="stylized-container"
           title="环境信息"
-          :titleWidth="170"
-          style="height: 14rem;"
+          client-height="9rem"
       >
-      </BorderBox11>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+      </DecoratedContainer>
+      <DecoratedContainer
           class="stylized-container"
           title="设备负载"
-          :titleWidth="170"
-          style="height: 16rem;"
+          client-height="11rem"
       >
-        <div class="decorated-container">
-          <LoadDashboard />
-        </div>
-      </BorderBox11>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+        <LoadDashboard />
+      </DecoratedContainer>
+      <DecoratedContainer
           class="stylized-container"
           title="实时感知"
-          :titleWidth="170"
-          style="height: 18rem;"
+          client-height="13rem"
       >
-        <div class="decorated-container">
-          <EventScrollView/>
-        </div>
-      </BorderBox11>
+        <EventScrollView/>
+      </DecoratedContainer>
     </div>
     <!--  左侧面板  -->
     <div
@@ -105,37 +95,25 @@ const loadCompleted = ref<boolean>(false);
         v-if="loadCompleted"
     >
       <div class="placeholder"/>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+      <DecoratedContainer
           class="stylized-container"
           title="设备规模"
-          :titleWidth="170"
-          style="height: 14rem;"
+          client-height="9rem"
       >
-        <div class="decorated-container">
-        </div>
-      </BorderBox11>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+      </DecoratedContainer>
+      <DecoratedContainer
           class="stylized-container"
           title="巡视统计信息"
-          :titleWidth="200"
-          style="height: 18rem;"
+          client-height="13rem"
       >
-        <div class="decorated-container">
-        </div>
-      </BorderBox11>
-      <BorderBox11
-          backgroundColor="rgba(65,94,121,0.7)"
+      </DecoratedContainer>
+      <DecoratedContainer
           class="stylized-container"
           title="负荷电流变化"
-          :titleWidth="200"
-          style="height: 18rem;"
+          client-height="13rem"
       >
-        <div class="decorated-container">
-          <CurrentChangeLineChart />
-        </div>
-      </BorderBox11>
+        <CurrentChangeLineChart />
+      </DecoratedContainer>
     </div>
   </div>
 </template>

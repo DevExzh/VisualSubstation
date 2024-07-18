@@ -112,15 +112,13 @@ setTimeout(changeValue, 500);
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
+  width: 45%;
   height: 100%;
 }
 .right-part {
   position: absolute;
-  top: 3%;
-  right: 5%;
-  width: 45%;
-  height: 97%;
+  left: 45%;
+  width: 55%;
 }
 .gauge-chart {
   position: absolute;

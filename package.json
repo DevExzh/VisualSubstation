@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dataview/datav-vue3": "^0.0.0-test.1672506674342",
     "@tweenjs/tween.js": "^23.1.2",
     "@vueup/vue-quill": "^1.2.0",
     "d3-geo": "^3.1.1",

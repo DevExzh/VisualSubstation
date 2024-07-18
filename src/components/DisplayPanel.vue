@@ -9,7 +9,9 @@
       <div class="panel-title">
         电网设备数字孪生管理系统
       </div>
-      <img src="/images/hologram.svg" class="top-decoration" alt="hologram"/>
+      <img src="/images/banner.svg" class="top-decoration" alt="hologram"/>
+      <div class="header-background left-part" />
+      <div class="header-background right-part" />
     </header>
     <div class="panel-body">
       <RouterView v-slot="{ Component }">
@@ -23,7 +25,7 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 @font-face {
   font-family: 'YouSheBiaoTiHei';
   src: url('/fonts/YouSheBiaoTiHei.woff2') format('woff2'),
@@ -33,7 +35,8 @@
   font-style: normal;
 }
 .top-decoration {
-  height: 8rem;
+  height: 3.25rem;
+  z-index: 4;
 }
 #display-panel {
   width: 100vw;
@@ -47,31 +50,30 @@
   z-index: 10;
   color: #fff;
   font-size: x-large;
-  padding: .5rem 0 .5rem 2rem;
   position: absolute;
   display: flex;
   justify-content: center;
   left: 0;
   top: 0;
   width: 100vw;
-  height: 8rem;
+  height: 3.25rem;
   pointer-events: none;
   animation: 0.7s ease-out 0s header-slide;
 }
 .panel-title {
   display: inline-block;
   z-index: 5;
-  font-size: 2.75rem;
+  font-size: 2rem;
   text-shadow: 1px 1px 3rem black;
   font-family: YouSheBiaoTiHei, serif;
-  background-image: linear-gradient(to bottom, #fff 50%, #333 100%);
+  background-image: linear-gradient(to bottom, #fff 50%, #63D8FF 100%);
   background-size: 100%;
   background-clip: text;
   -webkit-text-fill-color: rgba(100%, 100%, 100%, 0.5);
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 5%;
+  transform: translate(-50%, 0);
 }
 .panel-body {
   position: absolute;
@@ -79,6 +81,36 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+}
+.header-background {
+  position: absolute;
+  top: 0;
+  height: 2.2rem;
+  background: linear-gradient(to bottom, transparent, rgba(42, 167, 250, 0.2));
+  width: 100%;
+  &.left-part {
+    left: 0;
+    width: calc(50vw - 19rem);
+    clip-path: polygon(
+            0 0,
+            calc(100% - 2.2rem) 0,
+            100% 2.2rem,
+            100% 100%,
+            0 100%,
+            0 0
+    );
+  }
+  &.right-part {
+    right: 0;
+    width: calc(50vw - 19rem);
+    clip-path: polygon(
+            100% 0,
+            2.2rem 0,
+            0 100%,
+            100% 100%,
+            100% 0
+    );
+  }
 }
 @keyframes header-slide {
   from {

@@ -5,6 +5,7 @@ import DockItem from "../widgets/DockItem.vue";
 import Dock from "../widgets/Dock.vue";
 import MonitorPanel from "../views/management/monitor/MonitorPanel.vue";
 import SystemPanel from "../views/management/system/SystemPanel.vue";
+import DecoratedContainer from "../widgets/DecoratedContainer.vue";
 </script>
 
 <template>
@@ -19,7 +20,12 @@ import SystemPanel from "../views/management/system/SystemPanel.vue";
     </DockItem>
   </Dock>
   <div class="panel-container">
-    <div class="left-panel"></div>
+    <div class="left-panel">
+      <div style="height: 10rem;"></div>
+      <DecoratedContainer title="标题" clientWidth="200px">
+        <span style="color: white;">SOME TEXT</span>
+      </DecoratedContainer>
+    </div>
     <div class="right-panel"></div>
   </div>
 </template>
