@@ -99,7 +99,7 @@ onMounted(() => {
 <template>
 <div
     ref="container"
-    :style="{overflow: 'hidden', height: '100%'}"
+    :style="{overflow: 'hidden'}"
 >
   <div
       ref="listContainer"

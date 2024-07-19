@@ -6,12 +6,12 @@ import {RegionClickEvent} from "../../ts/events/MapEvents.ts";
 const modelCanvas = ref<HTMLCanvasElement>();
 let scene: MapScene;
 const emits = defineEmits<{
-  regionClicked: [region: FeatureProperties]
+  regionClicked: [region: FeatureProperties | undefined, isCancelled: boolean]
 }>();
 onMounted(() => {
   scene = new MapScene(modelCanvas.value!);
   scene.addEventListener('region-click', evt => {
-    emits('regionClicked', (evt as RegionClickEvent).region);
+    emits('regionClicked', (evt as RegionClickEvent).region, (evt as RegionClickEvent).isCancelled);
   });
 });
 onBeforeUnmount(() => {

@@ -53,7 +53,7 @@ const progress = computed(() => (currentValue.value! / (props.max - props.min) *
   bottom: 0;
   right: 0;
   font-family: 'Digital', monospace;
-  font-size: 25pt;
+  font-size: 1.5rem;
   color: #b2ebf2;
 }
 .progress-bar {

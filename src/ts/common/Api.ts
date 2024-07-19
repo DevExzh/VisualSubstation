@@ -1,5 +1,6 @@
 import * as Types from "./ApiTypes.ts";
 import HTTPService from "./Request.ts";
+import {CurrentChangeInfo} from "./ApiTypes.ts";
 export namespace Api {
   /**
    * 登录
@@ -650,6 +651,32 @@ export namespace Api {
           return HTTPService.get('/system/dict/type/optionselect');
         }
       }
+    }
+  }
+
+  export namespace Sensor {
+    export async function getCurrentChangeHour(): Promise<Types.CurrentChangeInfoResponse> {
+      return HTTPService.get('/api/sensor/current/hourly');
+    }
+
+    export async function getCurrentChangeMinute(): Promise<Types.Response & {data: CurrentChangeInfo}> {
+      return HTTPService.get('/api/sensor/current/tenM');
+    }
+
+    export async function getPowerGridLoad(): Promise<Types.PowerGridLoadInfoResponse> {
+      return HTTPService.get('/api/sensor/gridLoad/history');
+    }
+  }
+
+  export namespace Event {
+    export async function listRecentEvents(maxCount: number): Promise<Types.RecentEventResponse> {
+      return HTTPService.get('/api/event/recent', {maxCount});
+    }
+  }
+
+  export namespace Environment {
+    export async function getEnvironmentInfo(): Promise<Types.EnvironmentInfo> {
+      return HTTPService.get('/api/sensor/eim');
     }
   }
 }

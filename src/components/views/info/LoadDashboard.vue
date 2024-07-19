@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import VChart from 'vue-echarts';
-import {ref} from "vue";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 import {use} from 'echarts/core';
 import {CanvasRenderer} from "echarts/renderers";
 import {GaugeChart} from "echarts/charts";
 import {EChartsOption} from "echarts";
 import ProgressDataView from "./ProgressDataView.vue";
+import Api from "../../../ts/common/Api.ts";
+import {baseURL} from "../../../ts/common/Request.ts";
 use([
     CanvasRenderer,
     GaugeChart
@@ -14,10 +16,11 @@ const options = ref<EChartsOption>({
   series: [
       {
         type: 'gauge',
+        radius: '70%',
         startAngle: 180,
         endAngle: 0,
         min: 0,
-        max: 100,
+        max: 1000,
         title: {
           show: false,
         },
@@ -29,7 +32,7 @@ const options = ref<EChartsOption>({
         },
         progress: {
           show: true,
-          width: 20,
+          width: 15,
         },
         itemStyle: {
           color: 'rgba(88, 217, 249, 0.5)',
@@ -53,17 +56,13 @@ const options = ref<EChartsOption>({
           offsetCenter: [0, '-25%'],
           color: 'rgba(84, 186, 223, 0.95)',
           formatter: (value) => {
-            return `{value|${value.toFixed(0)}}{unit|mW}`;
+            return `{value|${value.toFixed(1)}}`;
           },
           rich: {
             value: {
               fontFamily: 'Digital',
-              fontSize: 50,
+              fontSize: 38,
             },
-            unit: {
-              fontSize: 16,
-              padding: [0, 0, -20, 10],
-            }
           }
         },
         data: [
@@ -74,12 +73,27 @@ const options = ref<EChartsOption>({
       },
   ]
 });
-const changeValue = () => {
-  // @ts-ignore
-  options.value.series[0].data[0].value = (Math.random() * 100).toFixed(0);
-  setTimeout(changeValue, 100);
-};
-setTimeout(changeValue, 500);
+const monthMin = ref<number>(0);
+const monthMax = ref<number>(0);
+const todayMin = ref<number>(0);
+const todayMax = ref<number>(0);
+let ws: WebSocket;
+onMounted(() => {
+  Api.Sensor.getPowerGridLoad().then(resp => {
+    monthMin.value = +resp.data.monthMin.toFixed(2);
+    monthMax.value = +resp.data.monthMax.toFixed(2);
+    todayMin.value = +resp.data.todayMin.toFixed(2);
+    todayMax.value = +resp.data.todayMax.toFixed(2);
+  });
+  ws = new WebSocket(baseURL + '/api/sensor/gridLoad/now');
+  ws.addEventListener('message', evt => {
+    // @ts-ignore
+    options.value.series[0].data[0].value = parseFloat(evt.data as string);
+  });
+});
+onBeforeUnmount(() => {
+  ws.close();
+});
 </script>
 
 <template>
@@ -88,13 +102,13 @@ setTimeout(changeValue, 500);
       <div class="gauge-chart">
         <VChart :option="options" autoresize/>
       </div>
-      <div class="gauge-label">当前负荷</div>
+      <div class="gauge-label">当前负荷 (mW)</div>
     </div>
     <div class="right-part">
-      <ProgressDataView name="今日最低" :value="123"/>
-      <ProgressDataView name="今日最高" :value="456"/>
-      <ProgressDataView name="历史最低" :value="789"/>
-      <ProgressDataView name="历史最高" :value="123"/>
+      <ProgressDataView name="今日最低" :value="todayMin"/>
+      <ProgressDataView name="今日最高" :value="todayMax"/>
+      <ProgressDataView name="历史最低" :value="monthMin"/>
+      <ProgressDataView name="历史最高" :value="monthMax"/>
     </div>
   </div>
 </template>
@@ -118,7 +132,8 @@ setTimeout(changeValue, 500);
 .right-part {
   position: absolute;
   left: 45%;
-  width: 55%;
+  top: 5%;
+  width: 50%;
 }
 .gauge-chart {
   position: absolute;

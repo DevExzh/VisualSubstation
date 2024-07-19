@@ -421,3 +421,56 @@ export interface UserDetailedInfoResponse extends Response {
     roles: RoleInfo[];
     posts: PostInfo[];
 }
+
+export interface EventInfo {
+    sourceId: string;
+    latitude: number;
+    scope: string;
+    scopeName: string;
+    description: string;
+    emergency: string;
+    scopeLevel: number;
+    time: string;
+    event: string;
+    longitude: number;
+    statusCode: number;
+}
+
+export interface RecentEventResponse extends Response {
+    total: number;
+    rows: EventInfo[];
+}
+
+export interface EnvironmentInfo {
+    humidity: number;
+    magnetic_field: number;
+    noise_level: number;
+    temperature: number;
+    wind_speed: number;
+}
+
+export interface EnvironmentInfoResponse extends Response {
+    data: EnvironmentInfo;
+}
+
+export interface CurrentChangeInfo {
+    minValue: number;
+    maxValue: number;
+    time: string;
+}
+
+export interface CurrentChangeInfoResponse extends Response {
+    total: number;
+    rows: CurrentChangeInfo[];
+}
+
+export interface PowerGridLoadInfo {
+    monthMin: number;
+    monthMax: number;
+    todayMin: number;
+    todayMax: number;
+}
+
+export interface PowerGridLoadInfoResponse extends Response {
+    data: PowerGridLoadInfo;
+}

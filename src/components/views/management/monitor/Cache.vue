@@ -196,7 +196,7 @@ onMounted(() => {
             <span class="icon-name">命令统计</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium chart-container">
-            <VChart :loading="loading" class="chart" :option="usedMemoryOption" theme="macarons" />
+            <VChart :loading="loading" class="chart" :option="usedMemoryOption" theme="macarons" autoresize />
           </div>
         </ElCard>
       </ElCol>
@@ -209,7 +209,7 @@ onMounted(() => {
             <span class="icon-name">内存信息</span>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium chart-container">
-            <VChart :loading="loading" class="chart" :option="commandStatsOption" theme="macarons"/>
+            <VChart :loading="loading" class="chart" :option="commandStatsOption" theme="macarons" autoresize />
           </div>
         </ElCard>
       </ElCol>

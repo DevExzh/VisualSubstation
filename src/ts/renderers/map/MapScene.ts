@@ -27,7 +27,7 @@ export class MapScene extends CanvasScene {
         switch (event.type) {
             case 'region-click': {
                 const converted = event as RegionClickEvent;
-                this.dispatchEvent(new RegionClickEvent(converted.region));
+                this.dispatchEvent(new RegionClickEvent(converted.region, converted.isCancelled));
                 return true;
             }
             default: return false;

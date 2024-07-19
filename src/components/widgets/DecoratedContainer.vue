@@ -39,8 +39,11 @@ const uuids: string[] = [v4(), v4()];
       height: headerHeight + 'px'
     }"
     >
+      <div class="header-corner">
+        <slot name="header-corner" />
+      </div>
       <svg class="title-decorator" xmlns="http://www.w3.org/2000/svg"
-           :width="headerHeight * 0.4" :height="headerHeight * 0.4"
+           width="16.707" height="16.707"
       >
         <g fill="none" fill-rule="evenodd">
           <path stroke="#59BFFF" stroke-dasharray="0,0" stroke-opacity=".2" d="m8.707 16.707 8-8-8-8-8 8z"/>
@@ -163,6 +166,7 @@ $borderWidth: v-bind(borderWidth);
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 5;
 }
 .title-decorator {
   position: absolute;
@@ -192,5 +196,13 @@ $borderWidth: v-bind(borderWidth);
   position: absolute;
   bottom: 0;
   right: 0;
+}
+.header-corner {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: v-bind("props.headerHeight + 'px'");
+  width: v-bind("`calc(${containerWidth} - ${svgInitWid}px)`");
+  z-index: 7;
 }
 </style>

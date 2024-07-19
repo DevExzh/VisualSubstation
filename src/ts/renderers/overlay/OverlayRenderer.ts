@@ -25,6 +25,8 @@ const _vector: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
 export class OverlayRenderer extends CanvasRenderer {
     protected _listenedScene?: CanvasScene;
     protected _boxes: Record<string, InvisibleBox> = {};
+    protected _containers: HTMLElement[] = [];
+    protected _objects: THREE.Object3D[] = [];
     public readonly scaleFactor: number;
 
     constructor(
@@ -103,6 +105,7 @@ export class OverlayRenderer extends CanvasRenderer {
             throw new Error(`Object with uuid ${uuid} is not registered`);
         }
         const container: HTMLDivElement = document.createElement('div');
+        container.style.pointerEvents = 'none';
         const node: VNode = createVNode(OverlayDecorator, {}, [
             createVNode(element, props)
         ]);
@@ -116,8 +119,17 @@ export class OverlayRenderer extends CanvasRenderer {
             obj.position.copy(_vector);
         }
         this._context.scene.add(obj);
+        this._objects.push(obj);
+        this._containers.push(container);
         this._context.renderer.render(this._context.scene, this._context.camera);
         return obj;
+    }
+
+    public clearAll(): void {
+        for(const obj of this._objects) {
+            this._context.scene.remove(obj);
+        }
+        this._containers.length = this._objects.length = 0;
     }
 
     [Symbol.dispose](): void {

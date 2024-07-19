@@ -22,45 +22,37 @@
 }
 .right-panel {
     position: absolute;
-    width: 25%;
     right: 0;
     padding-right: 0.5rem;
     height: 100%;
     z-index: 5;
     background: linear-gradient(to left, rgba(20, 20, 20, 0.8), transparent);
-    animation: 1s ease-out 0s right-panel-move;
 }
 .left-panel {
     position: absolute;
-    width: 25%;
     left: 0;
     padding-left: 0.5rem;
     height: 100%;
     z-index: 5;
     background: linear-gradient(to right, rgba(20, 20, 20, 0.8), transparent);
-    animation: 1s ease-out 0s left-panel-move;
 }
-@keyframes item-appear {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.left-panel-enter-active, .left-panel-leave-active,
+.right-panel-enter-active, .right-panel-leave-active {
+    transition: all 1s ease-out;
 }
-@keyframes right-panel-move {
-    from {
-        right: -25%;
-    }
-    to {
-        right: 0;
-    }
+.right-panel-leave-from, .right-panel-enter-to {
+    right: 0;
+    opacity: 1;
 }
-@keyframes left-panel-move {
-    from {
-        left: -25%;
-    }
-    to {
-        left: 0;
-    }
+.right-panel-leave-to, .right-panel-enter-from {
+    right: -25%;
+    opacity: 0;
+}
+.left-panel-leave-from, .left-panel-enter-to {
+    left: 0;
+    opacity: 1;
+}
+.left-panel-leave-to, .left-panel-enter-from {
+    left: -25%;
+    opacity: 0;
 }

@@ -110,6 +110,7 @@ export class MapRenderer extends CanvasRenderer {
 
     protected resumeAllSubregions(): void {
         if(this._regions.length === 0) return;
+        this.dispatchEvent(new RegionClickEvent(undefined, true));
         this.remove(...this._subregions, ...this._anchors);
         this._subregions.length = 0;
         this._anchors.length = 0;

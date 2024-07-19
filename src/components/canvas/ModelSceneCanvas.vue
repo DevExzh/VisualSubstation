@@ -53,9 +53,12 @@ onMounted(() => {
     const event = (evt as ObjectSelectionEvent);
     if(event.selected) {
       event.objects.forEach(object => {
-        overlay.addComponent(DeviceInfoOverlay, {
-          name: object.userData['fileName'],
-        }, object.uuid);
+        const name = object.userData['fileName'];
+        if(/[\u4E00-\u9FA5]+/g.test(name)) {
+          overlay.addComponent(DeviceInfoOverlay, {
+            name: (name as string).replace(/_/g, ' ')
+          }, object.uuid);
+        }
       });
     } else {
     }
