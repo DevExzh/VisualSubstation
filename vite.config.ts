@@ -1,7 +1,7 @@
 import {defineConfig, loadEnv} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import string from 'vite-plugin-string';
-import * as path from "node:path";
+import glsl from 'vite-plugin-glsl';
 
 export default defineConfig(({mode, command}) => {
     const env = loadEnv(mode, process.cwd());
@@ -21,6 +21,7 @@ export default defineConfig(({mode, command}) => {
         },
         plugins: [
             vue(),
+            glsl(),
             string({
               include: [
                   '**/*.vert',

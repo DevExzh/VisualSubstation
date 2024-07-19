@@ -21,7 +21,7 @@ const props = withDefaults(
       direction: ScrollDirection.TopToBottom
     }
 );
-let isHovered = false;
+// let isHovered = false;
 let x = ref<number>(0),
     y = ref<number>(0),
     w = ref<number>(0),
@@ -67,14 +67,14 @@ const cancelScroll = () => {
 // 光标移入事件
 const onEnter = () => {
   if(props.pauseOnHover) {
-    isHovered = false;
+    // isHovered = false;
     scroll();
   }
 };
 // 光标移出事件
 const onLeave = () => {
   if(props.pauseOnHover) {
-    isHovered = true;
+    // isHovered = true;
     cancelScroll();
   }
 };
