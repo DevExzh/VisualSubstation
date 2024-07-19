@@ -10,6 +10,8 @@ import Dock from "../widgets/Dock.vue";
 import ModelDismantleCanvas from "../canvas/ModelDismantleCanvas.vue";
 import DecoratedContainer from "../widgets/DecoratedContainer.vue";
 import InspectionStatisticsChart from "../views/info/InspectionStatisticsChart.vue";
+import EnvironmentDashBoard from "../views/info/EnvironmentDashBoard.vue";
+import SensorInfoDashBoard from "../views/info/SensorInfoDashBoard.vue";
 
 // 属性
 withDefaults(defineProps<{
@@ -74,9 +76,10 @@ const inspectedPeriod = ref<'today' | 'month'>('today');
         <DecoratedContainer
             class="stylized-container"
             title="环境信息"
-            client-height="9rem"
+            client-height="12rem"
             client-width="24rem"
         >
+          <EnvironmentDashBoard/>
         </DecoratedContainer>
         <DecoratedContainer
             class="stylized-container"
@@ -109,19 +112,20 @@ const inspectedPeriod = ref<'today' | 'month'>('today');
           v-if="loadCompleted"
       >
         <div class="placeholder"/>
-        <DecoratedContainer
-            class="stylized-container"
-            title="设备规模"
-            client-height="9rem"
-            client-width="24rem"
-        >
-        </DecoratedContainer>
+<!--        <DecoratedContainer-->
+<!--            class="stylized-container"-->
+<!--            title="设备规模"-->
+<!--            client-height="9rem"-->
+<!--            client-width="24rem"-->
+<!--        >-->
+<!--        </DecoratedContainer>-->
         <DecoratedContainer
             class="stylized-container"
             title="传感器规模"
-            client-height="12rem"
+            client-height="24rem"
             client-width="24rem"
         >
+          <SensorInfoDashBoard/>
         </DecoratedContainer>
         <DecoratedContainer
             class="stylized-container"

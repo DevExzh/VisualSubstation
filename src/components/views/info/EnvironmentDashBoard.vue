@@ -1,21 +1,24 @@
 <template>
-  <div class="dashboard">
-    <div class="info-box">
-      <div class="info-title">磁感应强度</div>
-      <hr class="divider">
-      <div class="info-data">
-        <span class="magnetic" v-if="result">{{result.magnetic_field.toFixed(2)}}</span>
-        v/m
+  <div class="container">
+    <div class="dashboard">
+      <div class="info-box">
+        <div class="info-title">磁感应强度</div>
+        <hr class="divider">
+        <div class="info-data">
+          <span class="magnetic" v-if="result">{{result.magnetic_field.toFixed(2)}}</span>
+          v/m
+        </div>
+      </div>
+      <div class="info-box">
+        <div class="info-title">变电站噪声</div>
+        <hr class="divider">
+        <div class="info-data">
+          <span class="noise" v-if="result">{{result.noise_level.toFixed(2)}}</span>
+          dB
+        </div>
       </div>
     </div>
-    <div class="info-box">
-      <div class="info-title">变电站噪声</div>
-      <hr class="divider">
-      <div class="info-data">
-        <span class="noise" v-if="result">{{result.noise_level.toFixed(2)}}</span>
-        dB
-      </div>
-    </div>
+    <EnvironmentDisplay :width="100"/>
   </div>
 </template>
 
@@ -23,6 +26,7 @@
 import { ref, onMounted } from 'vue';
 import HTTPService from "../../../ts/common/Request.ts";
 import {EnvironmentInfo, EnvironmentInfoResponse} from "../../../ts/common/ApiTypes.ts";
+import EnvironmentDisplay from "./EnvironmentDisplay.vue";
 const result = ref<EnvironmentInfo>();
 onMounted(() => {
   HTTPService.get("/api/sensor/eim", {max_count: 10}).then((response: EnvironmentInfoResponse) => {
@@ -36,41 +40,36 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  justify-content: center;
+}
 .dashboard {
   display: flex;
   flex-direction: column; /* 垂直排列 */
-  justify-content: space-between; /* 横向排列 */
+  justify-content: center; /* 横向排列 */
   align-items: center; /* 纵向居中 */
-  height: 150px;
   width: 100%; /* 适应父容器 */
+  height: 100%;
   padding: 0;
 }
 
 .info-box {
-  border-radius: 8px;
-  color: white;
+  background: linear-gradient(to bottom, rgba(5, 27, 38, .8), rgba(0, 65, 97, .8));
+  border-radius: 0.25em;
+  border: 1px solid #5EBCF5;
+  margin: 0.5em;
+  padding: 0.5em;
   text-align: center;
-  background: linear-gradient(145deg, #0f3460, #162447);
-  border: 2px solid #00f2fe;
-  box-shadow: 0 0 15px #00f2fe;
-  height: 70px;
-  width: 125px; /* 缩小为原来的一半 */
-  margin: 5px; /* 增加外边距，避免贴合太紧 */
+  color: #fff;
 }
-
 .info-title {
-  font-size: 12px; /* 缩小为原来的一半 */
-  margin-bottom: 5px; /* 缩小为原来的一半 */
-  background-color: #1a1a2e;
-  padding: 5px; /* 缩小为原来的一半 */
-  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
-
 .info-data {
-  font-size: 16px; /* 缩小为原来的一半 */
-  background-color: #1f4068;
-  padding: 5px; /* 缩小为原来的一半 */
-  border-radius: 5px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .divider {

@@ -11,11 +11,12 @@ import PowerGridInfo from "../views/info/PowerGridInfo.vue";
 import LoadDashboard from "../views/info/LoadDashboard.vue";
 import {FeatureProperties} from "../../ts/map/GeoJson.ts";
 import SensorCountTimeline from "../views/info/SensorCountTimeline.vue";
+import EnvironmentDisplay from "../views/info/EnvironmentDisplay.vue";
+import SubstationInfo from "../views/info/SubstationInfo.vue";
 const shouldDisplayPanel = ref<boolean>(false);
 const leftPanel = ref<HTMLElement>();
 const rightPanel = ref<HTMLElement>();
 const onRegionClicked = (_: FeatureProperties | undefined, cancel: boolean) => {
-  console.log(cancel);
   shouldDisplayPanel.value = cancel;
 };
 onMounted(() => {
@@ -54,13 +55,17 @@ onMounted(() => {
            class="decorated-container"
            title="变电站详情"
            client-width="24rem"
+           client-height="13rem"
        >
+         <SubstationInfo />
        </DecoratedContainer>
        <DecoratedContainer
            class="decorated-container"
            title="环境监测"
            client-width="24rem"
+           client-height="9rem"
        >
+         <EnvironmentDisplay/>
        </DecoratedContainer>
      </div>
    </transition>

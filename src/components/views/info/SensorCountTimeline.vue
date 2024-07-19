@@ -41,13 +41,12 @@ const colorsChangeTo = [
 ];
 
 const chartData = {
-  name: ['Example Series 1', 'Example Series 2'],
-  label: ['Label 1', 'Label 2', 'Label 3'],
+  name: ['在线传感器数量', '连接的传感器数量'],
+  label: ['7/17', '7/18', '7/19'],
   data: {
     series1: { type: 'bar', data: [10, 20, 30] },
     series2: { type: 'line', data: [15, 25, 35] },
   },
-  yName: ['Y Axis Label'],
   xAxisTYpe: 'category',
 };
 
@@ -102,7 +101,6 @@ const options = ref({
   yAxis: [
     {
       type: 'value',
-      name: chartData.yName[0],
       axisLine: {
         lineStyle: {
           color: 'rgba(110, 184, 229, 0.8)',
