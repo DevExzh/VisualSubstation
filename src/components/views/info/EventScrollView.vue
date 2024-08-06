@@ -31,7 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ScrollArea class="scroll-area">
+  <ScrollArea>
     <div :class="[
         'event-row',
         {
@@ -53,10 +53,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.scroll-area {
-  padding: 0.25em;
-  height: calc(100% - 1.25em);
-}
 .index {
   width: 1.25em;
   height: 1.25em;
