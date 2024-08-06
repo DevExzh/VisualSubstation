@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
 import {ElForm, ElFormItem, ElInput, ElButton, ElIcon, ElCheckbox, ElLink} from 'element-plus';
 import {User, Lock} from '@element-plus/icons-vue';
 import Background from "./misc/LoginBackground.vue";
@@ -97,8 +97,10 @@ const getCookie = () => {
     loginForm.value.rememberMe = rememberMe === undefined ? false : Boolean(rememberMe);
   }
 }
-getCode();
-getCookie();
+onBeforeMount(() => {
+  getCode();
+  getCookie();
+});
 </script>
 
 <template>

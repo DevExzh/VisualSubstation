@@ -1,10 +1,10 @@
-import * as THREE from "three";
 import {pathOf, FilePath} from "../common/PathHelper.ts";
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader.js";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader.js";
 import {FBXLoader} from "three/examples/jsm/loaders/FBXLoader.js";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader.js";
 import {ThreeContext, LoadedModel} from "../common/Types.ts";
+import {Loader, Object3D} from "three";
 
 export interface ModelManifest {
     type: string,
@@ -14,7 +14,7 @@ export interface ModelManifest {
     positions: Record<string, [number, number, number]>,
 }
 
-export interface LoadedObject extends THREE.Object3D {
+export interface LoadedObject extends Object3D {
     userData: {
         isLoadedModel: boolean;
         originalName: string;
@@ -46,7 +46,7 @@ export class ModelLoader extends EventTarget implements Disposable {
     private context: ThreeContext;
     public exclusions: string[] = [];
     public initialPositions: ModelManifest['positions'] = {};
-    public readonly models: THREE.Object3D[] = [];
+    public readonly models: Object3D[] = [];
 
     /**
      * 模型加载器构造函数
@@ -67,7 +67,7 @@ export class ModelLoader extends EventTarget implements Disposable {
      * @function
      * @param extension 文件扩展名，包括开头的点（如 .fbx, .gltf）
      */
-    loaderFromExtension(extension: string): THREE.Loader {
+    loaderFromExtension(extension: string): Loader {
         switch (extension) {
             default:
             case '.glb':
@@ -117,7 +117,7 @@ export class ModelLoader extends EventTarget implements Disposable {
     async loadSingle3DModel(modelPath: string, draco: boolean = false): Promise<void> {
         const path: FilePath | null = pathOf(modelPath);
         if(!path) return;
-        let loader: THREE.Loader = this.loaderFromExtension(path.extension);
+        let loader: Loader = this.loaderFromExtension(path.extension);
         loader.setPath(path.folder);
         if(draco
             && loader instanceof GLTFLoader

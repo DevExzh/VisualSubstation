@@ -2,10 +2,10 @@
 import { ref, watch } from 'vue';
 import VChart from "vue-echarts";
 import {graphic, use} from "echarts/core";
-import { EChartsOption } from 'echarts/types/dist/shared.js';
 import {TooltipComponent} from "echarts/components";
 import {BarChart} from "echarts/charts";
 import {CanvasRenderer} from "echarts/renderers";
+import {EChartsOption} from "echarts";
 const currentPeriod = defineModel<'today' | 'month'>('period', {default: 'today'});
 const todayData = {
   defect: [10, 30, 20, 10],

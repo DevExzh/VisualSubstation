@@ -12,6 +12,7 @@ import DecoratedContainer from "../widgets/DecoratedContainer.vue";
 import InspectionStatisticsChart from "../views/info/InspectionStatisticsChart.vue";
 import EnvironmentDashBoard from "../views/info/EnvironmentDashBoard.vue";
 import SensorInfoDashBoard from "../views/info/SensorInfoDashBoard.vue";
+import Panel from "../widgets/Panel.vue";
 
 // 属性
 withDefaults(defineProps<{
@@ -31,6 +32,7 @@ const inspectedPeriod = ref<'today' | 'month'>('today');
     <LoadingView v-if="!loadCompleted"/>
   </Transition>
   <Dock style="z-index: 20">
+    <DockItem name="感知设备管理" icon="/images/folder.png"></DockItem>
     <DockItem name="设备拆解" icon="/images/dismantle.png">
       <ElTabs tab-position="left" style="height: 100%; width: 100%;">
         <ElTabPane lazy label="变压器" name="transformer">
@@ -67,81 +69,68 @@ const inspectedPeriod = ref<'today' | 'month'>('today');
   <!-- 面板 -->
   <div class="panel-container">
     <!--  右侧面板  -->
-    <transition name="right-panel" mode="out-in">
-      <div
-          class="right-panel"
-          v-if="loadCompleted"
+    <Panel side="right" top="2rem" :show="loadCompleted">
+      <DecoratedContainer
+          class="stylized-container"
+          title="环境信息"
+          client-height="12rem"
+          client-width="24rem"
       >
-        <div class="placeholder"/>
-        <DecoratedContainer
-            class="stylized-container"
-            title="环境信息"
-            client-height="12rem"
-            client-width="24rem"
-        >
-          <EnvironmentDashBoard/>
-        </DecoratedContainer>
-        <DecoratedContainer
-            class="stylized-container"
-            title="巡视统计信息"
-            client-height="13rem"
-            client-width="24rem"
-        >
-          <template #header-corner>
-            <ElButtonGroup class="corner-container" size="small">
-              <ElButton text class="corner-button" @click="inspectedPeriod = 'today'">今日</ElButton>
-              <ElButton text class="corner-button" @click="inspectedPeriod = 'month'">本月</ElButton>
-            </ElButtonGroup>
-          </template>
-          <InspectionStatisticsChart v-model:period="inspectedPeriod"/>
-        </DecoratedContainer>
-        <DecoratedContainer
-            class="stylized-container"
-            title="实时感知"
-            client-height="13rem"
-            client-width="24rem"
-        >
-          <EventScrollView/>
-        </DecoratedContainer>
-      </div>
-    </transition>
+        <EnvironmentDashBoard/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="stylized-container"
+          title="巡视统计信息"
+          client-height="13rem"
+          client-width="24rem"
+      >
+        <template #header-corner>
+          <ElButtonGroup class="corner-container" size="small">
+            <ElButton text class="corner-button" @click="inspectedPeriod = 'today'">今日</ElButton>
+            <ElButton text class="corner-button" @click="inspectedPeriod = 'month'">本月</ElButton>
+          </ElButtonGroup>
+        </template>
+        <InspectionStatisticsChart v-model:period="inspectedPeriod"/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="stylized-container"
+          title="实时感知"
+          client-height="13rem"
+          client-width="24rem"
+      >
+        <EventScrollView/>
+      </DecoratedContainer>
+    </Panel>
     <!--  左侧面板  -->
-    <transition name="left-panel" mode="out-in">
-      <div
-          class="left-panel"
-          v-if="loadCompleted"
+    <Panel side="left" top="2rem" :show="loadCompleted">
+      <DecoratedContainer
+          class="stylized-container"
+          title="设备规模"
+          client-height="9rem"
+          client-width="24rem"
       >
-        <div class="placeholder"/>
-<!--        <DecoratedContainer-->
-<!--            class="stylized-container"-->
-<!--            title="设备规模"-->
-<!--            client-height="9rem"-->
-<!--            client-width="24rem"-->
-<!--        >-->
-<!--        </DecoratedContainer>-->
-        <DecoratedContainer
-            class="stylized-container"
-            title="传感器规模"
-            client-height="24rem"
-            client-width="24rem"
-        >
-          <SensorInfoDashBoard/>
-        </DecoratedContainer>
-        <DecoratedContainer
-            class="stylized-container"
-            title="负荷电流变化"
-            client-height="13rem"
-            client-width="24rem"
-        >
-          <CurrentChangeLineChart />
-        </DecoratedContainer>
-      </div>
-    </transition>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="stylized-container"
+          title="传感器规模"
+          client-height="14rem"
+          client-width="24rem"
+      >
+        <SensorInfoDashBoard/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="stylized-container"
+          title="负荷电流变化"
+          client-height="13rem"
+          client-width="24rem"
+      >
+        <CurrentChangeLineChart />
+      </DecoratedContainer>
+    </Panel>
   </div>
 </template>
 
 <style scoped>
-@import "../../css/scene.style.css";
 :deep(.el-tabs__content), :deep(.el-tab-pane) {
   height: 100%;
 }
@@ -150,6 +139,18 @@ const inspectedPeriod = ref<'today' | 'month'>('today');
 }
 .fade-leave-to {
   opacity: 0;
+}
+.panel-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  pointer-events: none;
+}
+.stylized-container {
+  margin-top: 1rem;
 }
 .corner-container {
   position: absolute;

@@ -1,5 +1,4 @@
-import * as THREE from "three";
-import {PerspectiveCamera, Vector4} from "three";
+import {Object3D, PerspectiveCamera, Renderer, Scene, Vector4} from "three";
 import Color4 from "three/examples/jsm/renderers/common/Color4.js";
 import {deepClone} from "./Utils.ts";
 
@@ -8,9 +7,9 @@ import {deepClone} from "./Utils.ts";
  * @interface
  */
 export interface ThreeContext {
-    renderer: THREE.Renderer;
-    camera: THREE.PerspectiveCamera;
-    scene: THREE.Scene;
+    renderer: Renderer;
+    camera: PerspectiveCamera;
+    scene: Scene;
 }
 
 /**
@@ -19,7 +18,7 @@ export interface ThreeContext {
  * @interface
  */
 export interface LoadedModel {
-    scene: THREE.Scene;
+    scene: Scene;
 }
 
 /**
@@ -54,7 +53,7 @@ export interface SceneObject {
  * @param fromObject 需要被转换的 Three.js Object3D 对象
  * @function
  */
-export function sceneObjectFromObject3D(fromObject: THREE.Object3D): SceneObject {
+export function sceneObjectFromObject3D(fromObject: Object3D): SceneObject {
     return {
         uuid: fromObject.uuid,
         id: fromObject.id,
@@ -82,8 +81,8 @@ export type Matrix4D = [
 /**
  * 相机对象
  * @description 由于 Web Worker 与主渲染线程之间不能直接传递对象，故需要将 Three.js 中的 Camera 转换成可序列化和反序列化的对象
- * @see THREE.Camera
- * @see THREE.Matrix4
+ * @see Camera
+ * @see Matrix4
  * @interface
  */
 export interface CameraObject {

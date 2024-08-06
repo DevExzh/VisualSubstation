@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import {KeyBinds, KeyBindsEvent} from "./KeyBinds.ts";
 import {RenderObject} from "../common/RenderObject.ts";
 import {HalfPi, TwoPi} from "../common/Constants.ts";
@@ -6,30 +5,44 @@ import {clamp, Deg2Rad} from "../common/Helper.ts";
 import {VirtualElement} from "../virtual-element/VirtualElement.ts";
 import {Player} from "../physical/Player.ts";
 import {ExtendedTriangle} from "three-mesh-bvh";
+import {
+    Box3,
+    Line3,
+    Matrix4,
+    Mesh,
+    MOUSE,
+    PerspectiveCamera,
+    Plane,
+    Quaternion,
+    Ray,
+    Spherical,
+    Vector2,
+    Vector3
+} from "three";
 
 // 复用需要反复修改的对象，避免每次都需要新建对象带来的开销
-const _vec1: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-const _vec2: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-const _vectorTo: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
-const _offset: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-const _quaternion: THREE.Quaternion = new THREE.Quaternion(0, 0, 0, 1);
-const _ray: THREE.Ray = new THREE.Ray();
-const _plane: THREE.Plane = new THREE.Plane();
+const _vec1: Vector3 = new Vector3(0, 0, 0);
+const _vec2: Vector3 = new Vector3(0, 0, 0);
+const _vectorTo: Vector3 = new Vector3(0, 1, 0);
+const _offset: Vector3 = new Vector3(0, 0, 0);
+const _quaternion: Quaternion = new Quaternion(0, 0, 0, 1);
+const _ray: Ray = new Ray();
+const _plane: Plane = new Plane();
 const TILT_LIMIT: number = Math.cos(70 * Deg2Rad);
 const _changeEvent: Event = new Event('change');
 const _savedState: Record<string, any> = {};
-const _box: THREE.Box3 = new THREE.Box3();
-const _mat4: THREE.Matrix4 = new THREE.Matrix4();
-const _line3: THREE.Line3 = new THREE.Line3();
+const _box: Box3 = new Box3();
+const _mat4: Matrix4 = new Matrix4();
+const _line3: Line3 = new Line3();
 
 /**
  * 鼠标按键绑定的功能
  * @description **注意！设置鼠标按键绑定仅会在视角类型为上帝视角时生效。**
  */
 export interface MouseButtons {
-    left: THREE.MOUSE;
-    right: THREE.MOUSE;
-    middle: THREE.MOUSE;
+    left: MOUSE;
+    right: MOUSE;
+    middle: MOUSE;
 }
 
 /**
@@ -66,7 +79,7 @@ export class CameraViewTypeChangeEvent extends Event {
  * @see KeyBinds
  */
 export class CameraControls extends RenderObject implements Disposable {
-    protected _camera: THREE.PerspectiveCamera;
+    protected _camera: PerspectiveCamera;
     protected _eventEmitter: HTMLElement | VirtualElement;
     protected _cameraType: CameraViewType = CameraViewType.Spectator;
     protected _cameraTypeChanged: boolean = false;
@@ -94,14 +107,14 @@ export class CameraControls extends RenderObject implements Disposable {
     }
 
     public isPlayerGrounded: boolean = false;
-    public collider?: THREE.Mesh;
+    public collider?: Mesh;
 
-    public readonly target: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-    public readonly cursor: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+    public readonly target: Vector3 = new Vector3(0, 0, 0);
+    public readonly cursor: Vector3 = new Vector3(0, 0, 0);
     public readonly mouseButtons: MouseButtons = {
-        left: THREE.MOUSE.PAN,
-        middle: THREE.MOUSE.DOLLY,
-        right: THREE.MOUSE.ROTATE,
+        left: MOUSE.PAN,
+        middle: MOUSE.DOLLY,
+        right: MOUSE.ROTATE,
     };
     public keyPanSpeed: number = 0.5;
     public panSpeed: number = 1;
@@ -119,18 +132,18 @@ export class CameraControls extends RenderObject implements Disposable {
     protected _rotateEnabled: boolean = true;
     protected _keyPanInProgress: boolean = false;
     protected _scale: number = 1;
-    protected _mouse: THREE.Vector2 = new THREE.Vector2(0, 0);
-    protected _dollyDirection: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-    protected _panOffset: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-    protected _start: THREE.Vector2 = new THREE.Vector2(0, 0);
-    protected _end: THREE.Vector2 = new THREE.Vector2(0, 0);
-    protected _delta: THREE.Vector2 = new THREE.Vector2(0, 0);
+    protected _mouse: Vector2 = new Vector2(0, 0);
+    protected _dollyDirection: Vector3 = new Vector3(0, 0, 0);
+    protected _panOffset: Vector3 = new Vector3(0, 0, 0);
+    protected _start: Vector2 = new Vector2(0, 0);
+    protected _end: Vector2 = new Vector2(0, 0);
+    protected _delta: Vector2 = new Vector2(0, 0);
     protected _cursorZoom: boolean = false;
-    protected _spherical: THREE.Spherical = new THREE.Spherical(0, 0, 0);
-    protected _sphericalDelta: THREE.Spherical = new THREE.Spherical(0, 0, 0);
-    protected _lastPosition: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-    protected _lastQuaternion: THREE.Quaternion = new THREE.Quaternion(0, 0, 0, 1);
-    protected _lastTargetPosition: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+    protected _spherical: Spherical = new Spherical(0, 0, 0);
+    protected _sphericalDelta: Spherical = new Spherical(0, 0, 0);
+    protected _lastPosition: Vector3 = new Vector3(0, 0, 0);
+    protected _lastQuaternion: Quaternion = new Quaternion(0, 0, 0, 1);
+    protected _lastTargetPosition: Vector3 = new Vector3(0, 0, 0);
 
     public set isZoomEnabled(value: boolean) {
         this._zoomEnabled = value;
@@ -246,7 +259,7 @@ export class CameraControls extends RenderObject implements Disposable {
             if(this._cameraType === CameraViewType.Spectator) {
                 if(event.isDown) {
                     if((this._keyPanInProgress = this.isPanEnabled && this.isInMovement())) {
-                        this._state.operation = THREE.MOUSE.PAN;
+                        this._state.operation = MOUSE.PAN;
                         this.animatePan();
                     }
                 } else if(!this.isInMovement()) {
@@ -281,12 +294,12 @@ export class CameraControls extends RenderObject implements Disposable {
             _box.max.addScalar(radius);
             // @ts-ignore
             this.collider.geometry.boundsTree?.shapecast({
-                intersectsBounds: (box: THREE.Box3) => box.intersectsBox(_box),
+                intersectsBounds: (box: Box3) => box.intersectsBox(_box),
                 intersectsTriangle: (triangle: ExtendedTriangle) => {
                     const distance: number = triangle.closestPointToSegment(_line3, _vec1, _vec2);
                     if(distance < radius) {
                         const depth: number = radius - distance;
-                        const direction: THREE.Vector3 = _vec2.sub(_vec1).normalize();
+                        const direction: Vector3 = _vec2.sub(_vec1).normalize();
                         _line3.start.addScaledVector(direction, depth);
                         _line3.end.addScaledVector(direction, depth);
                     }
@@ -348,7 +361,7 @@ export class CameraControls extends RenderObject implements Disposable {
         _offset.copy(this._camera.position).sub(this.target);
         const targetDistance = _offset.length() * Math.tan(this._camera.fov / 2 * Deg2Rad);
         const element = this._eventEmitter;
-        const matrix: THREE.Matrix4 = this._camera.matrix;
+        const matrix: Matrix4 = this._camera.matrix;
         // Pan left
         if(deltaX !== 0) {
             this._panOffset.add(_vec1.setFromMatrixColumn(matrix, 0)
@@ -396,7 +409,7 @@ export class CameraControls extends RenderObject implements Disposable {
         return this._cameraType;
     }
 
-    public constructor(camera: THREE.PerspectiveCamera, eventEmitter: HTMLElement | VirtualElement) {
+    public constructor(camera: PerspectiveCamera, eventEmitter: HTMLElement | VirtualElement) {
         super();
         this._camera = camera;
         this._eventEmitter = eventEmitter;
@@ -449,18 +462,18 @@ export class CameraControls extends RenderObject implements Disposable {
         if(this._cameraType === CameraViewType.Spectator) {
             switch (this._state.operation) {
                 default: return;
-                case THREE.MOUSE.PAN: {
+                case MOUSE.PAN: {
                     if(!this._panEnabled) return;
                     this._delta.multiplyScalar(this.panSpeed);
                     this.pan(this._delta.x, this._delta.y);
                     break;
                 }
-                case THREE.MOUSE.DOLLY: {
+                case MOUSE.DOLLY: {
                     if(!this._zoomEnabled) return;
                     this.handleDolly(this._delta.y);
                     break;
                 }
-                case THREE.MOUSE.ROTATE: {
+                case MOUSE.ROTATE: {
                     if(!this._rotateEnabled) return;
                     this._delta.multiplyScalar(this.rotateSpeed);
                     const height: number = this._eventEmitter.clientHeight;
@@ -494,28 +507,28 @@ export class CameraControls extends RenderObject implements Disposable {
                 this._state.operation = -1;
         }
         switch (this._state.operation) {
-            case THREE.MOUSE.DOLLY: {
+            case MOUSE.DOLLY: {
                 if (!this._zoomEnabled) return;
                 const val: number = event.clientX;
                 this.updateMouse(val, val);
                 break;
             }
-            case THREE.MOUSE.ROTATE:
+            case MOUSE.ROTATE:
                 if (event.ctrlKey || event.metaKey || event.shiftKey) {
                     if (!this._panEnabled) return;
-                    this._state.operation = THREE.MOUSE.PAN;
+                    this._state.operation = MOUSE.PAN;
                 } else {
                     if (!this._rotateEnabled) return;
-                    this._state.operation = THREE.MOUSE.ROTATE;
+                    this._state.operation = MOUSE.ROTATE;
                 }
                 break;
-            case THREE.MOUSE.PAN:
+            case MOUSE.PAN:
                 if (event.ctrlKey || event.metaKey || event.shiftKey) {
                     if (!this._rotateEnabled) return;
-                    this._state.operation = THREE.MOUSE.ROTATE;
+                    this._state.operation = MOUSE.ROTATE;
                 } else {
                     if (!this._panEnabled) return;
-                    this._state.operation = THREE.MOUSE.PAN;
+                    this._state.operation = MOUSE.PAN;
                 }
                 break;
             default:

@@ -1,6 +1,5 @@
-import * as THREE from "three";
 import {CanvasSize,} from "../../common/Types.ts";
-import {ModelLoader, ModelObjectLoadEvent} from "../../loaders/ModelLoader.ts";
+import {ModelLoader, ModelObjectLoadEvent} from "../../../../../bounding-box/src/ModelLoader.ts";
 import {EdgeHighlighter} from "../../effects/EdgeHighlighter.ts";
 import {TextureLoader} from "../../loaders/TextureLoader.ts";
 import {
@@ -18,11 +17,24 @@ import {
     StaticGeometryGenerator
 } from 'three-mesh-bvh';
 import {Player} from "../../physical/Player.ts";
+import {Flame} from "../../effects/Flame.ts";
+import {
+    Mesh,
+    SpotLight,
+    BufferGeometry,
+    AmbientLight,
+    Fog,
+    Box3,
+    Color,
+    Vector3,
+    RepeatWrapping,
+    CircleGeometry, MeshStandardMaterial
+} from "three";
 // @ts-ignore
-THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 // @ts-ignore
-THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
-THREE.Mesh.prototype.raycast = acceleratedRaycast;
+BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+Mesh.prototype.raycast = acceleratedRaycast;
 
 let textureLoader = new TextureLoader;
 
@@ -36,11 +48,11 @@ export class ModelRenderer extends CanvasRenderer {
     private readonly _modelLoader: ModelLoader;
     // 边框高亮
     private readonly _clickHighlighter: EdgeHighlighter;
-    private _topMostLight: THREE.SpotLight = new THREE.SpotLight(0xffffff, 1);
+    private _topMostLight: SpotLight = new SpotLight(0xffffff, 1);
     private _exclusions: string[] = [];
     private _controls: CameraControls;
     private _player: Player = new Player('/player.glb');
-    private _collider: THREE.Mesh = new THREE.Mesh;
+    private _collider: Mesh = new Mesh;
 
     public override setPixelRatio(ratio: number) {
         this._clickHighlighter.pixelRatio = this._pixelRatio;
@@ -63,9 +75,9 @@ export class ModelRenderer extends CanvasRenderer {
         shadows: boolean = true,
     ) {
         super(canvas, bodyElement, shadows);
-        this._context.scene.fog = new THREE.Fog(0x252525, 200, 250);
+        this._context.scene.fog = new Fog(0x252525, 200, 250);
         // 初始化灯光
-        this.add(new THREE.AmbientLight(0xffffff, 0.25));
+        this.add(new AmbientLight(0xffffff, 0.25));
         this._topMostLight.castShadow = true;
         this._topMostLight.shadow.bias = -0.0001;
         this._topMostLight.shadow.mapSize.set(2048, 2048);
@@ -103,7 +115,7 @@ export class ModelRenderer extends CanvasRenderer {
                     });
                 }
             }
-            const boundingBox: THREE.Box3 = new THREE.Box3().setFromObject(event.object, true);
+            const boundingBox: Box3 = new Box3().setFromObject(event.object, true);
             this.dispatchEvent(new SceneObjectBoundingBoxEvent({
                 min: [boundingBox.min.x, boundingBox.min.y, boundingBox.min.z],
                 max: [boundingBox.max.x, boundingBox.max.y, boundingBox.max.z],
@@ -120,14 +132,15 @@ export class ModelRenderer extends CanvasRenderer {
         // 初始化边框高亮
         this._clickHighlighter = new EdgeHighlighter(
             this._context,
-            new THREE.Color(0xff9800),
-            new THREE.Color(0xff0000)
+            new Color(0xff9800),
+            new Color(0xff0000)
         );
         this._clickHighlighter.addEventListener('object-selection', evt => {
             const event: ObjectSelectionEvent = evt as ObjectSelectionEvent;
             if(event.objects.length === 0) return;
             this.dispatchEvent(new ObjectSelectionEvent(event.selected, event.camera, ...event.objects));
         });
+        this.add(new Flame(this._context));
     }
 
     protected override async pointerDownEvent(event: PointerEvent): Promise<void> {
@@ -151,9 +164,9 @@ export class ModelRenderer extends CanvasRenderer {
             try {
                 this._clickHighlighter.selectionExclusion.push(this._player.uuid);
                 await this._modelLoader.loadAll(manifestPath);
-                const sceneAABB = new THREE.Box3().setFromObject(this._context.scene, true);
-                const delta = new THREE.Vector3().copy(sceneAABB.max).sub(sceneAABB.min);
-                let centerPoint: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+                const sceneAABB = new Box3().setFromObject(this._context.scene, true);
+                const delta = new Vector3().copy(sceneAABB.max).sub(sceneAABB.min);
+                let centerPoint: Vector3 = new Vector3(0, 0, 0);
                 sceneAABB.getCenter(centerPoint);
                 this._player.position.copy(centerPoint).y = sceneAABB.min.y + 0.5;
                 this.add(this._player);
@@ -173,11 +186,11 @@ export class ModelRenderer extends CanvasRenderer {
                 this._controls.collider = this._collider;
                 // 最底层平面
                 const texture = await textureLoader.loadAsync('/textures/ground-plane.jpg');
-                texture.wrapT = texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = texture.wrapS = RepeatWrapping;
                 texture.repeat.set(64, 64);
-                const plane = new THREE.Mesh(
-                    new THREE.CircleGeometry(1024, 64),
-                    new THREE.MeshStandardMaterial({
+                const plane = new Mesh(
+                    new CircleGeometry(1024, 64),
+                    new MeshStandardMaterial({
                         map: texture,
                     })
                 );

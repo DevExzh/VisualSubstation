@@ -147,7 +147,7 @@ export interface RouteListResponse extends Response {
 export interface CaptchaImageResponse extends Response {
     img: string;
     uuid: string;
-    captchaEnabled: boolean;
+    captchaEnabled?: boolean;
 }
 
 // 注册信息

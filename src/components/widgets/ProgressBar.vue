@@ -58,8 +58,8 @@ const gradient = computed(() => {
     border-radius: 10px;
     overflow: hidden;
     background: linear-gradient(145deg, #0f3460, #162447);
-    border: 2px solid #00f2fe;
-    box-shadow: 0 0 15px #00f2fe;
+    box-shadow: 0 0 1rem rgba(0, 242, 254, 0.3);
+    border: 1px solid #5EBCF5;
     margin: 20px;
     width: 150px;
 
@@ -80,7 +80,7 @@ const gradient = computed(() => {
 
   .progress-bar-title {
     text-align: center;
-    font-size: 16px;
+    font-size: smaller;
     color: white;
     margin-top: -1em;
     padding-left: 10px;

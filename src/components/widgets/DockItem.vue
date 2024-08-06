@@ -70,22 +70,20 @@ onMounted(() => {
     </Widget>
   </teleport>
   <li
-      class="dock-item"
+      class="dock-item" v-once
       @dragstart.prevent
       @contextmenu.prevent
   >
     <span class="item-name">{{$props.name}}</span>
-    <div>
-      <div ref="icon">
-        <img
-            @click="onClick"
-            class="item-icon"
-            :src="$props.icon"
-            alt="Dock item"
-        />
-      </div>
-      <div ref="indicator" class="indicator" />
+    <div ref="icon">
+      <img
+          @click="onClick"
+          class="item-icon"
+          :src="$props.icon"
+          alt="Dock item"
+      />
     </div>
+    <div ref="indicator" class="indicator" />
   </li>
 </template>
 

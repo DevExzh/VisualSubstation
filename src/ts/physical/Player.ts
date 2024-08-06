@@ -1,5 +1,5 @@
-import * as THREE from "three";
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader.js";
+import {AnimationAction, AnimationMixer, Box3, Line3, Object3D, Vector3} from "three";
 
 const loader: GLTFLoader = new GLTFLoader();
 
@@ -19,32 +19,32 @@ const defaultAnimationMap = {
 
 export type AnimationName = keyof typeof defaultAnimationMap;
 
-export class Player extends THREE.Object3D {
+export class Player extends Object3D {
     public type: string = "Player";
     public speed: number = 10;
     public step: number = 5;
     public gravity: number = -30;
-    public readonly velocity: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
+    public readonly velocity: Vector3 = new Vector3(0, 0, 0);
 
     protected _radius: number = 0;
     public get radius(): number {
         return this._radius;
     }
 
-    protected _segment: THREE.Line3 = new THREE.Line3(
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 0, 0),
+    protected _segment: Line3 = new Line3(
+        new Vector3(0, 0, 0),
+        new Vector3(0, 0, 0),
     );
-    public get segment(): THREE.Line3 {
+    public get segment(): Line3 {
         return this._segment;
     }
 
     // @ts-ignore
-    protected _animationMap: Record<AnimationName, THREE.AnimationAction> = {};
-    protected _mixer?: THREE.AnimationMixer;
-    protected _action?: THREE.AnimationAction;
+    protected _animationMap: Record<AnimationName, AnimationAction> = {};
+    protected _mixer?: AnimationMixer;
+    protected _action?: AnimationAction;
     protected _name: AnimationName = 'walk';
-    protected _skeleton?: THREE.Object3D;
+    protected _skeleton?: Object3D;
 
     constructor(modelPath: string) {
         super();
@@ -59,7 +59,7 @@ export class Player extends THREE.Object3D {
             this.animations = gltf.animations;
             this._skeleton = gltf.scene;
             this.add(gltf.scene);
-            this._mixer = new THREE.AnimationMixer(gltf.scene);
+            this._mixer = new AnimationMixer(gltf.scene);
             for(const key in defaultAnimationMap) {
                 this._animationMap[key as AnimationName] = this._mixer.clipAction(
                     this.animations[defaultAnimationMap[key as AnimationName]]
@@ -67,9 +67,9 @@ export class Player extends THREE.Object3D {
             }
             this.playAnimation('idle');
             // 计算包围盒
-            const boundingBox: THREE.Box3 = new THREE.Box3().setFromObject(this, true);
+            const boundingBox: Box3 = new Box3().setFromObject(this, true);
             // 计算长宽高的大小
-            const delta: THREE.Vector3 = boundingBox.max.clone().sub(boundingBox.min);
+            const delta: Vector3 = boundingBox.max.clone().sub(boundingBox.min);
             // 计算包围胶囊体的半径
             this._radius = Math.min(Math.abs(delta.x) / 2, Math.abs(delta.z) / 2);
             this._segment.start.y = (boundingBox.max.y - this._radius) / 1.75;
@@ -84,7 +84,7 @@ export class Player extends THREE.Object3D {
         if(name in this._animationMap && name != this._name) {
             this._name = name;
             this._action?.fadeOut(0.2);
-            const action: THREE.AnimationAction = this._animationMap[name];
+            const action: AnimationAction = this._animationMap[name];
             action.reset();
             action.fadeIn(0.2);
             action.play();

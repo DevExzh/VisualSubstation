@@ -1,10 +1,10 @@
 import {cameraObjectFormThreeCamera, CanvasSize, ThreeContext} from "../common/Types.ts";
-import * as THREE from "three";
 import {
     CameraChangeEvent,
 } from "../events/SceneEvents.ts";
 import {Deg2Rad} from "../common/Helper.ts";
 import {AnyEvent} from "../events/AnyEvent.ts";
+import {Object3D, PCFSoftShadowMap, PerspectiveCamera, Scene, Vector2, Vector3, WebGLRenderer} from "three";
 
 function getCanvasSize(canvas: HTMLElement | OffscreenCanvas): CanvasSize {
     return (
@@ -47,7 +47,7 @@ export class CanvasRenderer extends EventTarget implements Disposable {
 
     public setPixelRatio(ratio: number): void {
         this._pixelRatio = ratio;
-        if(this._context.renderer instanceof THREE.WebGLRenderer) {
+        if(this._context.renderer instanceof WebGLRenderer) {
             this._context.renderer.setPixelRatio(this._pixelRatio);
         }
         this._context.camera.updateProjectionMatrix();
@@ -71,7 +71,7 @@ export class CanvasRenderer extends EventTarget implements Disposable {
      * @see https://en.wikipedia.org/wiki/Spherical_coordinate_system
      * @static
      */
-    public static setObjectPositionFromSpherical(object: THREE.Object3D, radius: number, theta: number, phi: number): void {
+    public static setObjectPositionFromSpherical(object: Object3D, radius: number, theta: number, phi: number): void {
         object.position.set(
             radius * Math.sin(theta) * Math.cos(phi),
             radius * Math.sin(theta) * Math.sin(phi),
@@ -79,8 +79,8 @@ export class CanvasRenderer extends EventTarget implements Disposable {
         );
     }
 
-    public static getBiasedSphericalCoords(bias: THREE.Vector3, radius: number, theta: number, phi: number): THREE.Vector3 {
-        return new THREE.Vector3(
+    public static getBiasedSphericalCoords(bias: Vector3, radius: number, theta: number, phi: number): Vector3 {
+        return new Vector3(
             bias.x + Deg2Rad * radius * Math.sin(theta) * Math.cos(phi),
             bias.y + Deg2Rad * radius * Math.sin(theta) * Math.sin(phi),
             bias.z + Deg2Rad * radius * Math.cos(theta)
@@ -97,7 +97,7 @@ export class CanvasRenderer extends EventTarget implements Disposable {
      * @static
      */
     public static setObjectPositionFromSphericalAngles(
-        object: THREE.Object3D, radius: number, theta: number, phi: number
+        object: Object3D, radius: number, theta: number, phi: number
     ): void {
         CanvasRenderer.setObjectPositionFromSpherical(object, radius, Deg2Rad * theta, Deg2Rad * phi);
     }
@@ -107,10 +107,10 @@ export class CanvasRenderer extends EventTarget implements Disposable {
         this._context.camera.updateProjectionMatrix();
     }
 
-    public static getNormalizedPointerPosition(e: PointerEvent): THREE.Vector2 {
+    public static getNormalizedPointerPosition(e: PointerEvent): Vector2 {
         const x = ( e.clientX / window.innerWidth) * 2 - 1;
         const y = - ( e.clientY / window.innerHeight) * 2 + 1;
-        return new THREE.Vector2(x, y);
+        return new Vector2(x, y);
     }
 
     protected constructor(
@@ -124,22 +124,22 @@ export class CanvasRenderer extends EventTarget implements Disposable {
         this._bodyElement = bodyElement;
         // 初始化渲染上下文
         this._context = context ?? {
-            renderer: new THREE.WebGLRenderer({
+            renderer: new WebGLRenderer({
                 canvas: this._canvas,
                 antialias: true,
                 alpha: true,
                 powerPreference: 'high-performance',
             }),
-            camera: new THREE.PerspectiveCamera(50, ((canvas): number => {
+            camera: new PerspectiveCamera(50, ((canvas): number => {
                 const size = getCanvasSize(canvas);
                 return size.width / size.height;
             })(canvas), 0.2, 1024),
-            scene: new THREE.Scene()
+            scene: new Scene()
         };
         this._context.scene.castShadow = this._context.scene.receiveShadow = shadows;
-        if(this._context.renderer instanceof THREE.WebGLRenderer) {
+        if(this._context.renderer instanceof WebGLRenderer) {
             this._context.renderer.shadowMap.enabled = shadows;
-            this._context.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            this._context.renderer.shadowMap.type = PCFSoftShadowMap;
         }
         // 添加事件监听器
         const element = (this._bodyElement as HTMLElement);
@@ -153,16 +153,16 @@ export class CanvasRenderer extends EventTarget implements Disposable {
     }
 
     public [Symbol.dispose](): void {
-        if(this._context.renderer instanceof THREE.WebGLRenderer) {
+        if(this._context.renderer instanceof WebGLRenderer) {
             this._context.renderer.dispose();
         }
     }
 
-    public add(...objects: THREE.Object3D[]): void {
+    public add(...objects: Object3D[]): void {
         this._context.scene.add(...objects);
     }
 
-    public remove(...objects: THREE.Object3D[]): void {
+    public remove(...objects: Object3D[]): void {
         this._context.scene.remove(...objects);
     }
 
@@ -178,12 +178,12 @@ export class CanvasRenderer extends EventTarget implements Disposable {
         return this._canvas;
     }
 
-    public get camera(): THREE.PerspectiveCamera {
+    public get camera(): PerspectiveCamera {
         return this._context.camera;
     }
 
     protected async compile(): Promise<void> {
-        if(this._context.renderer instanceof THREE.WebGLRenderer) {
+        if(this._context.renderer instanceof WebGLRenderer) {
             await this._context.renderer.compileAsync(this._context.scene, this.camera);
         }
     }

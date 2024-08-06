@@ -13,9 +13,9 @@ import {FeatureProperties} from "../../ts/map/GeoJson.ts";
 import SensorCountTimeline from "../views/info/SensorCountTimeline.vue";
 import EnvironmentDisplay from "../views/info/EnvironmentDisplay.vue";
 import SubstationInfo from "../views/info/SubstationInfo.vue";
+import Panel from "../widgets/Panel.vue";
+
 const shouldDisplayPanel = ref<boolean>(false);
-const leftPanel = ref<HTMLElement>();
-const rightPanel = ref<HTMLElement>();
 const onRegionClicked = (_: FeatureProperties | undefined, cancel: boolean) => {
   shouldDisplayPanel.value = cancel;
 };
@@ -36,75 +36,79 @@ onMounted(() => {
     </DockItem>
   </Dock>
   <div class="panel-container">
-   <transition name="left-panel" mode="out-in">
-     <div class="left-panel" ref="leftPanel" v-if="shouldDisplayPanel">
-       <div style="height: 2rem;" />
-       <DecoratedContainer
-           class="decorated-container"
-           title="运行状态"
-           client-width="24rem"
-           client-height="8rem"
-       >
-         <div class="status-display">
-           <div class="normal-status-label">正<br/>常</div>
-           <div class="warning-status-label">警<br/>戒</div>
-           <div class="error-status-label">告<br/>警</div>
-         </div>
-       </DecoratedContainer>
-       <DecoratedContainer
-           class="decorated-container"
-           title="变电站详情"
-           client-width="24rem"
-           client-height="13rem"
-       >
-         <SubstationInfo />
-       </DecoratedContainer>
-       <DecoratedContainer
-           class="decorated-container"
-           title="环境监测"
-           client-width="24rem"
-           client-height="9rem"
-       >
-         <EnvironmentDisplay/>
-       </DecoratedContainer>
-     </div>
-   </transition>
-    <transition name="right-panel" mode="out-in">
-      <div class="right-panel" ref="rightPanel" v-if="shouldDisplayPanel">
-        <div style="height: 2rem;" />
-        <DecoratedContainer
-            class="decorated-container"
-            title="电网运行状况"
-            client-width="24rem"
-        >
-          <PowerGridInfo style="width: 100%; height: 100%;"/>
-        </DecoratedContainer>
-        <DecoratedContainer
-            class="decorated-container"
-            title="电网负荷"
-            client-width="24rem"
-            client-height="13rem"
-        >
-          <LoadDashboard />
-        </DecoratedContainer>
-        <DecoratedContainer
-            class="decorated-container"
-            title="传感动态趋势"
-            client-width="24rem"
-            client-height="14rem"
-        >
-          <SensorCountTimeline />
-        </DecoratedContainer>
-      </div>
-    </transition>
+    <Panel side="left" top="2rem" :show="shouldDisplayPanel">
+      <DecoratedContainer
+          class="decorated-container"
+          title="运行状态"
+          client-width="24rem"
+          client-height="8rem"
+      >
+        <div class="status-display">
+          <div class="normal-status-label">正<br/>常</div>
+          <div class="warning-status-label">警<br/>戒</div>
+          <div class="error-status-label">告<br/>警</div>
+        </div>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="decorated-container"
+          title="变电站详情"
+          client-width="24rem"
+          client-height="13rem"
+      >
+        <SubstationInfo/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="decorated-container"
+          title="环境监测"
+          client-width="24rem"
+          client-height="9rem"
+      >
+        <EnvironmentDisplay/>
+      </DecoratedContainer>
+    </Panel>
+    <Panel side="right" top="2rem" :show="shouldDisplayPanel">
+      <DecoratedContainer
+          class="decorated-container"
+          title="电网运行状况"
+          client-width="24rem"
+      >
+        <PowerGridInfo style="width: 100%; height: 100%;"/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="decorated-container"
+          title="电网负荷"
+          client-width="24rem"
+          client-height="13rem"
+      >
+        <LoadDashboard/>
+      </DecoratedContainer>
+      <DecoratedContainer
+          class="decorated-container"
+          title="传感动态趋势"
+          client-width="24rem"
+          client-height="14rem"
+      >
+        <SensorCountTimeline/>
+      </DecoratedContainer>
+    </Panel>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import "../../css/scene.style.css";
+.panel-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  pointer-events: none;
+}
+
 .decorated-container {
   margin-top: 1rem;
 }
+
 .status-display {
   display: flex;
   align-items: center;
@@ -112,6 +116,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
 }
+
 @mixin status-label-format($color) {
   width: 15%;
   height: 70%;
@@ -144,12 +149,15 @@ onMounted(() => {
     background: $color;
   }
 }
+
 .normal-status-label {
   @include status-label-format(#0BC9EA);
 }
+
 .warning-status-label {
   @include status-label-format(#F7C456);
 }
+
 .error-status-label {
   @include status-label-format(#FC8C44);
 }

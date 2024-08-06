@@ -1,8 +1,8 @@
-import * as THREE from "three";
+import {Color, ShaderChunk, ShaderMaterial, Texture, UniformsLib, Vector2} from "three";
 
 const meshline_vert = `
-${THREE.ShaderChunk.logdepthbuf_pars_vertex}
-${THREE.ShaderChunk.fog_pars_vertex}
+${ShaderChunk.logdepthbuf_pars_vertex}
+${ShaderChunk.fog_pars_vertex}
 attribute vec3 previous;
 attribute vec3 next;
 attribute float side;
@@ -53,14 +53,14 @@ void main() {
     }
     finalPosition.xy += normal.xy * side;
     gl_Position = finalPosition;
-    ${THREE.ShaderChunk.logdepthbuf_vertex}
-    ${THREE.ShaderChunk.fog_vertex && 'vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);'}
-    ${THREE.ShaderChunk.fog_vertex}
+    ${ShaderChunk.logdepthbuf_vertex}
+    ${ShaderChunk.fog_vertex && 'vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);'}
+    ${ShaderChunk.fog_vertex}
 }`;
 
 const meshline_frag = `
-${THREE.ShaderChunk.fog_pars_fragment}
-${THREE.ShaderChunk.logdepthbuf_pars_fragment}
+${ShaderChunk.fog_pars_fragment}
+${ShaderChunk.logdepthbuf_pars_fragment}
 uniform sampler2D map;
 uniform sampler2D alphaMap;
 uniform float useMap;
@@ -76,7 +76,7 @@ varying vec2 vUV;
 varying vec4 vColor;
 varying float vCounters;
 void main() {
-    ${THREE.ShaderChunk.logdepthbuf_fragment}
+    ${ShaderChunk.logdepthbuf_fragment}
     vec4 c = vColor;
     if (useMap == 1.) c *= texture2D(map, vUV * repeat);
     if (useAlphaMap == 1.) c.a *= texture2D(alphaMap, vUV * repeat).a;
@@ -86,41 +86,41 @@ void main() {
     }
     gl_FragColor = c;
     gl_FragColor.a *= step(vCounters, visibility);
-    ${THREE.ShaderChunk.fog_fragment}
+    ${ShaderChunk.fog_fragment}
 }`;
 
 export type MeshLineMaterialParameters = {
     lineWidth: number;
-    map: THREE.Texture;
-    alphaMap: THREE.Texture;
+    map: Texture;
+    alphaMap: Texture;
     useMap: boolean;
     useAlphaMap: boolean;
-    repeat: THREE.Vector2;
-    color: THREE.Color;
+    repeat: Vector2;
+    color: Color;
     opacity: number;
     alphaTest: number;
     dashArray: number;
     dashOffset: number;
     dashRatio: number;
-    resolution: THREE.Vector2;
+    resolution: Vector2;
     sizeAttenuation: number;
 };
 
-export class MeshLineMaterial extends THREE.ShaderMaterial {
+export class MeshLineMaterial extends ShaderMaterial {
     isMeshLineMaterial: boolean;
     type: string;
 
     constructor(parameters?: Partial<MeshLineMaterialParameters>) {
         super({
-            uniforms: Object.assign({}, THREE.UniformsLib.fog, {
+            uniforms: Object.assign({}, UniformsLib.fog, {
                 lineWidth: { value: 1 },
                 map: { value: null },
                 useMap: { value: 0 },
                 alphaMap: { value: undefined },
                 useAlphaMap: { value: 0 },
-                color: { value: new THREE.Color(0xffffff) },
+                color: { value: new Color(0xffffff) },
                 opacity: { value: 1 },
-                resolution: { value: new THREE.Vector2(1, 1) },
+                resolution: { value: new Vector2(1, 1) },
                 sizeAttenuation: { value: 1 },
                 dashArray: { value: 0 },
                 dashOffset: { value: 0 },
@@ -128,7 +128,7 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
                 useDash: { value: 0 },
                 visibility: { value: 1 },
                 alphaTest: { value: 0 },
-                repeat: { value: new THREE.Vector2(1, 1) },
+                repeat: { value: new Vector2(1, 1) },
             }),
             vertexShader: meshline_vert,
             fragmentShader: meshline_frag,
@@ -151,11 +151,11 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
         this.uniforms.lineWidth.value = value;
     }
 
-    get map(): THREE.Texture {
+    get map(): Texture {
         return this.uniforms.map.value;
     }
 
-    set map(value: THREE.Texture) {
+    set map(value: Texture) {
         this.uniforms.map.value = value;
     }
 
@@ -167,11 +167,11 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
         this.uniforms.useMap.value = value;
     }
 
-    get alphaMap(): THREE.Texture {
+    get alphaMap(): Texture {
         return this.uniforms.alphaMap.value;
     }
 
-    set alphaMap(value: THREE.Texture) {
+    set alphaMap(value: Texture) {
         this.uniforms.alphaMap.value = value;
     }
 
@@ -183,11 +183,11 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
         this.uniforms.useAlphaMap.value = value;
     }
 
-    get color(): THREE.Color {
+    get color(): Color {
         return this.uniforms.color.value;
     }
 
-    set color(value: THREE.Color) {
+    set color(value: Color) {
         this.uniforms.color.value = value;
     }
 
@@ -199,11 +199,11 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
         this.uniforms.opacity.value = value;
     }
 
-    get resolution(): THREE.Vector2 {
+    get resolution(): Vector2 {
         return this.uniforms.resolution.value;
     }
 
-    set resolution(value: THREE.Vector2) {
+    set resolution(value: Vector2) {
         this.uniforms.resolution.value.copy(value);
     }
 
@@ -264,11 +264,11 @@ export class MeshLineMaterial extends THREE.ShaderMaterial {
         this.uniforms.alphaTest.value = value;
     }
 
-    get repeat(): THREE.Vector2 {
+    get repeat(): Vector2 {
         return this.uniforms.repeat.value;
     }
 
-    set repeat(value: THREE.Vector2) {
+    set repeat(value: Vector2) {
         this.uniforms.repeat.value.copy(value);
     }
 

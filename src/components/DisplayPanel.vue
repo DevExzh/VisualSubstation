@@ -2,6 +2,25 @@
 </script>
 
 <template>
+  <svg style="visibility: hidden; z-index: -256;">
+    <defs>
+      <linearGradient id="b" x1="0%" x2="99.111%" y1="50%" y2="50%">
+        <stop offset="0%" stop-color="#1F87CC" stop-opacity=".302"/>
+        <stop offset="100%" stop-color="#1F87CC" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="c" x1="0%" x2="92.145%" y1="50%" y2="50%">
+        <stop offset="0%" stop-color="#5EBCF5" stop-opacity=".4"/>
+        <stop offset="100%" stop-color="#5EBCF5" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="h" x1="0%" x2="100%" y1="49.817%" y2="49.817%">
+        <stop offset="0%" stop-color="#59BFFF" stop-opacity="0"/>
+        <stop offset="28.99%" stop-color="#59BFFF" stop-opacity=".851"/>
+        <stop offset="50.97%" stop-color="#ABDFFF"/>
+        <stop offset="71.81%" stop-color="#59BFFF" stop-opacity=".651"/>
+        <stop offset="100%" stop-color="#59BFFF" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+  </svg>
   <div
       id="display-panel"
   >
@@ -58,7 +77,7 @@
   width: 100vw;
   height: 3.25rem;
   pointer-events: none;
-  animation: 0.7s ease-out 0s header-slide;
+  animation: 1.25s ease-out 0s header-slide;
 }
 .panel-title {
   display: inline-block;

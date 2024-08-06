@@ -73,6 +73,5 @@ vec4 frag_add() {
 }
 
 void main() {
-    // Placeholder to choose the correct fragment function to call
-    gl_FragColor = frag_screen(); // This is just a placeholder function call
+    gl_FragColor = frag_screen();
 }

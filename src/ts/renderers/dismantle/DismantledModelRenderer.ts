@@ -1,19 +1,19 @@
 import {CanvasRenderer} from "../CanvasRenderer.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {DragControls} from "three/examples/jsm/controls/DragControls.js";
-import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
-import {LoadedObject, ModelLoader, ModelObjectLoadEvent} from "../../loaders/ModelLoader.ts";
+import {LoadedObject, ModelLoader, ModelObjectLoadEvent} from "../../../../../bounding-box/src/ModelLoader.ts";
 import {LoadEvent, LoadState} from "../../events/SceneEvents.ts";
+import {AmbientLight, Box3, HemisphereLight, Mesh, Object3D, Vector3} from "three";
 
-const _box: THREE.Box3 = new THREE.Box3();
-const _vec: THREE.Vector3 = new THREE.Vector3();
+const _box: Box3 = new Box3();
+const _vec: Vector3 = new Vector3();
 
 export class DismantledModelRenderer extends CanvasRenderer {
     private controls: OrbitControls;
     private dragControls: DragControls;
     private modelLoader: ModelLoader;
-    private initialPositions: Map<THREE.Object3D, THREE.Vector3> = new Map();
+    private initialPositions: Map<Object3D, Vector3> = new Map();
     private objects: Map<string, LoadedObject> = new Map();
     private animating: boolean = false; // 动画进行中的标志
     private dragging: boolean = false; // 拖动进行中的标志
@@ -40,8 +40,8 @@ export class DismantledModelRenderer extends CanvasRenderer {
         this.camera.position.z = 10;
         // 添加环境光和全景光
         this.add(
-            new THREE.AmbientLight(0x404040),
-            new THREE.HemisphereLight(0xffffbb, 0x080820, 1)
+            new AmbientLight(0x404040),
+            new HemisphereLight(0xffffbb, 0x080820, 1)
         );
         this.modelLoader = new ModelLoader(this._context);
         this.modelLoader.addEventListener('model-object-loaded', evt => {
@@ -53,7 +53,7 @@ export class DismantledModelRenderer extends CanvasRenderer {
             event.object.position.add(_vec);
             this.objects.set(event.object.userData.originalName, event.object);
             event.object.traverse(child => {
-                if((child as THREE.Mesh).isMesh) {
+                if((child as Mesh).isMesh) {
                     this.initialPositions.set(child, child.position.clone())
                 }
             });
@@ -95,13 +95,13 @@ export class DismantledModelRenderer extends CanvasRenderer {
     }
 
     // 移动模型位置
-    public moveModelByDistance(model: THREE.Object3D | string, distance: number, component: 'x' | 'y' | 'z'): void {
+    public moveModelByDistance(model: Object3D | string, distance: number, component: 'x' | 'y' | 'z'): void {
         this.animating = true; // 开始动画
         if(typeof model === 'string') {
-            model = this.objects.get(model) as THREE.Object3D;
+            model = this.objects.get(model) as Object3D;
         }
-        model.traverse((child: THREE.Object3D) => {
-            if ((child as THREE.Mesh).isMesh) {
+        model.traverse((child: Object3D) => {
+            if ((child as Mesh).isMesh) {
                 const newPos = { ...child.position };
                 newPos[component] += distance;
                 new TWEEN.Tween(child.position)

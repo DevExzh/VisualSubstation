@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import {CanvasRenderer} from "../CanvasRenderer.ts";
 import {MapControls} from "three/examples/jsm/controls/MapControls.js";
 import {chinaProjection, LineType, object3DFromGeoJson} from "../../map/MapUtils.ts";
@@ -9,25 +8,36 @@ import {Animations} from "../../common/Animations.ts";
 import {Anchor} from "../../meshes/Anchor.ts";
 import {RegionClickEvent} from "../../events/MapEvents.ts";
 import {FeatureProperties} from "../../map/GeoJson.ts";
+import {
+    AmbientLight, CircleGeometry,
+    Color, Fog, Intersection,
+    Mesh, MeshStandardMaterial,
+    Object3D,
+    PerspectiveCamera,
+    PointLight,
+    Raycaster, RepeatWrapping,
+    Scene, Texture,
+    WebGLRenderer
+} from "three";
 
 const textureLoader = new TextureLoader();
 
 export class MapRenderer extends CanvasRenderer {
     protected _controls: MapControls;
-    protected _mainLight: THREE.PointLight;
-    protected _ambientLight: THREE.AmbientLight;
-    protected _rayCaster: THREE.Raycaster;
-    protected _plane?: THREE.Mesh;
+    protected _mainLight: PointLight;
+    protected _ambientLight: AmbientLight;
+    protected _rayCaster: Raycaster;
+    protected _plane?: Mesh;
     protected _animations: Animations = new Animations(this);
     protected _mappings: Record<string, string> = {};
-    protected _regions: THREE.Object3D[] = [];
-    protected _subregions: THREE.Object3D[] = [];
-    protected _anchors: Anchor[] = [];
+    protected _regions: Object3D[] = [];
+    protected _subregions: Object3D[] = [];
+    protected _anchors: Object3D[] = [];
     protected _regionHeight: number = 3;
-    protected _areaColor: THREE.Color = new THREE.Color('#887908');
-    protected _borderColor: THREE.Color = new THREE.Color('#FFF9C4')
-    protected _areaColorOnPopUp: THREE.Color = new THREE.Color('#064f71');
-    protected _borderColorOnPopUp: THREE.Color = new THREE.Color('#1da8f1');
+    protected _areaColor: Color = new Color('#887908');
+    protected _borderColor: Color = new Color('#FFF9C4')
+    protected _areaColorOnPopUp: Color = new Color('#064f71');
+    protected _borderColorOnPopUp: Color = new Color('#1da8f1');
 
     public constructor(
         canvas: HTMLCanvasElement | OffscreenCanvas,
@@ -35,17 +45,17 @@ export class MapRenderer extends CanvasRenderer {
         shadows: boolean = true,
     ) {
         super(canvas, bodyElement, shadows, {
-            renderer: new THREE.WebGLRenderer({
+            renderer: new WebGLRenderer({
                 canvas: canvas,
                 antialias: true,
             }),
-            camera: new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 0.01, 512),
-            scene: new THREE.Scene(),
+            camera: new PerspectiveCamera(50, canvas.width / canvas.height, 0.01, 512),
+            scene: new Scene(),
         });
-        this._context.scene.fog = new THREE.Fog(0x252525, 100, 150);
+        this._context.scene.fog = new Fog(0x252525, 100, 150);
         this._context.scene.receiveShadow = shadows;
-        this._context.scene.background = new THREE.Color(0x252525);
-        this._rayCaster = new THREE.Raycaster();
+        this._context.scene.background = new Color(0x252525);
+        this._rayCaster = new Raycaster();
         this.setCameraPosition(100, Math.PI / 4, Math.PI / 5);
         this._controls = new MapControls(this._context.camera, this._bodyElement as HTMLElement);
         this._controls.listenToKeyEvents(this._bodyElement as HTMLElement);
@@ -53,13 +63,13 @@ export class MapRenderer extends CanvasRenderer {
         this._controls.minDistance = 1;
         this._controls.maxDistance = 128;
         this._controls.update();
-        this._mainLight = new THREE.PointLight(0xffffff, 1000);
+        this._mainLight = new PointLight(0xffffff, 1000);
         CanvasRenderer.setObjectPositionFromSphericalAngles(this._mainLight, 50, 65, 20);
-        this._ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
+        this._ambientLight = new AmbientLight(0xffffff, 0.25);
         object3DFromGeoJson('/map/china.json', {
             areaColor: this._areaColor,
             borderColor: this._borderColor,
-        }).then((objects: THREE.Object3D[]): void => {
+        }).then((objects: Object3D[]): void => {
             this.add(...objects, this._mainLight, this._ambientLight);
             this.compile().then(_ => this.render());
         });
@@ -70,12 +80,12 @@ export class MapRenderer extends CanvasRenderer {
         }).then(mappings => {
             this._mappings = mappings;
         });
-        textureLoader.loadAsync('/textures/ground-plane.jpg').then((texture: THREE.Texture) => {
-            texture.wrapT = texture.wrapS = THREE.RepeatWrapping;
+        textureLoader.loadAsync('/textures/ground-plane.jpg').then((texture: Texture) => {
+            texture.wrapT = texture.wrapS = RepeatWrapping;
             texture.repeat.set(64, 64);
-            this._plane = new THREE.Mesh(
-                new THREE.CircleGeometry(512, 64),
-                new THREE.MeshStandardMaterial({
+            this._plane = new Mesh(
+                new CircleGeometry(512, 64),
+                new MeshStandardMaterial({
                     map: texture,
                 })
             );
@@ -85,12 +95,12 @@ export class MapRenderer extends CanvasRenderer {
         });
     }
 
-    protected intersects(e: PointerEvent, objects?: THREE.Object3D[]): (THREE.Object3D | undefined) {
+    protected intersects(e: PointerEvent, objects?: Object3D[]): (Object3D | undefined) {
         this._rayCaster.setFromCamera(CanvasRenderer.getNormalizedPointerPosition(e), this._context.camera);
-        const intersections: THREE.Intersection[] = this._rayCaster
+        const intersections: Intersection[] = this._rayCaster
             .intersectObjects(objects ?? this._context.scene.children);
         if(intersections.length > 0) {
-            let o: THREE.Object3D = intersections[0].object;
+            let o: Object3D = intersections[0].object;
             if(o === this._plane) return undefined;
             while (!o.userData.name) {
                 o = o.parent!;
@@ -139,7 +149,7 @@ export class MapRenderer extends CanvasRenderer {
                         .interpolation(TWEEN.Interpolation.Bezier)
                         .onUpdate(v => {
                             o.scale.set(1, 1, v.height);
-                            ((o as THREE.Mesh).material as THREE.MeshStandardMaterial)
+                            ((o as Mesh).material as MeshStandardMaterial)
                                 .color.set(v.color.r, v.color.g, v.color.b);
                         })
                         .start(),
@@ -150,7 +160,7 @@ export class MapRenderer extends CanvasRenderer {
         this.compile().then(_ => this.render());
     }
 
-    protected animateCameraTo(object: THREE.Object3D) {
+    protected animateCameraTo(object: Object3D) {
         this.resumeAllSubregions();
         this._mainLight.rotation.set(0, 0, 0);
         const cameraPosFrom =  this._context.camera.position;
@@ -167,10 +177,10 @@ export class MapRenderer extends CanvasRenderer {
                     lineHeight: this._regionHeight + 0.001
                 }
             )
-                .then((subregions: THREE.Object3D[]) => {
+                .then((subregions: Object3D[]) => {
                     this._regions.push(object);
                     this._subregions = subregions;
-                    subregions.forEach((region: THREE.Object3D) => {
+                    subregions.forEach((region: Object3D) => {
                         const center = chinaProjection(region.userData.center as [number, number])!;
                         const anchor = new Anchor(region.userData.name);
                         anchor.position.set(center[0], this._regionHeight + 0.01, center[1]);
@@ -181,8 +191,8 @@ export class MapRenderer extends CanvasRenderer {
                             }
                         });
                     });
-                    const gl = (this._context.renderer as THREE.WebGLRenderer);
-                    const scene = new THREE.Object3D;
+                    const gl = (this._context.renderer as WebGLRenderer);
+                    const scene = new Object3D;
                     scene.add(...subregions);
                     return gl.compileAsync(scene, this._context.camera, this._context.scene);
                 });
@@ -248,7 +258,7 @@ export class MapRenderer extends CanvasRenderer {
                             // 拉长板块的大小
                             obj.scale.set(1, 1, o.height);
                             // 颜色过渡
-                            ((obj as THREE.Mesh).material as THREE.MeshStandardMaterial)
+                            ((obj as Mesh).material as MeshStandardMaterial)
                                 .color.set(o.color.r, o.color.g, o.color.b);
                         })
                         .start(),
@@ -261,7 +271,7 @@ export class MapRenderer extends CanvasRenderer {
     protected override async pointerDownEvent(event: PointerEvent): Promise<void> {
         if(event.isPrimary && event.button === 0) {
             if(this._subregions.length !== 0) {
-                const subregion: THREE.Object3D | undefined = this.intersects(event, this._subregions);
+                const subregion: Object3D | undefined = this.intersects(event, this._subregions);
                 if(subregion) {
                     // 通知路由器进行路由切换
                     this.dispatchEvent(new RouteSwitchEvent('substation-scene', {
@@ -279,7 +289,7 @@ export class MapRenderer extends CanvasRenderer {
                     }
                 }
             }
-            const region: THREE.Object3D | undefined = this.intersects(event);
+            const region: Object3D | undefined = this.intersects(event);
             // 点击了某个区域
             if(region) {
                 this.animateCameraTo(region);

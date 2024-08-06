@@ -21,7 +21,6 @@ provide(offsetKey, props.offset);
 provide(scaleFactorKey, props.scaleFactor);
 const dockContainer = ref<HTMLDivElement>();
 const invisible = ref<HTMLDivElement>();
-const dockBaseHeight = ref<string>('');
 const spacing = ref<string>('');
 let timer: any | undefined;
 const hideDock = () => {
@@ -43,7 +42,6 @@ const onLeave = () => {
 onMounted(() => {
   if(!dockContainer.value) return;
   if(props.autoHide) timer = setTimeout(hideDock, 3000);
-  dockBaseHeight.value = `calc(${props.iconSize} * 0.6)`;
   invisible.value!.style.height = props.iconSize as string;
   invisible.value!.style.width = `calc(${props.iconSize} * 2)`;
   spacing.value = typeof props.spacing === "number" ? props.spacing + 'px' : props.spacing;
@@ -54,27 +52,43 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-      class="dock-container"
-      @mouseenter="onEnter"
-      @mouseleave="onLeave"
-  >
+  <transition name="dock" appear>
     <div
-        ref="dockContainer"
-        class="dock-bar"
-        @dragstart.prevent
-        @contextmenu.prevent
+        class="dock-container"
+        @mouseenter="onEnter"
+        @mouseleave="onLeave"
     >
-      <ul class="dock-items">
-        <slot class="dock-item" :is="DockItem"/>
-      </ul>
-      <div class="dock-base" />
+      <div
+          ref="dockContainer"
+          class="dock-bar"
+          @dragstart.prevent
+          @contextmenu.prevent
+      >
+        <ul class="dock-items">
+          <slot class="dock-item" :is="DockItem"/>
+        </ul>
+        <div
+            class="dock-base"
+            :style="{
+            height: `calc(${props.iconSize} * 0.6)`
+          }"
+        />
+      </div>
+      <div ref="invisible" @mouseenter.native="onEnter" class="invisible" />
     </div>
-    <div ref="invisible" @mouseenter.native="onEnter" class="invisible" />
-  </div>
+  </transition>
 </template>
 
 <style lang="scss" scoped>
+.dock-enter-from {
+  transform: translateY(100%);
+}
+.dock-enter-to {
+  transform: translateY(0%);
+}
+.dock-enter-active {
+  transition: all 0.4s ease-out;
+}
 .invisible {
   position: absolute;
   display: none;
@@ -113,7 +127,6 @@ onBeforeUnmount(() => {
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: v-bind(dockBaseHeight);
   pointer-events: none;
   user-select: none;
   z-index: 3;

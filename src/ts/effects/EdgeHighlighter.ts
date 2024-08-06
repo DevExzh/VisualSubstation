@@ -2,13 +2,13 @@ import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass.js";
 import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass.js";
 import {OutputPass} from "three/examples/jsm/postprocessing/OutputPass.js";
 import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer.js";
-import * as THREE from "three";
 import {
     cameraObjectFormThreeCamera,
     CanvasSize, SceneObject, sceneObjectFromObject3D,
     ThreeContext
 } from "../common/Types.ts";
 import {ObjectSelectionEvent} from "../events/SceneEvents.ts";
+import {Color, Intersection, Object3D, Raycaster, Vector2, WebGLRenderer} from "three";
 
 export class EdgeHighlighter extends EventTarget {
     private context: ThreeContext;
@@ -16,7 +16,7 @@ export class EdgeHighlighter extends EventTarget {
     private composer: EffectComposer;
     private readonly clickOutlinePass: OutlinePass;
     private readonly manualOutlinePass: OutlinePass;
-    private readonly rayCaster: THREE.Raycaster = new THREE.Raycaster();
+    private readonly rayCaster: Raycaster = new Raycaster();
     public selectionExclusion: string[] = [];
     private canvasSize: CanvasSize = {width: -1, height: -1};
 
@@ -36,20 +36,20 @@ export class EdgeHighlighter extends EventTarget {
 
     constructor(
         context: ThreeContext,
-        clickColor: THREE.Color,
-        manualColor: THREE.Color,
+        clickColor: Color,
+        manualColor: Color,
     ) {
         super();
         this.context = context;
         // @ts-ignore
         this.rayCaster.firstHitOnly = true;
-        this.composer = new EffectComposer(this.context.renderer as THREE.WebGLRenderer);
+        this.composer = new EffectComposer(this.context.renderer as WebGLRenderer);
         this.composer.setPixelRatio(window.devicePixelRatio);
 
         // 产生高亮轮廓的效果
-        const getPass = (color: THREE.Color): OutlinePass => {
+        const getPass = (color: Color): OutlinePass => {
             const outlinePass: OutlinePass = new OutlinePass(
-                new THREE.Vector2(window.innerWidth, window.innerHeight),
+                new Vector2(window.innerWidth, window.innerHeight),
                 this.context.scene,
                 this.context.camera
             );
@@ -71,8 +71,8 @@ export class EdgeHighlighter extends EventTarget {
         this.composer.addPass(new OutputPass());
     }
 
-    set selectedObjects(objects: THREE.Object3D[]) {
-        const selected: THREE.Object3D[] = [];
+    set selectedObjects(objects: Object3D[]) {
+        const selected: Object3D[] = [];
         for(const obj of objects) {
             if(!this.selectionExclusion?.includes(obj.name)) selected.push(obj);
         }
@@ -96,14 +96,14 @@ export class EdgeHighlighter extends EventTarget {
     onPointerDown(e: PointerEvent) {
         const x = ( e.clientX / this.canvasSize.width ) * 2 - 1;
         const y = - ( e.clientY / this.canvasSize.height ) * 2 + 1;
-        this.rayCaster.setFromCamera(new THREE.Vector2(x, y), this.context.camera);
-        const intersects: THREE.Intersection[] = this.rayCaster.intersectObject(this.context.scene, true);
+        this.rayCaster.setFromCamera(new Vector2(x, y), this.context.camera);
+        const intersects: Intersection[] = this.rayCaster.intersectObject(this.context.scene, true);
         // 当且仅当有相交时
         if(e.isPrimary && e.button === 0 &&
             intersects.length > 0 && // 只选中符合条件的
             !this.selectionExclusion?.includes(intersects[0].object.uuid)
         ) {
-            let objSelected: THREE.Object3D = intersects[0].object;
+            let objSelected: Object3D = intersects[0].object;
             while(objSelected.parent) {
                 if("fileName" in objSelected.userData) {
                     break;

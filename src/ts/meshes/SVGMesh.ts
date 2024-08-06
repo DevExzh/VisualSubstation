@@ -1,9 +1,9 @@
-import * as THREE from "three";
 import {SVGLoader} from "three/examples/jsm/loaders/SVGLoader.js";
+import {BufferGeometry, Color, DoubleSide, Matrix4, Mesh, MeshBasicMaterial, Object3D, ShapeGeometry} from "three";
 
 const loader = new SVGLoader();
 
-export class SVGMesh extends THREE.Object3D {
+export class SVGMesh extends Object3D {
     constructor(url: string) {
         super();
         loader.load(
@@ -13,37 +13,37 @@ export class SVGMesh extends THREE.Object3D {
                 for ( const path of texture.paths ) {
                     const fillColor = path.userData?.style.fill;
                     if ( fillColor !== undefined && fillColor !== 'none' ) {
-                        const material = new THREE.MeshBasicMaterial( {
-                            color: new THREE.Color().setStyle( fillColor ),
+                        const material = new MeshBasicMaterial( {
+                            color: new Color().setStyle( fillColor ),
                             opacity: path.userData?.style.fillOpacity,
                             transparent: true,
-                            side: THREE.DoubleSide,
+                            side: DoubleSide,
                             depthWrite: false,
                         } );
                         const shapes = SVGLoader.createShapes( path );
                         for ( const shape of shapes ) {
-                            const geometry = new THREE.ShapeGeometry( shape );
-                            geometry.applyMatrix4(new THREE.Matrix4().makeScale ( 1, -1, 1 ))
-                            const mesh: THREE.Mesh = new THREE.Mesh( geometry, material );
+                            const geometry = new ShapeGeometry( shape );
+                            geometry.applyMatrix4(new Matrix4().makeScale ( 1, -1, 1 ))
+                            const mesh: Mesh = new Mesh( geometry, material );
                             mesh.renderOrder = renderOrder ++;
                             this.add(mesh);
                         }
                     }
                     const strokeColor = path.userData?.style.stroke;
                     if ( strokeColor !== undefined && strokeColor !== 'none' ) {
-                        const material = new THREE.MeshBasicMaterial( {
-                            color: new THREE.Color().setStyle( strokeColor ),
+                        const material = new MeshBasicMaterial( {
+                            color: new Color().setStyle( strokeColor ),
                             opacity: path.userData?.style.strokeOpacity,
                             transparent: true,
-                            side: THREE.DoubleSide,
+                            side: DoubleSide,
                             depthWrite: false,
                         } );
                         for ( const subPath of path.subPaths ) {
-                            const geometry: THREE.BufferGeometry =
+                            const geometry: BufferGeometry =
                                 SVGLoader.pointsToStroke( subPath.getPoints(), path.userData?.style );
-                            geometry.applyMatrix4(new THREE.Matrix4().makeScale ( 1, -1, 1 ))
+                            geometry.applyMatrix4(new Matrix4().makeScale ( 1, -1, 1 ))
                             if ( geometry ) {
-                                const mesh: THREE.Mesh = new THREE.Mesh( geometry, material );
+                                const mesh: Mesh = new Mesh( geometry, material );
                                 mesh.renderOrder = renderOrder ++;
                                 this.add(mesh);
                             }

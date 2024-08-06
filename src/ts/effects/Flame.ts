@@ -10,8 +10,8 @@ import {
 
 import {ThreeContext} from "../common/Types.ts";
 import {TextureLoader} from "../loaders/TextureLoader.ts";
-import FlameVertShader from './shaders/Flame.vert';
-import FlameFragShader from './shaders/Flame.frag';
+import FlameVertShader from './shaders/Flame.vert?raw';
+import FlameFragShader from './shaders/Flame.frag?raw';
 import {Deg2Rad} from "../common/Helper.ts";
 
 export class Flame extends Object3D {
