@@ -14,6 +14,7 @@ import SensorCountTimeline from "../views/info/SensorCountTimeline.vue";
 import EnvironmentDisplay from "../views/info/EnvironmentDisplay.vue";
 import SubstationInfo from "../views/info/SubstationInfo.vue";
 import Panel from "../widgets/Panel.vue";
+import DecoratedButton from "../widgets/DecoratedButton.vue";
 
 const shouldDisplayPanel = ref<boolean>(false);
 const onRegionClicked = (_: FeatureProperties | undefined, cancel: boolean) => {
@@ -35,80 +36,79 @@ onMounted(() => {
       <MonitorPanel/>
     </DockItem>
   </Dock>
-  <div class="panel-container">
-    <Panel side="left" top="2rem" :show="shouldDisplayPanel">
-      <DecoratedContainer
-          class="decorated-container"
-          title="运行状态"
-          client-width="24rem"
-          client-height="8rem"
+  <Panel side="left" top="2.5rem" :show="shouldDisplayPanel">
+    <DecoratedContainer
+        class="decorated-container"
+        title="运行状态"
+        client-width="24rem"
+        client-height="8rem"
+    >
+      <div class="status-display">
+        <div class="normal-status-label">正<br/>常</div>
+        <div class="warning-status-label">警<br/>戒</div>
+        <div class="error-status-label">告<br/>警</div>
+      </div>
+    </DecoratedContainer>
+    <DecoratedContainer
+        class="decorated-container"
+        title="变电站详情"
+        client-width="24rem"
+        client-height="13rem"
+    >
+      <SubstationInfo/>
+    </DecoratedContainer>
+    <DecoratedContainer
+        class="decorated-container"
+        title="环境监测"
+        client-width="24rem"
+        client-height="9rem"
+    >
+      <EnvironmentDisplay/>
+    </DecoratedContainer>
+  </Panel>
+  <Panel side="right" top="2.5rem" :show="shouldDisplayPanel">
+    <template #pin="scope">
+      <DecoratedButton
+          :on-click="scope.operations.toggleVisibility"
+          :tooltip="scope.visible ? '折叠面板' : '展开面板'"
+          tooltip-placement="left-start"
       >
-        <div class="status-display">
-          <div class="normal-status-label">正<br/>常</div>
-          <div class="warning-status-label">警<br/>戒</div>
-          <div class="error-status-label">告<br/>警</div>
-        </div>
-      </DecoratedContainer>
-      <DecoratedContainer
-          class="decorated-container"
-          title="变电站详情"
-          client-width="24rem"
-          client-height="13rem"
-      >
-        <SubstationInfo/>
-      </DecoratedContainer>
-      <DecoratedContainer
-          class="decorated-container"
-          title="环境监测"
-          client-width="24rem"
-          client-height="9rem"
-      >
-        <EnvironmentDisplay/>
-      </DecoratedContainer>
-    </Panel>
-    <Panel side="right" top="2rem" :show="shouldDisplayPanel">
-      <DecoratedContainer
-          class="decorated-container"
-          title="电网运行状况"
-          client-width="24rem"
-      >
-        <PowerGridInfo style="width: 100%; height: 100%;"/>
-      </DecoratedContainer>
-      <DecoratedContainer
-          class="decorated-container"
-          title="电网负荷"
-          client-width="24rem"
-          client-height="13rem"
-      >
-        <LoadDashboard/>
-      </DecoratedContainer>
-      <DecoratedContainer
-          class="decorated-container"
-          title="传感动态趋势"
-          client-width="24rem"
-          client-height="14rem"
-      >
-        <SensorCountTimeline/>
-      </DecoratedContainer>
-    </Panel>
-  </div>
+        <svg style="width: 60%; height: 60%;" viewBox="0 0 517.217 897.628">
+          <path style="fill: url(#decorated-fill)" v-if="scope.visible"
+                d="M1.024 62.813v527.36q0 76.8-.512 141.312T0 831.837q0 24.576 11.776 40.96t29.696 22.016 39.424 0 39.936-24.064q37.888-38.912 81.92-81.408t90.624-85.504 94.208-86.016 91.648-82.944q19.456-17.408 29.184-43.008t8.704-53.248-11.776-54.272-32.256-45.056q-39.936-34.816-79.36-70.144t-80.896-72.704-87.04-78.336-96.768-87.04Q106.496 10.59 83.456 3.933T41.984 1.885t-29.696 20.48T1.024 62.813"/>
+          <path style="fill: url(#decorated-fill)" v-else
+                d="M516.194 62.813v527.36q0 76.8.512 141.312t.512 100.352q0 24.576-11.776 40.96t-29.696 22.016-39.424 0-39.936-24.064q-37.888-38.912-81.92-81.408t-90.624-85.504-94.208-86.016-91.648-82.944Q18.53 517.47 8.802 491.87T.098 438.621t11.776-54.272 32.256-45.056q39.936-34.816 79.36-70.144t80.896-72.704 87.04-78.336 96.768-87.04q22.528-20.48 45.568-27.136t41.472-2.048 29.696 20.48 11.264 40.448"/>
+        </svg>
+      </DecoratedButton>
+      <DecoratedButton/>
+    </template>
+    <DecoratedContainer
+        class="decorated-container"
+        title="电网运行状况"
+        client-width="24rem"
+    >
+      <PowerGridInfo style="width: 100%; height: 100%;"/>
+    </DecoratedContainer>
+    <DecoratedContainer
+        class="decorated-container"
+        title="电网负荷"
+        client-width="24rem"
+        client-height="13rem"
+    >
+      <LoadDashboard/>
+    </DecoratedContainer>
+    <DecoratedContainer
+        class="decorated-container"
+        title="传感动态趋势"
+        client-width="24rem"
+        client-height="14rem"
+    >
+      <SensorCountTimeline/>
+    </DecoratedContainer>
+  </Panel>
 </template>
 
 <style lang="scss" scoped>
-.panel-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  pointer-events: none;
-}
-
-.decorated-container {
-  margin-top: 1rem;
-}
-
 .status-display {
   display: flex;
   align-items: center;
@@ -160,5 +160,9 @@ onMounted(() => {
 
 .error-status-label {
   @include status-label-format(#FC8C44);
+}
+
+.decorated-path {
+  box-shadow: 0 0 20px 0 rgba(0,133,255,0.50);
 }
 </style>

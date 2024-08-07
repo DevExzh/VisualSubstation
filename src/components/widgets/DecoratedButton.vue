@@ -1,35 +1,48 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {pixels} from "../../ts/common/Utils.ts";
 const props = withDefaults(defineProps<{
   // 按钮样式
   type?: 'circle' | 'hexagon',
   size?: string | number,
+  tooltip?: string,
+  tooltipPlacement?: string,
+  onClick?: () => void
 }>(), {
   type: 'circle',
-  size: '3rem',
+  size: '2.5rem',
+  tooltip: '',
+  tooltipPlacement: 'bottom',
+  onClick: () => {}
 });
 const iconSize = ref<string>(pixels(props.size) + 'px');
+const iconStyle = reactive<Record<string, any>>({
+  'background-size': '100% 100%'
+});
+onMounted(() => {
+  switch (props.type) {
+    case 'circle': {
+      iconStyle['background-image'] = 'url(/images/icon-circle-border.svg)';
+      break;
+    }
+    case "hexagon": {
+      iconStyle['background-image'] = 'url(/images/icon-hexagon-border.svg)';
+      break;
+    }
+  }
+});
 </script>
 
 <template>
-  <div
-      class="icon-container"
-  >
-    <div class="icon">
-      <slot/>
+  <ElTooltip :disabled="$props.tooltip === ''" :content="$props.tooltip" :placement="tooltipPlacement">
+    <div
+        class="icon-container"
+        @click="$props.onClick"
+        :style="iconStyle"
+    >
+      <div class="icon"><slot/></div>
     </div>
-    <img
-        class="icon-background"
-        v-if="$props.type === 'circle'" v-once
-        src="/images/icon-circle-border.svg" alt="border"
-    />
-    <img
-        class="icon-background"
-        v-if="$props.type === 'hexagon'" v-once
-        src="/images/icon-hexagon-border.svg" alt="border"
-    />
-  </div>
+  </ElTooltip>
 </template>
 
 <style lang="scss" scoped>
@@ -38,20 +51,18 @@ $iconSize: v-bind(iconSize);
   width: $iconSize;
   height: $iconSize;
   cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  position: relative;
   & .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 20%;
     left: 20%;
     width: 60%;
     height: 60%;
-    z-index: 3;
-  }
-  & .icon-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    // 只需要高度占满即可
-    height: 100%;
   }
 }
 </style>

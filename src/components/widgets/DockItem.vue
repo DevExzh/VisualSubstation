@@ -3,6 +3,8 @@ import {inject, onMounted, ref} from "vue";
 import {iconSizeKey, offsetKey, scaleFactorKey} from "../../ts/widgets/Dock.ts";
 import Widget from "./Widget.vue";
 import {WindowState} from "../../ts/widgets/Widget.ts";
+import useDockStore from "../../ts/store/DockStore.ts";
+import {pixels} from "../../ts/common/Utils.ts";
 
 withDefaults(defineProps<{
   name: string;
@@ -14,9 +16,10 @@ withDefaults(defineProps<{
   showWidgetIcon: false
 });
 const emits = defineEmits<{
-  widgetOpen: []
+  widgetOpen: [],
+  widgetClosed: []
 }>();
-const isOpen = ref<boolean>(false);
+const isOpen = defineModel<boolean>('open', {default: false});
 const icon = ref<HTMLElement>();
 const indicator = ref<HTMLElement>();
 const iconSize = ref<string>('');
@@ -24,7 +27,7 @@ const offset = ref<string>('');
 const labelOffset = ref<string>('');
 const scale = ref<number>(1);
 const bindWidget = ref<InstanceType<typeof Widget>>();
-const onClick = () => {
+const show = () => {
   emits('widgetOpen');
   if (isOpen.value) {
     switch (bindWidget.value?.widget.windowState) {
@@ -47,13 +50,16 @@ const onClick = () => {
     }, 1500);
   }
 };
+defineExpose({show});
 const onWidgetClose = () => {
+  emits('widgetClosed');
   indicator.value!.style.opacity = '0';
 };
 onMounted(() => {
-  iconSize.value = inject(iconSizeKey)!;
-  offset.value = inject(offsetKey)! + 'px';
-  scale.value = inject(scaleFactorKey)!;
+  const dock = useDockStore();
+  iconSize.value = inject(iconSizeKey) ?? pixels(dock.iconSize!) + 'px';
+  offset.value = (inject(offsetKey) ?? dock.offset) + 'px';
+  scale.value = inject(scaleFactorKey) ?? dock.scaleFactor!;
   labelOffset.value = `calc(${iconSize.value} * ${scale.value} + 1rem)`;
 });
 </script>
@@ -77,7 +83,7 @@ onMounted(() => {
     <span class="item-name">{{$props.name}}</span>
     <div ref="icon">
       <img
-          @click="onClick"
+          @click="show"
           class="item-icon"
           :src="$props.icon"
           alt="Dock item"

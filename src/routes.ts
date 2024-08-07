@@ -5,6 +5,7 @@ import {tokenKey} from "./ts/common/Request.ts";
 import Auth from "./ts/common/Auth.ts";
 import useUserStore from "./ts/store/UserStore.ts";
 import {ElMessage} from "element-plus";
+import usePanelStore from "./ts/store/PanelStore.ts";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -77,6 +78,8 @@ router.beforeEach(({meta, name}, _, next) => {
         next();
     } else {
         const userStore = useUserStore();
+        // 在切换页面前释放掉面板状态
+        usePanelStore().setFunctions.length = 0;
         if(userStore.permissions.length == 0 || userStore.roles.length == 0) {
             userStore.getInfo().then(info => {
                 if(requiresAuth && (Auth.hasPermissionOr(info.permissions) || Auth.hasRoleOr(info.roles))) {

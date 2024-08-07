@@ -2,14 +2,9 @@
 import {onBeforeUnmount, onMounted, provide, ref} from "vue";
 import DockItem from "../widgets/DockItem.vue";
 import {iconSizeKey, offsetKey, scaleFactorKey} from "../../ts/widgets/Dock.ts";
+import {useDockStore, DockSettings} from "../../ts/store/DockStore.ts";
 
-const props = withDefaults(defineProps<{
-  autoHide?: boolean;
-  iconSize?: number | string;
-  offset?: number;
-  scaleFactor?: number;
-  spacing?: number | string;
-}>(), {
+const props = withDefaults(defineProps<DockSettings>(), {
   autoHide: false,
   iconSize: '4rem',
   offset: 5,
@@ -39,12 +34,19 @@ const onLeave = () => {
   if(!dockContainer.value || !props.autoHide) return;
   if(props.autoHide) setTimeout(hideDock, 100);
 };
+const dockItems = ref<HTMLUListElement>();
 onMounted(() => {
   if(!dockContainer.value) return;
   if(props.autoHide) timer = setTimeout(hideDock, 3000);
   invisible.value!.style.height = props.iconSize as string;
   invisible.value!.style.width = `calc(${props.iconSize} * 2)`;
   spacing.value = typeof props.spacing === "number" ? props.spacing + 'px' : props.spacing;
+  const dock = useDockStore();
+  dock.dockItemContainer = dockItems.value;
+  dock.iconSize = props.iconSize;
+  dock.offset = props.offset;
+  dock.scaleFactor = props.scaleFactor;
+  dock.spacing = props.spacing;
 });
 onBeforeUnmount(() => {
   if(timer) clearTimeout(timer);
@@ -64,7 +66,7 @@ onBeforeUnmount(() => {
           @dragstart.prevent
           @contextmenu.prevent
       >
-        <ul class="dock-items">
+        <ul class="dock-items" ref="dockItems">
           <slot class="dock-item" :is="DockItem"/>
         </ul>
         <div
@@ -135,5 +137,6 @@ onBeforeUnmount(() => {
   border: 2px #aaa solid;
   transform-origin: 50% 100%;
   transform: rotateX(55deg);
+  transition: all ease 0.4s;
 }
 </style>

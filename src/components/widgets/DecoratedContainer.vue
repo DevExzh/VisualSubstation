@@ -62,7 +62,7 @@ const headerCornerWidth = computed<string>(() => `calc(${containerWidth} - ${svg
             <use :xlink:href="`#${uuids[0]}`"/>
           </mask>
         </defs>
-        <use :xlink:href="`#${uuids[0]}`" fill="url(#b)" fill-rule="evenodd" stroke="url(#c)"
+        <use :xlink:href="`#${uuids[0]}`" fill="url(#header-bg)" fill-rule="evenodd" stroke="url(#header-bg-stroke)"
              stroke-dasharray="0,0" stroke-width="2" :mask="`url(#${uuids[1]})`"/>
         <path fill="#DBF1FF" fill-rule="evenodd" d="M0 0h10v2H2v2H0V1z"/>
       </svg>
@@ -96,7 +96,7 @@ const headerCornerWidth = computed<string>(() => `calc(${containerWidth} - ${svg
       <div class="bg-border" />
       <svg class="bottom-decorator"
            :width="0.53 * pixels($props.clientWidth!)" height="1">
-        <path fill="url(#h)" fill-rule="evenodd" d="M345 299v1H105v-1z" transform="translate(-105 -299)"/>
+        <path fill="url(#bottom-deco)" fill-rule="evenodd" d="M345 299v1H105v-1z" transform="translate(-105 -299)"/>
       </svg>
       <svg class="bottom-corner-left" width="8" height="8">
         <path fill="#DBF1FF" fill-rule="evenodd" d="M0 8V0h2v6h6v2H2z"/>

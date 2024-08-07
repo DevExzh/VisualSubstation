@@ -2,6 +2,7 @@
 // GitHub 上已有项目 vue-seamless-scroll 的代码风格实在太糟糕，而且还没有类型注解，故重构了整个组件
 import {ScrollDirection} from "../../ts/widgets/ScrollArea.ts";
 import {reactive, ref, onMounted} from "vue";
+const scrollArea = ref<HTMLDivElement>();
 const props = withDefaults(
     defineProps<{
       // 单次动画的步长，可以用此属性控制动画的快慢
@@ -73,7 +74,6 @@ const onLeave = () => {
     scroll();
   }
 };
-const scrollArea = ref<HTMLDivElement>();
 onMounted(scroll);
 </script>
 
@@ -85,7 +85,7 @@ onMounted(scroll);
       @mouseenter="onEnter"
       @mouseleave="onLeave"
   >
-    <div ref="scrollArea"><slot name="default" v-for="_ in 2"/></div>
+    <div ref="scrollArea"><slot name="default" v-for="index in 2" :key="index"/></div>
   </div>
 </div>
 </template>

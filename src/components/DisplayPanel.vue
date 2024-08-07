@@ -1,36 +1,80 @@
 <script setup lang="ts">
+import DecoratedButton from "./widgets/DecoratedButton.vue";
+import {onMounted, ref} from "vue";
+import useUserStore from "../ts/store/UserStore.ts";
+import {ElMessage, ElMessageBox} from "element-plus";
+import Api from "../ts/common/Api.ts";
+import router from "../routes.ts";
+import useDockStore from "../ts/store/DockStore.ts";
+import DockItem from "./widgets/DockItem.vue";
+const formattedDateTime = ref<string>('');
+const userName = ref<string>('');
+const onExitClicked = () => {
+  ElMessageBox.confirm(`您确定要退出登录吗?`, "系统提示", {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: "warning",
+  })
+      .then(Api.logout)
+      .then(() => {
+        router.replace({name: 'login'});
+        ElMessage.success('登出成功');
+      })
+  ;
+};
+const isSettingsOpen = ref<boolean>(false);
+const dock = useDockStore();
+onMounted(() => {
+  useUserStore().getInfo().then(res => userName.value = res.user.nickName);
+  setInterval(() => {
+    const now = new Date();
+    formattedDateTime.value = now.toLocaleDateString() + '<br>' + now.toLocaleTimeString();
+  }, 1000);
+});
 </script>
 
 <template>
-  <svg style="visibility: hidden; z-index: -256;">
-    <defs>
-      <linearGradient id="b" x1="0%" x2="99.111%" y1="50%" y2="50%">
-        <stop offset="0%" stop-color="#1F87CC" stop-opacity=".302"/>
-        <stop offset="100%" stop-color="#1F87CC" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="c" x1="0%" x2="92.145%" y1="50%" y2="50%">
-        <stop offset="0%" stop-color="#5EBCF5" stop-opacity=".4"/>
-        <stop offset="100%" stop-color="#5EBCF5" stop-opacity="0"/>
-      </linearGradient>
-      <linearGradient id="h" x1="0%" x2="100%" y1="49.817%" y2="49.817%">
-        <stop offset="0%" stop-color="#59BFFF" stop-opacity="0"/>
-        <stop offset="28.99%" stop-color="#59BFFF" stop-opacity=".851"/>
-        <stop offset="50.97%" stop-color="#ABDFFF"/>
-        <stop offset="71.81%" stop-color="#59BFFF" stop-opacity=".651"/>
-        <stop offset="100%" stop-color="#59BFFF" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-  </svg>
   <div
       id="display-panel"
   >
-    <header v-once class="panel-header">
-      <div class="panel-title">
+    <header class="panel-header">
+      <div v-once class="panel-title">
         电网设备数字孪生管理系统
       </div>
-      <img src="/images/banner.svg" class="top-decoration" alt="hologram"/>
+      <img v-once src="/images/banner.svg" class="top-decoration" alt="hologram"/>
       <div class="header-background left-part" />
-      <div class="header-background right-part" />
+      <div class="header-background right-part">
+        <DecoratedButton
+            :on-click="onExitClicked"
+            style="z-index: 8" type="hexagon" size="2rem" tooltip="退出登录">
+          <svg v-once style="width: 100%; height: 100%;" viewBox="0 0 1024 1024">
+            <path
+                style="fill: url(#decorated-fill)"
+                d="M768 640V512H448V384h320V256l192 192zm-64-64v256H384v192L0 832V0h704v320h-64V64H128l256 128v576h256V576z"
+            />
+          </svg>
+        </DecoratedButton>
+        <DecoratedButton
+            :on-click="() => {isSettingsOpen = true;}"
+            style="z-index: 8" type="hexagon" size="2rem" tooltip="设置"
+        >
+          <teleport :to="dock.dockItemContainer" v-if="isSettingsOpen">
+            <DockItem name="设置" icon="/images/settings.png"
+                      :open="isSettingsOpen" @widget-closed="isSettingsOpen = false"></DockItem>
+          </teleport>
+          <svg v-once style="width: 100%; height: 100%;" viewBox="0 0 1024 1024">
+            <path
+                style="fill: url(#decorated-fill)"
+                d="m940 596-76-57.6c.8-8 1.6-16.8 1.6-26.4s-.8-18.4-1.6-26.4l76-57.6c20.8-16 26.4-44 12.8-68L868 216.8c-9.6-16.8-28-27.2-47.2-27.2-6.4 0-12 .8-18.4 3.2L712 228c-15.2-10.4-31.2-19.2-47.2-26.4l-13.6-92c-4-26.4-26.4-45.6-53.6-45.6H426.4c-27.2 0-49.6 19.2-53.6 44.8L360 201.6c-16 7.2-31.2 16-47.2 26.4l-90.4-35.2c-6.4-2.4-12.8-3.2-19.2-3.2-19.2 0-37.6 9.6-46.4 26.4L71.2 360c-13.6 22.4-8 52 12.8 68l76 57.6c-.8 9.6-1.6 18.4-1.6 26.4s0 16.8 1.6 26.4L84 596c-20.8 16-26.4 44-12.8 68L156 807.2c9.6 16.8 28 27.2 47.2 27.2 6.4 0 12-.8 18.4-3.2L312 796c15.2 10.4 31.2 19.2 47.2 26.4l13.6 92C376 940 399.2 960 426.4 960h171.2c27.2 0 49.6-19.2 53.6-44.8l13.6-92.8c16-7.2 31.2-16 47.2-26.4l90.4 35.2c6.4 2.4 12.8 3.2 19.2 3.2 19.2 0 37.6-9.6 46.4-26.4l85.6-144.8C966.4 640 960.8 612 940 596m-236-84c0 105.6-86.4 192-192 192s-192-86.4-192-192 86.4-192 192-192 192 86.4 192 192"
+            />
+          </svg>
+        </DecoratedButton>
+        <div class="header-text">
+          <span style="font-size: small;">欢迎您&ensp;</span><b>{{userName}}</b>
+          <span style="font-size: small;">&ensp;现在是&ensp;</span>
+          <b style="font-size: small;" v-html="formattedDateTime"/>
+        </div>
+      </div>
     </header>
     <div class="panel-body">
       <RouterView v-slot="{ Component }">
@@ -76,8 +120,17 @@
   top: 0;
   width: 100vw;
   height: 3.25rem;
-  pointer-events: none;
   animation: 1.25s ease-out 0s header-slide;
+}
+.header-text {
+  font-size: medium;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #FFFFFF 0%, #C2E7FF 71%, #95D5FF 87%, #8DD2FF 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 .panel-title {
   display: inline-block;
@@ -106,7 +159,8 @@
   top: 0;
   height: 2.2rem;
   background: linear-gradient(to bottom, transparent, rgba(42, 167, 250, 0.2));
-  width: 100%;
+  display: flex;
+  gap: 0.5em;
   &.left-part {
     left: 0;
     width: calc(50vw - 19rem);
@@ -122,6 +176,7 @@
   &.right-part {
     right: 0;
     width: calc(50vw - 19rem);
+    flex-direction: row-reverse;
     clip-path: polygon(
             100% 0,
             2.2rem 0,
