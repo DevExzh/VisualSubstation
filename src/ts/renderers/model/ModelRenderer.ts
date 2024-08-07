@@ -1,13 +1,14 @@
-import {CanvasSize,} from "../../common/Types.ts";
+import {CameraViewType, CanvasSize,} from "../../common/Types.ts";
 import {ModelLoader, ModelObjectLoadEvent} from "../../../../../bounding-box/src/ModelLoader.ts";
 import {EdgeHighlighter} from "../../effects/EdgeHighlighter.ts";
 import {TextureLoader} from "../../loaders/TextureLoader.ts";
 import {
+    CameraViewTypeChangeEvent,
     LoadEvent,
     LoadState, ObjectSelectionEvent, SceneObjectBoundingBoxEvent,
 } from "../../events/SceneEvents.ts";
 import {CanvasRenderer} from "../CanvasRenderer.ts";
-import {CameraControls, CameraViewType, CameraViewTypeChangeEvent} from "../../controllers/CameraControls.ts";
+import {CameraControls} from "../../controllers/CameraControls.ts";
 import {Tween} from "@tweenjs/tween.js";
 import {
     acceleratedRaycast,
@@ -28,7 +29,7 @@ import {
     Color,
     Vector3,
     RepeatWrapping,
-    CircleGeometry, MeshStandardMaterial
+    CircleGeometry, MeshStandardMaterial, Object3D
 } from "three";
 // @ts-ignore
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
@@ -96,6 +97,7 @@ export class ModelRenderer extends CanvasRenderer {
             this.messageBox({
                 message: `已切换到 ${typeName} 视角`
             });
+            this.dispatchEvent(new CameraViewTypeChangeEvent((evt as CameraViewTypeChangeEvent).viewType));
         });
         this._controls.player = this._player;
         this._controls.maxDistance = 256;
@@ -104,7 +106,7 @@ export class ModelRenderer extends CanvasRenderer {
         this._modelLoader = new ModelLoader(this._context, shadows, shadows);
         this._modelLoader.addEventListener('model-object-loaded', async (evt: Event) => {
             const event = evt as ModelObjectLoadEvent;
-            const name = event.name, object = event.object;
+            const name = event.name, object = event.object as unknown as Object3D;
             if(this._modelLoader.exclusions.includes(name)) {
                 this._exclusions.push(object.uuid);
                 if(!!object.traverse) {
@@ -115,12 +117,12 @@ export class ModelRenderer extends CanvasRenderer {
                     });
                 }
             }
-            const boundingBox: Box3 = new Box3().setFromObject(event.object, true);
+            const boundingBox: Box3 = new Box3().setFromObject(object, true);
             this.dispatchEvent(new SceneObjectBoundingBoxEvent({
                 min: [boundingBox.min.x, boundingBox.min.y, boundingBox.min.z],
                 max: [boundingBox.max.x, boundingBox.max.y, boundingBox.max.z],
-                name: event.object.name,
-                uuid: event.object.uuid,
+                name: object.name,
+                uuid: object.uuid,
                 userData: Object.assign(event.object.userData, {
                     fileName: name
                 }),
@@ -152,6 +154,14 @@ export class ModelRenderer extends CanvasRenderer {
         const canvasSize = await super.resizeEvent(size);
         this._clickHighlighter.onResize(canvasSize);
         return canvasSize;
+    }
+
+    public toggleCameraViewType(): void {
+        this._controls.toggleCamera();
+    }
+
+    public currentCameraViewType(): CameraViewType {
+        return this._controls.cameraViewType;
     }
 
     /**
@@ -232,7 +242,6 @@ export class ModelRenderer extends CanvasRenderer {
     }
 
     public override [Symbol.dispose] (): void {
-        this._modelLoader[Symbol.dispose]();
         super[Symbol.dispose]();
     }
 }

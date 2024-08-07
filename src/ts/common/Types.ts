@@ -122,3 +122,13 @@ export function mergeOptions<T>(options: T, patch?: Partial<T>): T {
 }
 
 export type DateRange = number | string | Date | [Date, Date] | [string, string] | [];
+
+/**
+ * 相机视角类型
+ * @enum
+ */
+export enum CameraViewType {
+    FirstPerson = 0,
+    ThirdPerson = 1,
+    Spectator = 2,
+}

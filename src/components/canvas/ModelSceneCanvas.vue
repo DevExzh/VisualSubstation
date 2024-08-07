@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import {ModelScene} from "../../ts/renderers/model/ModelScene.ts";
-import {ObjectSelectionEvent} from "../../ts/events/SceneEvents.ts";
+import {CameraViewTypeChangeEvent, ObjectSelectionEvent} from "../../ts/events/SceneEvents.ts";
 import {OverlayRenderer} from "../../ts/renderers/overlay/OverlayRenderer.ts";
 import DeviceInfoOverlay from "../overlay/DeviceInfoOverlay.vue";
+import {CameraViewType} from "../../ts/common/Types.ts";
 // import {SoundEffects} from "../../ts/effects/SoundEffects.ts";
 // import {EventManager} from "../../ts/events/EventManager.ts";
 
@@ -14,6 +15,7 @@ const properties = defineProps<{
 // 定义事件信号
 const emits = defineEmits<{
   load: [],
+  cameraViewType: [CameraViewType],
 }>();
 
 // 用来绘制元素的画布
@@ -26,7 +28,16 @@ let scene: ModelScene;
 let overlay: OverlayRenderer;
 // let soundEffects: SoundEffects;
 // let eventManager: EventManager;
-
+defineExpose({
+  useCall: (): (((
+      functionName: string,
+      isAsync: boolean,
+      expectResult: boolean,
+      ...parameters: any[]
+  ) => Promise<any>) | undefined) => {
+    return scene?.call.bind(scene);
+  }
+});
 // 在当前组件被挂载时，开始渲染
 onMounted(() => {
   scene = new ModelScene(
@@ -66,6 +77,9 @@ onMounted(() => {
   scene.addEventListener('load', (_: Event) => {
     emits('load');
     modelCanvas.value!.style!.opacity = '1';
+  });
+  scene.addEventListener('camera-view-type', (evt: Event) => {
+    emits('camera-view-type', (evt as CameraViewTypeChangeEvent).viewType);
   });
 
   // 加载清单中的各个模型

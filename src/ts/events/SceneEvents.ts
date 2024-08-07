@@ -1,4 +1,4 @@
-import {CameraObject, SceneObject, sceneObjectFromObject3D} from "../common/Types.ts";
+import {CameraObject, CameraViewType, SceneObject, sceneObjectFromObject3D} from "../common/Types.ts";
 import {Object3D} from "three";
 
 export class CameraChangeEvent extends Event {
@@ -79,5 +79,18 @@ export class LoadEvent extends Event {
     constructor(state: LoadState) {
         super('load');
         this.state = state;
+    }
+}
+
+/**
+ * 相机视角类型变化事件
+ * @see CameraViewType
+ */
+export class CameraViewTypeChangeEvent extends Event {
+    public readonly viewType: CameraViewType;
+
+    public constructor(viewType: CameraViewType) {
+        super('camera-view-type');
+        this.viewType = viewType;
     }
 }

@@ -7,18 +7,17 @@ const props = withDefaults(defineProps<{
   size?: string | number,
   tooltip?: string,
   tooltipPlacement?: string,
-  onClick?: () => void
 }>(), {
   type: 'circle',
   size: '2.5rem',
   tooltip: '',
   tooltipPlacement: 'bottom',
-  onClick: () => {}
 });
 const iconSize = ref<string>(pixels(props.size) + 'px');
 const iconStyle = reactive<Record<string, any>>({
   'background-size': '100% 100%'
 });
+defineEmits(['click']);
 onMounted(() => {
   switch (props.type) {
     case 'circle': {
@@ -37,7 +36,7 @@ onMounted(() => {
   <ElTooltip :disabled="$props.tooltip === ''" :content="$props.tooltip" :placement="tooltipPlacement">
     <div
         class="icon-container"
-        @click="$props.onClick"
+        @click="$emit('click')"
         :style="iconStyle"
     >
       <div class="icon"><slot/></div>

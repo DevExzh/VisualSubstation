@@ -1,7 +1,7 @@
 import {ModelRenderer} from "./ModelRenderer.ts";
 import {CanvasScene} from "../CanvasScene.ts";
 import {
-    CameraChangeEvent,
+    CameraChangeEvent, CameraViewTypeChangeEvent,
     LoadEvent, ObjectSelectionEvent,
     SceneObjectChangeEvent
 } from "../../events/SceneEvents.ts";
@@ -44,6 +44,13 @@ export class ModelScene extends CanvasScene {
                 const converted = event as ObjectSelectionEvent;
                 this.dispatchEvent(
                     new ObjectSelectionEvent(converted.selected, converted.camera, ...converted.objects)
+                );
+                return true;
+            }
+            case 'camera-view-type': {
+                const converted = event as CameraViewTypeChangeEvent;
+                this.dispatchEvent(
+                    new CameraViewTypeChangeEvent(converted.viewType)
                 );
                 return true;
             }

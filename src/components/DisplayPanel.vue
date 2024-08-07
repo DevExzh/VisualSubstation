@@ -45,17 +45,17 @@ onMounted(() => {
       <div class="header-background left-part" />
       <div class="header-background right-part">
         <DecoratedButton
-            :on-click="onExitClicked"
+            @click="onExitClicked"
             style="z-index: 8" type="hexagon" size="2rem" tooltip="退出登录">
           <svg v-once style="width: 100%; height: 100%;" viewBox="0 0 1024 1024">
             <path
-                style="fill: url(#decorated-fill)"
+                fill="url(#decorated-fill)"
                 d="M768 640V512H448V384h320V256l192 192zm-64-64v256H384v192L0 832V0h704v320h-64V64H128l256 128v576h256V576z"
             />
           </svg>
         </DecoratedButton>
         <DecoratedButton
-            :on-click="() => {isSettingsOpen = true;}"
+            @click="isSettingsOpen = true"
             style="z-index: 8" type="hexagon" size="2rem" tooltip="设置"
         >
           <teleport :to="dock.dockItemContainer" v-if="isSettingsOpen">
@@ -64,7 +64,7 @@ onMounted(() => {
           </teleport>
           <svg v-once style="width: 100%; height: 100%;" viewBox="0 0 1024 1024">
             <path
-                style="fill: url(#decorated-fill)"
+                fill="url(#decorated-fill)"
                 d="m940 596-76-57.6c.8-8 1.6-16.8 1.6-26.4s-.8-18.4-1.6-26.4l76-57.6c20.8-16 26.4-44 12.8-68L868 216.8c-9.6-16.8-28-27.2-47.2-27.2-6.4 0-12 .8-18.4 3.2L712 228c-15.2-10.4-31.2-19.2-47.2-26.4l-13.6-92c-4-26.4-26.4-45.6-53.6-45.6H426.4c-27.2 0-49.6 19.2-53.6 44.8L360 201.6c-16 7.2-31.2 16-47.2 26.4l-90.4-35.2c-6.4-2.4-12.8-3.2-19.2-3.2-19.2 0-37.6 9.6-46.4 26.4L71.2 360c-13.6 22.4-8 52 12.8 68l76 57.6c-.8 9.6-1.6 18.4-1.6 26.4s0 16.8 1.6 26.4L84 596c-20.8 16-26.4 44-12.8 68L156 807.2c9.6 16.8 28 27.2 47.2 27.2 6.4 0 12-.8 18.4-3.2L312 796c15.2 10.4 31.2 19.2 47.2 26.4l13.6 92C376 940 399.2 960 426.4 960h171.2c27.2 0 49.6-19.2 53.6-44.8l13.6-92.8c16-7.2 31.2-16 47.2-26.4l90.4 35.2c6.4 2.4 12.8 3.2 19.2 3.2 19.2 0 37.6-9.6 46.4-26.4l85.6-144.8C966.4 640 960.8 612 940 596m-236-84c0 105.6-86.4 192-192 192s-192-86.4-192-192 86.4-192 192-192 192 86.4 192 192"
             />
           </svg>

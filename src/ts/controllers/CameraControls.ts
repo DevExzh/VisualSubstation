@@ -19,6 +19,8 @@ import {
     Vector2,
     Vector3
 } from "three";
+import {CameraViewType} from "../common/Types.ts";
+import {CameraViewTypeChangeEvent} from "../events/SceneEvents.ts";
 
 // 复用需要反复修改的对象，避免每次都需要新建对象带来的开销
 const _vec1: Vector3 = new Vector3(0, 0, 0);
@@ -43,28 +45,6 @@ export interface MouseButtons {
     left: MOUSE;
     right: MOUSE;
     middle: MOUSE;
-}
-
-/**
- * 相机视角类型
- * @enum
- */
-export enum CameraViewType {
-    FirstPerson = 0,
-    ThirdPerson = 1,
-    Spectator = 2,
-}
-
-/**
- * 相机视角类型变化事件
- * @see CameraViewType
- */
-export class CameraViewTypeChangeEvent extends Event {
-    public readonly viewType: CameraViewType;
-    public constructor(viewType: CameraViewType) {
-        super('camera-view-type');
-        this.viewType = viewType;
-    }
 }
 
 /**
