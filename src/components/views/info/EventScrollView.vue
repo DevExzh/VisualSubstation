@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ScrollArea from "../../widgets/ScrollArea.vue";
+import ScrollArea from "../../widgets/layout/ScrollArea.vue";
 import {onMounted, ref} from "vue";
 import Api from "../../../ts/common/Api.ts";
 import {EventInfo} from "../../../ts/common/ApiTypes.ts";

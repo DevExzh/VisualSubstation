@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, computed} from "vue";
-import {pixels} from "../../ts/common/Utils.ts";
+import {pixels} from "../../../ts/common/Utils.ts";
 import {v4} from "uuid";
 
 const props = withDefaults(defineProps<{

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 记录未匹配的项
 import {computed, ref} from "vue";
-import {DictValue} from "../../ts/store/DictStore.ts";
+import {DictValue} from "../../../ts/store/DictStore.ts";
 const mismatchArray = ref<string[]>([]);
 const props = defineProps({
   // 数据

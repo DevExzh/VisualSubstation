@@ -9,8 +9,8 @@ import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {addDateRange, parseTime} from "../../../../ts/common/Utils.ts";
 import Api from "../../../../ts/common/Api.ts";
 import {DateRange} from "../../../../ts/common/Types.ts";
-import Pagination from "../../../widgets/Pagination.vue";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
 import {Menu, RoleInfo} from "../../../../ts/common/ApiTypes.ts";
 
 const { sys_normal_disable } = useDict("sys_normal_disable");

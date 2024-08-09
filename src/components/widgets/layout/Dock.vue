@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {onBeforeUnmount, onMounted, provide, ref} from "vue";
-import DockItem from "../widgets/DockItem.vue";
-import {iconSizeKey, offsetKey, scaleFactorKey} from "../../ts/widgets/Dock.ts";
-import {useDockStore, DockSettings} from "../../ts/store/DockStore.ts";
+import DockItem from "./DockItem.vue";
+import {iconSizeKey, offsetKey, scaleFactorKey} from "../../../ts/widgets/Dock.ts";
+import {useDockStore, DockSettings} from "../../../ts/store/DockStore.ts";
 
 const props = withDefaults(defineProps<DockSettings>(), {
   autoHide: false,

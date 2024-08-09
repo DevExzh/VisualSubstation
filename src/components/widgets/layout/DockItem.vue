@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {inject, onMounted, ref} from "vue";
-import {iconSizeKey, offsetKey, scaleFactorKey} from "../../ts/widgets/Dock.ts";
+import {iconSizeKey, offsetKey, scaleFactorKey} from "../../../ts/widgets/Dock.ts";
 import Widget from "./Widget.vue";
-import {WindowState} from "../../ts/widgets/Widget.ts";
-import useDockStore from "../../ts/store/DockStore.ts";
-import {pixels} from "../../ts/common/Utils.ts";
+import {WindowState} from "../../../ts/widgets/Widget.ts";
+import useDockStore from "../../../ts/store/DockStore.ts";
+import {pixels} from "../../../ts/common/Utils.ts";
 
 withDefaults(defineProps<{
   name: string;

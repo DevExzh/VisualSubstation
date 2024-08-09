@@ -2,10 +2,10 @@
 import {onBeforeMount, ref, watch} from "vue";
 import {ElForm, ElFormItem, ElInput, ElButton, ElIcon, ElCheckbox, ElLink} from 'element-plus';
 import {User, Lock} from '@element-plus/icons-vue';
-import Background from "./misc/LoginBackground.vue";
+import Background from "../misc/LoginBackground.vue";
 import {LocationQuery, LocationQueryValue, useRoute, useRouter} from "vue-router";
-import useUserStore from "../ts/store/UserStore.ts";
-import Api from "../ts/common/Api.ts";
+import useUserStore from "../../ts/store/UserStore.ts";
+import Api from "../../ts/common/Api.ts";
 import Cookies from "js-cookie";
 const userStore = useUserStore();
 const route = useRoute();

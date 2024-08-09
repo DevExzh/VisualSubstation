@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
-import Login from "./components/Login.vue";
+import Login from "./components/pages/Login.vue";
 import Cookies from "js-cookie";
 import {tokenKey} from "./ts/common/Request.ts";
 import Auth from "./ts/common/Auth.ts";
@@ -13,7 +13,7 @@ const router = createRouter({
         {
             path: '/view',
             name: 'panel-view',
-            component: () => import('./components/DisplayPanel.vue'),
+            component: () => import('./components/pages/DisplayPanel.vue'),
             children: [
                 {
                     path: 'map',
@@ -57,7 +57,7 @@ const router = createRouter({
                 title: '页面不存在',
                 requiresAuth: false,
             },
-            component: () => import('./components/NotFound.vue')
+            component: () => import('./components/pages/NotFound.vue')
         }
     ],
     scrollBehavior(_: any, __: any, savedPosition: any) {

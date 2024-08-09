@@ -2,7 +2,7 @@
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import {computed, onMounted, ref, toRaw, watch} from "vue";
-import {baseURL, tokenKey} from "../../ts/common/Request.ts";
+import {baseURL, tokenKey} from "../../../ts/common/Request.ts";
 import Cookies from "js-cookie";
 import {ElMessage, UploadFile, UploadRawFile} from "element-plus";
 

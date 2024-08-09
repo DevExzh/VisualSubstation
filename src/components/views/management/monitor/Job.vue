@@ -6,13 +6,13 @@ import {
   Delete, Download, Operation, Edit, CaretRight, View
 } from "@element-plus/icons-vue";
 import Api from "../../../../ts/common/Api.ts";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
-import DictTag from "../../../widgets/DictTag.vue";
-import Pagination from "../../../widgets/Pagination.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
+import DictTag from "../../../widgets/form/DictTag.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
 import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {parseTime, selectDictLabel} from "../../../../ts/common/Utils.ts";
 import {JobInfo} from "../../../../ts/common/ApiTypes.ts";
-import CronTab from "../../../widgets/CronTab.vue";
+import CronTab from "../../../widgets/form/CronTab.vue";
 const { sys_job_group, sys_job_status } = useDict("sys_job_group", "sys_job_status");
 const jobList = ref<JobInfo[]>([]);
 const open = ref<boolean>(false);

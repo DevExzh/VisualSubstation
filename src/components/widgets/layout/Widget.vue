@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import interact from 'interactjs';
 import {onBeforeUnmount, onMounted, provide, ref} from "vue";
-import {useWidgetStore, widgetKey, WidgetState, WindowState} from "../../ts/widgets/Widget.ts";
-import {pixels} from "../../ts/common/Utils.ts";
+import {useWidgetStore, widgetKey, WidgetState, WindowState} from "../../../ts/widgets/Widget.ts";
+import {pixels} from "../../../ts/common/Utils.ts";
 const windowContainer = ref<HTMLElement>();
 const clientArea = ref<HTMLElement>();
 const props = withDefaults(
@@ -453,13 +453,5 @@ defineExpose({
   width: 100%;
   height: 100%;
   overflow: scroll;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease-in;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

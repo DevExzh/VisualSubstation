@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ElPagination} from "element-plus";
 import {computed} from "vue";
-import {scrollTo} from "../../ts/common/Utils.ts";
+import {scrollTo} from "../../../ts/common/Utils.ts";
 
 const props = defineProps({
   total: {

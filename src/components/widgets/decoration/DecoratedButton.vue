@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
-import {pixels} from "../../ts/common/Utils.ts";
+import {pixels} from "../../../ts/common/Utils.ts";
 const props = withDefaults(defineProps<{
   // 按钮样式
   type?: 'circle' | 'hexagon',

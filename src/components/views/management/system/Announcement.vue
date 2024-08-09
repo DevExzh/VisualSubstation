@@ -6,10 +6,10 @@ import { Search, Refresh, Plus, Edit, Delete } from "@element-plus/icons-vue";
 import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {parseTime} from "../../../../ts/common/Utils.ts";
 import Api from "../../../../ts/common/Api.ts";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
-import DictTag from "../../../widgets/DictTag.vue";
-import Pagination from "../../../widgets/Pagination.vue";
-import Editor from "../../../widgets/Editor.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
+import DictTag from "../../../widgets/form/DictTag.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
+import Editor from "../../../widgets/dialog/Editor.vue";
 
 const { sys_notice_status, sys_notice_type } = useDict("sys_notice_status", "sys_notice_type");
 

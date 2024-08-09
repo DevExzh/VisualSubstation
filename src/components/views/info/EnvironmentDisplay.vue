@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProgressBar from "../../widgets/ProgressBar.vue";
+import ProgressBar from "../../widgets/form/ProgressBar.vue";
 
 const titles = ['温度', '风速', '湿度'];
 const formatter = [

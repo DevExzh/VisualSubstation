@@ -12,10 +12,10 @@ import {baseURL, tokenKey} from "../../../../ts/common/Request.ts";
 import Cookies from "js-cookie";
 import Api from "../../../../ts/common/Api.ts";
 import {addDateRange, parseTime} from "../../../../ts/common/Utils.ts";
-import Pagination from "../../../widgets/Pagination.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
 import {DateRange} from "../../../../ts/common/Types.ts";
 import {Menu, PostInfo, RoleInfo, UserInfo} from "../../../../ts/common/ApiTypes.ts";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
 
 const {sys_normal_disable, sys_user_sex} = useDict("sys_normal_disable", "sys_user_sex");
 

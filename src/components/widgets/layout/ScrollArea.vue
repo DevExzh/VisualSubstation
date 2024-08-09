@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // GitHub 上已有项目 vue-seamless-scroll 的代码风格实在太糟糕，而且还没有类型注解，故重构了整个组件
-import {ScrollDirection} from "../../ts/widgets/ScrollArea.ts";
+import {ScrollDirection} from "../../../ts/widgets/ScrollArea.ts";
 import {reactive, ref, onMounted} from "vue";
 const scrollArea = ref<HTMLDivElement>();
 const props = withDefaults(

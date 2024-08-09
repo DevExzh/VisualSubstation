@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import Api from "../../../../ts/common/Api.ts";
-import Pagination from "../../../widgets/Pagination.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
 import {parseTime} from "../../../../ts/common/Utils.ts";
 import {ElForm, ElMessage, ElMessageBox} from "element-plus";
 import {UserOnline} from "../../../../ts/common/ApiTypes.ts";

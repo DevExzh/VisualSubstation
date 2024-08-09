@@ -5,9 +5,9 @@ import { Search, Refresh, Plus, Edit, Delete, Download } from "@element-plus/ico
 import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import Api from "../../../../ts/common/Api.ts";
 import {parseTime} from "../../../../ts/common/Utils.ts";
-import DictTag from "../../../widgets/DictTag.vue";
-import Pagination from "../../../widgets/Pagination.vue";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
+import DictTag from "../../../widgets/form/DictTag.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
 import {PostInfo} from "../../../../ts/common/ApiTypes.ts";
 
 const { sys_normal_disable } = useDict("sys_normal_disable");

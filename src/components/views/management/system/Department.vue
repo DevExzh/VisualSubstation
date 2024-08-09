@@ -6,10 +6,10 @@ import { onMounted, reactive, ref, toRefs, nextTick } from "vue";
 import { Search, Refresh, Plus, Edit, Delete, Sort as SortIcon } from "@element-plus/icons-vue";
 import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import Api from "../../../../ts/common/Api.ts";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
 import {DepartmentInfo} from "../../../../ts/common/ApiTypes.ts";
 import {parseTime} from "../../../../ts/common/Utils.ts";
-import DictTag from "../../../widgets/DictTag.vue";
+import DictTag from "../../../widgets/form/DictTag.vue";
 
 const { sys_normal_disable } = useDict("sys_normal_disable");
 

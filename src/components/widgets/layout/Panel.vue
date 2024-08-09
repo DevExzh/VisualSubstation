@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, reactive, watch, onMounted} from "vue";
-import {pixels} from "../../ts/common/Utils.ts";
-import usePanelStore from "../../ts/store/PanelStore.ts";
+import {pixels} from "../../../ts/common/Utils.ts";
+import usePanelStore from "../../../ts/store/PanelStore.ts";
 const props = withDefaults(defineProps<{
   side: 'left' | 'right',
   // 离停靠边的距离

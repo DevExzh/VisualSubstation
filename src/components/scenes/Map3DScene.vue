@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import MapSceneCanvas from "../canvas/MapSceneCanvas.vue";
 import SceneTutorial from "../misc/SceneTutorial.vue";
-import DockItem from "../widgets/DockItem.vue";
-import Dock from "../widgets/Dock.vue";
+import DockItem from "../widgets/layout/DockItem.vue";
+import Dock from "../widgets/layout/Dock.vue";
 import MonitorPanel from "../views/management/monitor/MonitorPanel.vue";
 import SystemPanel from "../views/management/system/SystemPanel.vue";
-import DecoratedContainer from "../widgets/DecoratedContainer.vue";
+import DecoratedContainer from "../widgets/decoration/DecoratedContainer.vue";
 import {onMounted, ref} from "vue";
 import PowerGridInfo from "../views/info/PowerGridInfo.vue";
 import LoadDashboard from "../views/info/LoadDashboard.vue";
@@ -13,8 +13,8 @@ import {FeatureProperties} from "../../ts/map/GeoJson.ts";
 import SensorCountTimeline from "../views/info/SensorCountTimeline.vue";
 import EnvironmentDisplay from "../views/info/EnvironmentDisplay.vue";
 import SubstationInfo from "../views/info/SubstationInfo.vue";
-import Panel from "../widgets/Panel.vue";
-import DecoratedButton from "../widgets/DecoratedButton.vue";
+import Panel from "../widgets/layout/Panel.vue";
+import DecoratedButton from "../widgets/decoration/DecoratedButton.vue";
 
 const shouldDisplayPanel = ref<boolean>(false);
 const onRegionClicked = (_: FeatureProperties | undefined, cancel: boolean) => {
@@ -162,6 +162,6 @@ onMounted(() => {
 }
 
 .decorated-path {
-  box-shadow: 0 0 20px 0 rgba(0,133,255,0.50);
+  box-shadow: 0 0 20px 0 rgba(0, 133, 255, 0.50);
 }
 </style>

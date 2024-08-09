@@ -6,9 +6,9 @@ import {DictValue, useDict} from "../../../../ts/store/DictStore.ts";
 import {addDateRange, parseTime, selectDictLabel} from "../../../../ts/common/Utils.ts";
 import {DateRange} from "../../../../ts/common/Types.ts";
 import {OperationLogInfo} from "../../../../ts/common/ApiTypes.ts";
-import Pagination from "../../../widgets/Pagination.vue";
-import RightToolBar from "../../../widgets/RightToolBar.vue";
-import DictTag from "../../../widgets/DictTag.vue";
+import Pagination from "../../../widgets/layout/Pagination.vue";
+import RightToolBar from "../../../widgets/form/RightToolBar.vue";
+import DictTag from "../../../widgets/form/DictTag.vue";
 import {Search, Refresh, View, Delete, Download} from "@element-plus/icons-vue";
 
 const { sys_oper_type, sys_common_status } = useDict("sys_oper_type","sys_common_status");

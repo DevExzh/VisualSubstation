@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import DecoratedButton from "./widgets/DecoratedButton.vue";
+import DecoratedButton from "../widgets/decoration/DecoratedButton.vue";
 import {onMounted, ref} from "vue";
-import useUserStore from "../ts/store/UserStore.ts";
+import useUserStore from "../../ts/store/UserStore.ts";
 import {ElMessage, ElMessageBox} from "element-plus";
-import Api from "../ts/common/Api.ts";
-import router from "../routes.ts";
-import useDockStore from "../ts/store/DockStore.ts";
-import DockItem from "./widgets/DockItem.vue";
+import Api from "../../ts/common/Api.ts";
+import router from "../../routes.ts";
+import useDockStore from "../../ts/store/DockStore.ts";
+import DockItem from "../widgets/layout/DockItem.vue";
 const formattedDateTime = ref<string>('');
 const userName = ref<string>('');
 const onExitClicked = () => {
