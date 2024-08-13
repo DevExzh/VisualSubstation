@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <EnvironmentDisplay :width="100"/>
+    <EnvironmentDisplay class="display" :location="$props.location"/>
   </div>
 </template>
 
@@ -27,6 +27,9 @@ import { ref, onMounted } from 'vue';
 import HTTPService from "../../../ts/common/Request.ts";
 import {EnvironmentInfo, EnvironmentInfoResponse} from "../../../ts/common/ApiTypes.ts";
 import EnvironmentDisplay from "./EnvironmentDisplay.vue";
+defineProps<{
+  location: string;
+}>();
 const result = ref<EnvironmentInfo>();
 onMounted(() => {
   HTTPService.get("/api/sensor/eim", {max_count: 10}).then((response: EnvironmentInfoResponse) => {
@@ -41,19 +44,28 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  display: flex;
-  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 .dashboard {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column; /* 垂直排列 */
   justify-content: center; /* 横向排列 */
   align-items: center; /* 纵向居中 */
-  width: 100%; /* 适应父容器 */
   height: 100%;
-  padding: 0;
+  margin-left: 0.5em;
+  flex-basis: 9em;
 }
-
+.display {
+  position: absolute;
+  top: 0.25em;
+  right: 0;
+  height: calc(100% - 0.5em);
+}
 .info-box {
   background: linear-gradient(to bottom, rgba(5, 27, 38, .8), rgba(0, 65, 97, .8));
   border-radius: 0.25em;

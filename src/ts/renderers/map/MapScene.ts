@@ -2,7 +2,7 @@ import {CanvasScene} from "../CanvasScene.ts";
 import {CanvasRenderer} from "../CanvasRenderer.ts";
 import {MapRenderer} from "./MapRenderer.ts";
 import {EventObject} from "../../events/AnyEvent.ts";
-import {RegionClickEvent} from "../../events/MapEvents.ts";
+import {RegionClickEvent, SpriteCreationEvent, SpriteDeleteEvent} from "../../events/MapEvents.ts";
 
 export class MapScene extends CanvasScene {
     constructor(canvas: HTMLCanvasElement) {
@@ -28,6 +28,15 @@ export class MapScene extends CanvasScene {
             case 'region-click': {
                 const converted = event as RegionClickEvent;
                 this.dispatchEvent(new RegionClickEvent(converted.region, converted.isCancelled));
+                return true;
+            }
+            case 'sprite-create': {
+                const converted = event as SpriteCreationEvent;
+                this.dispatchEvent(new SpriteCreationEvent(converted.position, converted.userData));
+                return true;
+            }
+            case 'sprite-delete': {
+                this.dispatchEvent(new SpriteDeleteEvent());
                 return true;
             }
             default: return false;

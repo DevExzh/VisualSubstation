@@ -94,6 +94,17 @@ export class OverlayRenderer extends CanvasRenderer {
         return undefined;
     }
 
+    private renderAsSprite(node: VNode): CSS3DObject {
+        const container: HTMLDivElement = document.createElement('div');
+        render(node, container);
+        const obj: CSS3DObject = new CSS3DSprite(container);
+        obj.scale.multiplyScalar(this.scaleFactor);
+        this._context.scene.add(obj);
+        this._objects.push(obj);
+        this._containers.push(container);
+        return obj;
+    }
+
     /**
      * 将一个 HTML 元素吸附到场景中的某个物体上
      * @param element 需要添加的 Vue 组件
@@ -104,32 +115,43 @@ export class OverlayRenderer extends CanvasRenderer {
         if(uuid !== undefined && !(uuid in this._boxes)) {
             throw new Error(`Object with uuid ${uuid} is not registered`);
         }
-        const container: HTMLDivElement = document.createElement('div');
-        container.style.pointerEvents = 'none';
         const node: VNode = createVNode(OverlayDecorator, {}, [
             createVNode(element, props)
         ]);
-        render(node, container);
-        const obj: CSS3DObject = new CSS3DSprite(container);
-        obj.scale.multiplyScalar(this.scaleFactor);
+        const obj = this.renderAsSprite(node);
         if(uuid) {
             const box: InvisibleBox = this._boxes[uuid];
             box.boundingBox.getCenter(_vector);
             _vector.y = box.boundingBox.max.y + 0.25;
             obj.position.copy(_vector);
         }
-        this._context.scene.add(obj);
-        this._objects.push(obj);
-        this._containers.push(container);
+        this._context.renderer.render(this._context.scene, this._context.camera);
+        return obj;
+    }
+
+    /**
+     * 在指定位置上创建浮空 HTML 元素
+     * @param position 指定的位置
+     * @param element 需要添加的 Vue 组件
+     * @param props 待添加的 Vue 组件的属性
+     * @param children 子组件
+     */
+    public addComponentToPosition(
+        position: [number, number, number],
+        element: Component,
+        props?: Record<string, any> & VNodeProps,
+        children?: any
+    ): CSS3DObject {
+        const obj = this.renderAsSprite(createVNode(element, props, children));
+        obj.position.set(...position);
         this._context.renderer.render(this._context.scene, this._context.camera);
         return obj;
     }
 
     public clearAll(): void {
-        for(const obj of this._objects) {
-            this._context.scene.remove(obj);
-        }
+        this._context.scene.remove(...this._objects);
         this._containers.length = this._objects.length = 0;
+        this.render();
     }
 
     [Symbol.dispose](): void {

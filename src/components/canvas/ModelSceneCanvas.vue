@@ -79,7 +79,7 @@ onMounted(() => {
     modelCanvas.value!.style!.opacity = '1';
   });
   scene.addEventListener('camera-view-type', (evt: Event) => {
-    emits('camera-view-type', (evt as CameraViewTypeChangeEvent).viewType);
+    emits('cameraViewType', (evt as CameraViewTypeChangeEvent).viewType);
   });
 
   // 加载清单中的各个模型

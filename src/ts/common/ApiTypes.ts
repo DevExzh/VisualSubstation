@@ -474,3 +474,108 @@ export interface PowerGridLoadInfo {
 export interface PowerGridLoadInfoResponse extends Response {
     data: PowerGridLoadInfo;
 }
+
+export interface WeatherNowResponse extends Response {
+    data: WeatherNow;
+}
+
+export interface WeatherNow {
+    code: string;
+    fxLink: string;
+    now: {
+        cloud: string;
+        dew: string;
+        feelsLike: string;
+        humidity: string;
+        icon: string;
+        obsTime: string;
+        precip: string;
+        pressure: string;
+        temp: string;
+        text: string;
+        vis: string;
+        wind360: string;
+        windDir: string;
+        windScale: string;
+        windSpeed: string;
+    };
+    refer: Refer;
+    updateTime: string;
+}
+
+export interface WeatherMinute {
+    code: string;
+    fxLink: string;
+    minutely: {
+        fxTime: string;
+        precip: string;
+        type: string;
+    }[];
+    refer: Refer;
+    summary: string;
+    updateTime: string;
+}
+
+export interface WeatherHour {
+    code: string;
+    fxLink: string;
+    hourly: {
+        cloud: string;
+        dew: string;
+        fxTime: string;
+        humidity: string;
+        icon: string;
+        pop: string;
+        precip: string;
+        pressure: string;
+        temp: string;
+        text: string;
+        wind360: string;
+        windDir: string;
+        windScale: string;
+        windSpeed: string;
+    }[];
+    refer: Refer;
+    updateTime: string;
+}
+
+export interface WeatherDaily {
+    code: string;
+    daily: {
+        cloud: string;
+        fxDate: string;
+        humidity: string;
+        iconDay: string;
+        iconNight: string;
+        moonPhase: string;
+        moonPhaseIcon: string;
+        moonrise: string;
+        moonset: string;
+        precip: string;
+        pressure: string;
+        sunrise: string;
+        sunset: string;
+        tempMax: string;
+        tempMin: string;
+        textDay: string;
+        textNight: string;
+        uvIndex: string;
+        vis: string;
+        wind360Day: string;
+        wind360Night: string;
+        windDirDay: string;
+        windDirNight: string;
+        windScaleDay: string;
+        windScaleNight: string;
+        windSpeedDay: string;
+        windSpeedNight: string;
+    }[];
+    fxLink: string;
+    refer: Refer;
+    updateTime: string;
+}
+
+export interface Refer {
+    sources: string[];
+    license: string[];
+}

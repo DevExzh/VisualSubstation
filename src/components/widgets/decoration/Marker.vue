@@ -18,12 +18,26 @@ withDefaults(
 </script>
 
 <template>
-  <Hexagon v-if="$props.type === 'hexagon'" :height="$props.height" :themeColor="$props.themeColor" />
-  <Circle v-else-if="$props.type === 'circle'" :height="$props.height" :themeColor="$props.themeColor" />
-  <Circle3D v-else-if="$props.type === '3d-circle'" :height="$props.height" :themeColor="$props.themeColor" />
-  <Triangle v-else-if="$props.type === 'triangle'" :height="$props.height" :themeColor="$props.themeColor" />
-  <Shield v-else-if="$props.type === 'shield'" :height="$props.height" :themeColor="$props.themeColor" />
-  <Square v-else :height="$props.height" :themeColor="$props.themeColor" />
+  <transition name="fade" appear>
+    <Hexagon v-if="$props.type === 'hexagon'" :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Hexagon>
+    <Circle v-else-if="$props.type === 'circle'" :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Circle>
+    <Circle3D v-else-if="$props.type === '3d-circle'" :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Circle3D>
+    <Triangle v-else-if="$props.type === 'triangle'" :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Triangle>
+    <Shield v-else-if="$props.type === 'shield'" :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Shield>
+    <Square v-else :height="$props.height" :themeColor="$props.themeColor">
+      <slot :themeColor="$props.themeColor"/>
+    </Square>
+  </transition>
 </template>
 
 <style scoped>

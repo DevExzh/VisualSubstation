@@ -121,10 +121,8 @@ const option = ref({
       axisLabel: {
         show: true,
         distance: -4,
-        textStyle: {
-          color:'rgba(63, 250, 250, 0.8)',
-          fontWeight: 'bold'
-        }
+        color: 'rgba(63, 250, 250, 0.8)',
+        fontWeight: 'bold',
       },
     },
     //从外数第三条线

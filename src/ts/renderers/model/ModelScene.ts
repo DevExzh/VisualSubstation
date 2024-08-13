@@ -1,7 +1,7 @@
 import {ModelRenderer} from "./ModelRenderer.ts";
 import {CanvasScene} from "../CanvasScene.ts";
 import {
-    CameraChangeEvent, CameraViewTypeChangeEvent,
+    CameraViewTypeChangeEvent,
     LoadEvent, ObjectSelectionEvent,
     SceneObjectChangeEvent
 } from "../../events/SceneEvents.ts";
@@ -27,12 +27,6 @@ export class ModelScene extends CanvasScene {
             case 'scene-object-change': {
                 const converted = event as SceneObjectChangeEvent;
                 this.dispatchEvent(new SceneObjectChangeEvent(converted.eventType, ...converted.objects));
-                return true;
-            }
-            // 相机位置/视角发生变化，对于协调多个组件共同渲染非常重要
-            case 'camera-change': {
-                const converted = event as CameraChangeEvent;
-                this.dispatchEvent(new CameraChangeEvent(converted.camera));
                 return true;
             }
             case 'load': {

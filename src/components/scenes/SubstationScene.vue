@@ -18,7 +18,8 @@ import {CameraViewType} from "../../ts/common/Types.ts";
 
 // 属性
 withDefaults(defineProps<{
-  sky?: boolean
+  sky?: boolean,
+  location: string,
 }>(), {
   sky: true
 });
@@ -33,11 +34,11 @@ let callFunc: ((
     isAsync: boolean,
     expectResult: boolean,
     ...parameters: any[]
-) => Promise<any>);
+) => Promise<any>) | undefined;
 const toggleCameraViewType = () => {
   if(!loadCompleted.value || !modelScene.value) return;
   if(!callFunc) callFunc = modelScene.value!.useCall();
-  callFunc('toggleCameraViewType', false, false);
+  callFunc?.('toggleCameraViewType', false, false);
 };
 const onCameraViewTypeChange = (type: CameraViewType) => {
   cameraViewType.value = type;
@@ -130,15 +131,15 @@ onMounted(() => {
         class="stylized-container"
         title="环境信息"
         client-height="12rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
-      <EnvironmentDashBoard/>
+      <EnvironmentDashBoard :location="$props.location"/>
     </DecoratedContainer>
     <DecoratedContainer
         class="stylized-container"
         title="巡视统计信息"
         client-height="13rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
       <template #header-corner>
         <ElButtonGroup class="corner-container" size="small">
@@ -152,7 +153,7 @@ onMounted(() => {
         class="stylized-container"
         title="实时感知"
         client-height="13rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
       <EventScrollView/>
     </DecoratedContainer>
@@ -163,14 +164,14 @@ onMounted(() => {
         class="stylized-container"
         title="设备规模"
         client-height="9rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
     </DecoratedContainer>
     <DecoratedContainer
         class="stylized-container"
         title="传感器规模"
         client-height="14rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
       <SensorInfoDashBoard/>
     </DecoratedContainer>
@@ -178,7 +179,7 @@ onMounted(() => {
         class="stylized-container"
         title="负荷电流变化"
         client-height="13rem"
-        client-width="24rem"
+        client-width="24.5rem"
     >
       <CurrentChangeLineChart />
     </DecoratedContainer>

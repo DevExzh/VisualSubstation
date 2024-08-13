@@ -9,3 +9,19 @@ export class RegionClickEvent extends Event {
         this.isCancelled = isCancelled;
     }
 }
+
+export class SpriteCreationEvent extends Event {
+    public readonly position: [number, number, number];
+    public readonly userData?: Record<string, any>;
+    public constructor(position: [number, number, number], userData?: Record<string, any>) {
+        super('sprite-create');
+        this.position = position;
+        this.userData = userData;
+    }
+}
+
+export class SpriteDeleteEvent extends Event {
+    public constructor() {
+        super('sprite-delete');
+    }
+}

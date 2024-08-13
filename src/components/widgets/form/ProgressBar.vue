@@ -1,89 +1,93 @@
-<template>
-  <div class="progress-bar">
-    <div class="progress-bar-inner">
-      <div class="progress-bar-bg" :style="{ width: `${percent}%`, background: gradient, height: `${strokeWidth}px` }"></div>
-      <span v-if="showInfo" class="progress-bar-text">{{ format ? format(percent) : `${percent}%` }}</span>
-    </div>
-    <div class="progress-bar-title">{{ title }}</div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue';
+import tinycolor from "tinycolor2";
 
-const props = withDefaults(defineProps<{
-  width?: string | number;
-  percent?: number;
-  strokeWidth?: number;
-  strokeColor?: string;
-  showInfo?: boolean;
-  format?: (percent: number) => string;
+withDefaults(defineProps<{
+  height?: number | string;
+  color?: string;
   title?: string;
+  formatter?: (value: number) => string;
+  showText?: boolean;
+  min?: number;
+  max?: number;
+  value: number;
 }>(), {
-  width: 200,
-  percent: 80
-});
-
-//const width = computed(() => typeof props.width === 'number' ? `${props.width}px` : props.width || '100%');
-const percent = ref(props.percent || 0);
-const strokeWidth = props.strokeWidth || 20;
-const strokeColor = props.strokeColor || 'blue';
-const showInfo = computed((): boolean => props.showInfo);
-
-const gradient = computed(() => {
-  switch (strokeColor) {
-    case 'blue':
-      return 'linear-gradient(to right, #4facfe, #00f2fe)';
-    case 'orange':
-      return 'linear-gradient(to right, #f093fb, #f5576c)';
-    case 'green':
-      return 'linear-gradient(to right, #43e97b, #38f9d7)';
-    default:
-      return 'linear-gradient(to right, #4facfe, #00f2fe)';
-  }
+  min: 0,
+  max: 100,
+  height: '1.5em',
+  showText: true,
+  color: "#2196f3",
 });
 </script>
 
-<style lang="scss" scoped>
-.progress-bar {
-  display: inline-block;
+<template>
+  <div
+      class="inner"
+      :style="{
+        boxShadow: `0 0 1em ${tinycolor($props.color).darken(20).setAlpha(0.5).toString()}`,
+        border: `1pt solid ${tinycolor($props.color).lighten(10).toString()}`,
+        background: tinycolor($props.color).darken(35).setAlpha(0.5).toString(),
+        height: $props.height,
+      }"
+  >
+    <div class="bar" :style="{
+        width: `${$props.value / ($props.max! - $props.min!) * 100}%`,
+        background:
+          `linear-gradient(45deg, rgba(0, 0, 0, 0.1) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.1) 50%,` +
+          `rgba(0, 0, 0, 0.1) 75%, transparent 75%, transparent),` +
+          `linear-gradient(to bottom, ${$props.color}, ${tinycolor($props.color).darken(20).toString()})`,
+        height: $props.height,
+      }"/>
+    <div class="prefix" v-if="$slots.prefix">
+      <slot name="prefix"/>
+    </div>
+    <span class="text">
+      <span v-if="$props.showText && !$slots.default">
+        {{ formatter ? formatter($props.value) : $props.value }}
+      </span>
+      <slot/>
+    </span>
+  </div>
+  <div class="title" :style="{ color: tinycolor($props.color).lighten(25).toString() }">{{ $props.title }}</div>
+</template>
+
+<style scoped>
+.inner {
   position: relative;
+  border-radius: .75em;
+  overflow: hidden;
+  min-width: 3em;
+}
+.prefix {
+  position: absolute;
+  top: 0;
+  left: 0.5em;
+  width: 1em;
+  height: 100%;
+}
+.text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: medium;
+  color: white;
+}
+.title {
   text-align: center;
-  margin-top: -0.4em;
-  padding-left: 5px;
-  padding-right: 5px;
-  width: 180px;
-  .progress-bar-inner {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    background: linear-gradient(145deg, #0f3460, #162447);
-    box-shadow: 0 0 1rem rgba(0, 242, 254, 0.3);
-    border: 1px solid #5EBCF5;
-    margin: 20px;
-    width: 150px;
-
-    .progress-bar-bg {
-      height: 100%;
-      transition: width 0.3s;
-    }
-
-    .progress-bar-text {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 14px;
-      color: white;
-    }
+  font-size: smaller;
+  font-weight: bolder;
+  color: white;
+}
+@keyframes striped-flow {
+  from {
+    background-position: -100%;
   }
-
-  .progress-bar-title {
-    text-align: center;
-    font-size: smaller;
-    color: white;
-    margin-top: -1em;
-    padding-left: 10px;
+  to {
+    background-position: 100%;
   }
+}
+.bar {
+  transition: width 0.3s ease-out;
+  animation: striped-flow 3s linear infinite;
 }
 </style>

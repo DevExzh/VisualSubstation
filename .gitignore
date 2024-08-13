@@ -25,3 +25,7 @@ dist-ssr
 
 # Project exclude paths
 /.vscode/
+
+# Auto import files
+auto-imports.d.ts
+components.d.ts

@@ -33,7 +33,8 @@ const router = createRouter({
                         requiresAuth: true,
                         permissions: ['view:map:substation']
                     },
-                    component: () => import('./components/scenes/SubstationScene.vue')
+                    component: () => import('./components/scenes/SubstationScene.vue'),
+                    props: route => route.query,
                 }
             ],
         },

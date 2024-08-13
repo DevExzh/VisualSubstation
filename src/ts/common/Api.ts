@@ -679,6 +679,12 @@ export namespace Api {
       return HTTPService.get('/api/sensor/eim');
     }
   }
+
+  export namespace Weather {
+    export async function getWeatherNow(location: string): Promise<Types.WeatherNowResponse> {
+      return HTTPService.get('/weather/forecast/now', {location});
+    }
+  }
 }
 
 export default Api;

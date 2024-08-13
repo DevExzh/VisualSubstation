@@ -1,11 +1,9 @@
 import {CanvasRenderer} from "../CanvasRenderer.ts";
 import {MapControls} from "three/examples/jsm/controls/MapControls.js";
-import {chinaProjection, LineType, object3DFromGeoJson} from "../../map/MapUtils.ts";
+import {LineType, object3DFromGeoJson} from "../../map/MapUtils.ts";
 import * as TWEEN from "@tweenjs/tween.js";
 import {TextureLoader} from "../../loaders/TextureLoader.ts";
-import {RouteSwitchEvent} from "../../events/RouterEvents.ts";
 import {Animations} from "../../common/Animations.ts";
-import {Anchor} from "../../meshes/Anchor.ts";
 import {RegionClickEvent} from "../../events/MapEvents.ts";
 import {FeatureProperties} from "../../map/GeoJson.ts";
 import {
@@ -32,12 +30,20 @@ export class MapRenderer extends CanvasRenderer {
     protected _mappings: Record<string, string> = {};
     protected _regions: Object3D[] = [];
     protected _subregions: Object3D[] = [];
-    protected _anchors: Object3D[] = [];
     protected _regionHeight: number = 3;
     protected _areaColor: Color = new Color('#887908');
     protected _borderColor: Color = new Color('#FFF9C4')
     protected _areaColorOnPopUp: Color = new Color('#064f71');
     protected _borderColorOnPopUp: Color = new Color('#1da8f1');
+
+    public getRegionHeight(): number {
+        return this._regionHeight;
+    }
+    public setRegionHeight(value: number) {
+        if(value > 0) {
+            this._regionHeight = value;
+        }
+    }
 
     public constructor(
         canvas: HTMLCanvasElement | OffscreenCanvas,
@@ -110,20 +116,11 @@ export class MapRenderer extends CanvasRenderer {
         return undefined;
     }
 
-    protected override async pointerMoveEvent(event: PointerEvent): Promise<void> {
-        await super.pointerMoveEvent(event);
-    }
-
-    public override async cameraChangeEvent(): Promise<void> {
-        await super.cameraChangeEvent();
-    }
-
     protected resumeAllSubregions(): void {
         if(this._regions.length === 0) return;
         this.dispatchEvent(new RegionClickEvent(undefined, true));
-        this.remove(...this._subregions, ...this._anchors);
+        this.remove(...this._subregions);
         this._subregions.length = 0;
-        this._anchors.length = 0;
         const region = this._regions.pop()!;
         region.traverse(o => {
             if(o.type === 'Mesh') {
@@ -181,10 +178,6 @@ export class MapRenderer extends CanvasRenderer {
                     this._regions.push(object);
                     this._subregions = subregions;
                     subregions.forEach((region: Object3D) => {
-                        const center = chinaProjection(region.userData.center as [number, number])!;
-                        const anchor = new Anchor(region.userData.name);
-                        anchor.position.set(center[0], this._regionHeight + 0.01, center[1]);
-                        this._anchors.push(anchor);
                         region.traverse(o => {
                             if(o.type === 'Mesh') {
                                 o.scale.set(1, 1, this._regionHeight);
@@ -227,7 +220,7 @@ export class MapRenderer extends CanvasRenderer {
                             o.visible = false;
                         }
                     });
-                    this.add(...this._subregions, ...this._anchors);
+                    this.add(...this._subregions);
                 })
                 .start(),
             id: object.uuid
@@ -272,13 +265,7 @@ export class MapRenderer extends CanvasRenderer {
         if(event.isPrimary && event.button === 0) {
             if(this._subregions.length !== 0) {
                 const subregion: Object3D | undefined = this.intersects(event, this._subregions);
-                if(subregion) {
-                    // 通知路由器进行路由切换
-                    this.dispatchEvent(new RouteSwitchEvent('substation-scene', {
-                        region: subregion.userData.name
-                    }));
-                    return;
-                } else {
+                if(!subregion) {
                     // 单击了空白处，取消选中所有区域
                     this._rayCaster.setFromCamera(
                         CanvasRenderer.getNormalizedPointerPosition(event),

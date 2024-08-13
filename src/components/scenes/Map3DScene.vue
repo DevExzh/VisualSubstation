@@ -61,9 +61,9 @@ onMounted(() => {
         class="decorated-container"
         title="环境监测"
         client-width="24rem"
-        client-height="9rem"
+        client-height="8.25rem"
     >
-      <EnvironmentDisplay/>
+      <EnvironmentDisplay location="101020800"/>
     </DecoratedContainer>
   </Panel>
   <Panel side="right" top="2.5rem" :show="shouldDisplayPanel">

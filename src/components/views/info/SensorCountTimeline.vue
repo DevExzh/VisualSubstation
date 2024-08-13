@@ -89,11 +89,9 @@ const options = ref({
     axisTick: { show: true, alignWithLabel: true },
     axisLabel: {
       show: true,
-      textStyle: {
-        color: "rgba(255, 255, 255, 1)",
-        fontSize: "12",
-        fontFamily: "SourceHanSans"
-      },
+      color: "rgba(255, 255, 255, 1)",
+      fontSize: "12",
+      fontFamily: "SourceHanSans",
       rotate: 0
     },
     data: chartData.label,

@@ -7,7 +7,7 @@ import {WorkerEvent} from "../events/WorkerEvents.ts";
 import {AnyEvent, EventObject} from "../events/AnyEvent.ts";
 import {WorkerMessageType} from "../virtual-element/WorkerProxy.ts";
 import {v4} from "uuid";
-import {SceneObjectBoundingBoxEvent} from "../events/SceneEvents.ts";
+import {CameraChangeEvent, SceneObjectBoundingBoxEvent} from "../events/SceneEvents.ts";
 import {ElMessage} from "element-plus";
 
 /**
@@ -91,6 +91,12 @@ export abstract class CanvasScene extends EventTarget implements Disposable {
             default: return false;
             case 'bounding-box': {
                 super.dispatchEvent(new SceneObjectBoundingBoxEvent((event as SceneObjectBoundingBoxEvent).boundingBox));
+                return true;
+            }
+            // 相机位置/视角发生变化，对于协调多个组件共同渲染非常重要
+            case 'camera-change': {
+                const converted = event as CameraChangeEvent;
+                this.dispatchEvent(new CameraChangeEvent(converted.camera));
                 return true;
             }
             case 'message-box': {
@@ -213,10 +219,10 @@ export abstract class CanvasScene extends EventTarget implements Disposable {
                     uuid
                 });
                 if(!expectResult) resolve(undefined);
-                const eventListener = (e: EventObject) => {
+                const eventListener = (e: { data: Record<string, any> }) => {
                     // 检查是否为函数回调事件
-                    if(e.type !== 'function-call') return;
-                    const event = e as FunctionCall;
+                    if(e.data.type !== 'function-call') return;
+                    const event = e.data as FunctionCall;
                     // 检查该事件的 uuid 是否与当前的一致
                     if(event.uuid !== uuid) return;
                     if(event.error) {
