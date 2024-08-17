@@ -21,11 +21,12 @@ function getCanvasSize(canvas: HTMLElement | OffscreenCanvas): CanvasSize {
 }
 
 export type MessageBoxParams = Partial<{
-    msgBoxType: 'success' | 'warning' | 'info' | 'error';
-    msgIcon: string;
-    msgShowAsHTML: boolean;
-    msgCenter: boolean;
-    msgClassName: string;
+    boxType: 'success' | 'warning' | 'info' | 'error';
+    icon: string;
+    showAsHTML: boolean;
+    center: boolean;
+    className: string;
+    grouping: boolean;
 }> & { message: string };
 
 /**
@@ -44,6 +45,8 @@ export class CanvasRenderer extends EventTarget implements Disposable {
     protected _context: ThreeContext;
     // 像素比率（对高分辨率屏幕非常重要）
     protected _pixelRatio: number = 2;
+    // 所有添加进场景的元素
+    protected _scene_obj: Record<string, Object3D> = {};
 
     public setPixelRatio(ratio: number): void {
         this._pixelRatio = ratio;
@@ -160,10 +163,20 @@ export class CanvasRenderer extends EventTarget implements Disposable {
 
     public add(...objects: Object3D[]): void {
         this._context.scene.add(...objects);
+        for (const object of objects) {
+            this._scene_obj[object.uuid] = object;
+        }
+        this.render();
     }
 
     public remove(...objects: Object3D[]): void {
         this._context.scene.remove(...objects);
+        this.render();
+    }
+
+    public removeByUuid(uuid: string): void {
+        this._context.scene.remove(this._scene_obj[uuid]);
+        this.render();
     }
 
     /**

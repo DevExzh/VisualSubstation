@@ -88,6 +88,12 @@ onMounted(() => {
   </div>
 </template>
 
+<style>
+.msg-box {
+  margin-top: 3.25em;
+}
+</style>
+
 <style lang="scss" scoped>
 @font-face {
   font-family: 'YouSheBiaoTiHei';

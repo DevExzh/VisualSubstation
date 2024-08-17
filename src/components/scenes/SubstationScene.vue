@@ -15,13 +15,14 @@ import SensorInfoDashBoard from "../views/info/SensorInfoDashBoard.vue";
 import Panel from "../widgets/layout/Panel.vue";
 import DecoratedButton from "../widgets/decoration/DecoratedButton.vue";
 import {CameraViewType} from "../../ts/common/Types.ts";
+import SensorList from "../views/management/sensor/SensorList.vue";
 
 // 属性
 withDefaults(defineProps<{
   sky?: boolean,
   location: string,
 }>(), {
-  sky: true
+  sky: false
 });
 
 // 是否加载完成
@@ -43,6 +44,7 @@ const toggleCameraViewType = () => {
 const onCameraViewTypeChange = (type: CameraViewType) => {
   cameraViewType.value = type;
 };
+const sensors = ref<any[]>([{}]);
 onMounted(() => {
   callFunc = modelScene.value!.useCall();
 });
@@ -53,7 +55,12 @@ onMounted(() => {
     <LoadingView v-if="!loadCompleted"/>
   </Transition>
   <Dock style="z-index: 20">
-    <DockItem name="感知设备管理" icon="/images/folder.png"></DockItem>
+    <DockItem name="感知设备管理" icon="/images/folder.png">
+      <SensorList
+          v-if="modelScene"
+          v-model="sensors"
+      />
+    </DockItem>
     <DockItem name="设备拆解" icon="/images/dismantle.png">
       <ElTabs tab-position="left" style="height: 100%; width: 100%;">
         <ElTabPane lazy label="变压器" name="transformer">

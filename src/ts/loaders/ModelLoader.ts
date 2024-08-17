@@ -33,16 +33,17 @@ export class ModelObjectLoadEvent extends Event {
     }
 }
 
+const loaders: Record<string, Loader> = {};
+
 /**
  * 3D 模型加载器
  * @class
  * @author Ryker Zhu <ryker.zhu@nuist.edu.cn>
  */
-export class ModelLoader extends EventTarget implements Disposable {
+export class ModelLoader extends EventTarget {
     private modelPromises: Promise<void>[] = [];
     private readonly castShadow: boolean = true;
     private readonly receiveShadow: boolean = true;
-    private dracoLoader: DRACOLoader | null = null;
     private context: ThreeContext;
     public exclusions: string[] = [];
     public initialPositions: ModelManifest['positions'] = {};
@@ -67,23 +68,25 @@ export class ModelLoader extends EventTarget implements Disposable {
      * @function
      * @param extension 文件扩展名，包括开头的点（如 .fbx, .gltf）
      */
-    loaderFromExtension(extension: string): Loader {
-        switch (extension) {
-            default:
-            case '.glb':
-            case '.gltf': {
-                const loader = new GLTFLoader();
-                if(!this.dracoLoader) {
+    public static loaderFromExtension(extension: string): Loader {
+        if(extension in loaders) {
+            return loaders[extension];
+        } else {
+            switch (extension) {
+                default:
+                case '.glb':
+                case '.gltf': {
+                    const loader = new GLTFLoader();
                     const dracoLoader = new DRACOLoader();
                     dracoLoader.setDecoderPath('/decoder/');
                     dracoLoader.setDecoderConfig({type: 'wasm'});
                     dracoLoader.preload();
-                    this.dracoLoader = dracoLoader;
+                    loader.setDRACOLoader(dracoLoader);
+                    return loader;
                 }
-                return loader;
+                case '.fbx': return new FBXLoader();
+                case '.obj': return new OBJLoader();
             }
-            case '.fbx': return new FBXLoader();
-            case '.obj': return new OBJLoader();
         }
     }
 
@@ -99,7 +102,7 @@ export class ModelLoader extends EventTarget implements Disposable {
             this.initialPositions = modelConfig.positions;
             for(let i = 0; i < modelConfig.models.length; ++i) {
                 const modelPath = (modelConfig.prefix ?? '/') + modelConfig.models[i];
-                this.modelPromises.push(this.loadSingle3DModel(modelPath, true));
+                this.modelPromises.push(this.loadSingle3DModel(modelPath));
             }
         }
         // 并发加载并编译着色器
@@ -112,19 +115,11 @@ export class ModelLoader extends EventTarget implements Disposable {
      * @async
      * @function
      * @param modelPath 模型路径，字符串的第一个路径分隔符表示 /public/
-     * @param draco 是否启用 Draco 网格压缩（仅 GLTF 模型）
      */
-    async loadSingle3DModel(modelPath: string, draco: boolean = false): Promise<void> {
+    async loadSingle3DModel(modelPath: string): Promise<void> {
         const path: FilePath | null = pathOf(modelPath);
         if(!path) return;
-        let loader: Loader = this.loaderFromExtension(path.extension);
-        loader.setPath(path.folder);
-        if(draco
-            && loader instanceof GLTFLoader
-            && this.dracoLoader instanceof DRACOLoader
-        ) {
-            loader.setDRACOLoader(this.dracoLoader);
-        }
+        const loader = ModelLoader.loaderFromExtension(path.extension);
         try {
             const model = await loader.loadAsync(path.fullFileName);
             if((model as LoadedModel)?.scene !== undefined && typeof (model as LoadedModel)?.scene === "object") {
@@ -152,9 +147,20 @@ export class ModelLoader extends EventTarget implements Disposable {
             console.error(e);
         }
     }
+}
 
-    [Symbol.dispose] () {
-        this.dracoLoader?.dispose();
-        this.dracoLoader = null;
-    }
+/**
+ * 静态方法，从指定路径加载模型
+ * @static
+ * @async
+ * @function
+ */
+export async function loadAsync(filePath: string): Promise<Object3D | undefined> {
+    const path: FilePath | null = pathOf(filePath);
+    if(!path) return undefined;
+    // @ts-ignore
+    return (
+        await ModelLoader.loaderFromExtension(path.extension)
+            .setPath(path.folder).loadAsync(path.fullFileName)
+    ).scene;
 }

@@ -5,6 +5,8 @@ import {CameraViewTypeChangeEvent, ObjectSelectionEvent} from "../../ts/events/S
 import {OverlayRenderer} from "../../ts/renderers/overlay/OverlayRenderer.ts";
 import DeviceInfoOverlay from "../overlay/DeviceInfoOverlay.vue";
 import {CameraViewType} from "../../ts/common/Types.ts";
+import useCommonStore from "../../ts/store/CommonStore.ts";
+import {keySceneOperations, ModelSceneOperations} from "./ModelSceneCanvas.ts";
 // import {SoundEffects} from "../../ts/effects/SoundEffects.ts";
 // import {EventManager} from "../../ts/events/EventManager.ts";
 
@@ -38,12 +40,17 @@ defineExpose({
     return scene?.call.bind(scene);
   }
 });
+const commonStore = useCommonStore();
 // 在当前组件被挂载时，开始渲染
 onMounted(() => {
   scene = new ModelScene(
       modelCanvas.value!
   );
   overlay = new OverlayRenderer(htmlMountPoint.value!, scene);
+  commonStore.set(keySceneOperations, {
+    addObjectFunction: path => scene.call('addObjectWithController', true, true, path),
+    removeObjectFunction: uuid => scene.call('removeByUuid', false, false, uuid),
+  } as ModelSceneOperations);
 
   // soundEffects = new SoundEffects(twin.camera);
   // eventManager = new EventManager(

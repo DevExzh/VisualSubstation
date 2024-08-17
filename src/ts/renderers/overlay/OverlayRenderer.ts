@@ -135,15 +135,18 @@ export class OverlayRenderer extends CanvasRenderer {
      * @param element 需要添加的 Vue 组件
      * @param props 待添加的 Vue 组件的属性
      * @param children 子组件
+     * @param scaleFactor 伸缩因子
      */
     public addComponentToPosition(
         position: [number, number, number],
         element: Component,
         props?: Record<string, any> & VNodeProps,
-        children?: any
+        children?: any,
+        scaleFactor?: number
     ): CSS3DObject {
         const obj = this.renderAsSprite(createVNode(element, props, children));
         obj.position.set(...position);
+        if(scaleFactor) obj.scale.multiplyScalar(scaleFactor);
         this._context.renderer.render(this._context.scene, this._context.camera);
         return obj;
     }

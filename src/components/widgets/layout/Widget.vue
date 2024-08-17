@@ -7,19 +7,21 @@ const windowContainer = ref<HTMLElement>();
 const clientArea = ref<HTMLElement>();
 const props = withDefaults(
     defineProps<{
-      controlButtons?: boolean,
+      controlButtons?: boolean | string[],
       resizable?: boolean,
       width?: number | string,
       height?: number | string,
       x?: number | 'center',
       y?: number | 'center',
+      activeOnDisplay?: boolean,
     }>(), {
-      controlButtons: _ => true,
-      resizable: _ => true,
-      width: _ => '45rem',
-      height: _ => '25.5rem',
-      x: _ => 50,
-      y: _ => 50,
+      controlButtons: true,
+      resizable: true,
+      width: '45rem',
+      height: '25.5rem',
+      x: 50,
+      y: 50,
+      activeOnDisplay: false,
     }
 );
 const emits = defineEmits<{
@@ -121,7 +123,7 @@ const useInteract = () => {
         edges: {
           top: true, left: true, bottom: true, right: true
         },
-        margin: 2,
+        margin: 6,
         listeners: {
           // 当前窗口被尝试改变大小时，调用此函数
           move: event => {
@@ -195,7 +197,12 @@ store.$subscribe((_, state) => {
     setInactive();
   }
 });
-onMounted(useInteract);
+onMounted(() => {
+  useInteract();
+  if(props.activeOnDisplay) {
+    setActive();
+  }
+});
 onBeforeUnmount(() => {
   interactable?.unset();
   const index = store.widgets.indexOf({
@@ -232,80 +239,88 @@ defineExpose({
 
 <template>
   <!-- 可拖拽窗口容器 -->
-  <div
-      ref="windowContainer"
-      :class="[
+  <Teleport to="body">
+    <div
+        ref="windowContainer"
+        :class="[
           'window-container',
           {
             maximized: widget.fullscreen.value,
             inactive: focusLost
           },
       ]"
-      :style="{
+        :style="{
         height: `${h}px`,
         width: `${w}px`,
         transform: `translate(${x}px, ${y}px)`,
         zIndex: widget.zIndex.value
       }"
-      @mousedown="setActive"
-  >
-    <!-- 标题栏 -->
-    <div
-        :class="[
+        @mousedown="setActive"
+    >
+      <!-- 标题栏 -->
+      <div
+          :class="[
             'title-bar',
             {
               maximized: widget.fullscreen.value,
               inactive: focusLost,
             }
         ]"
-    >
-      <!-- 关闭、最小化、最大化按钮 -->
-      <div
-          @mouseenter="titleBarButtonsEntered"
-          @mouseleave="titleBarButtonsLeft"
-          :class="['title-buttons', { maximized: widget.fullscreen.value }]"
-          v-if="props.controlButtons"
       >
+        <!-- 关闭、最小化、最大化按钮 -->
         <div
-            :class="[
+            @mouseenter="titleBarButtonsEntered"
+            @mouseleave="titleBarButtonsLeft"
+            :class="['title-buttons', { maximized: widget.fullscreen.value }]"
+            v-if="props.controlButtons === true ||
+            (typeof props.controlButtons === 'object' && props.controlButtons.length != 0)"
+            v-memo="[props.controlButtons, props.resizable]"
+        >
+          <div
+              :class="[
                 'button close-button',
                 { pressed: closeBtnPressed, inactive: focusLost }
             ]"
-            @mousedown="closeBtnPressed = true"
-            @mouseup="onClose"
-        >
-          <svg ref="closeBtn" class="button-hover-img" viewBox="0 0 1024 1024">
-            <path fill="#313131" d="m662.189 511.984 330.593-330.561a106.23 106.23 0 0 0 0-150.226 106.166 106.166 0 0 0-150.226 0L511.963 361.694 181.434 31.165a106.166 106.166 0 0 0-150.258 0 106.23 106.23 0 0 0 0 150.226L361.77 511.952 31.144 842.609a106.23 106.23 0 1 0 150.258 150.226L511.931 662.21l330.625 330.657a105.7 105.7 0 0 0 75.097 31.069 106.23 106.23 0 0 0 75.129-181.295L662.253 512.016z"/>
-          </svg>
-        </div>
-        <div
-            :class="[
+              v-if="props.controlButtons === true ||
+              (typeof props.controlButtons == 'object' && props.controlButtons.includes('close'))"
+              @mousedown="closeBtnPressed = true"
+              @mouseup="onClose"
+          >
+            <svg ref="closeBtn" class="button-hover-img" viewBox="0 0 1024 1024">
+              <path fill="#313131" d="m662.189 511.984 330.593-330.561a106.23 106.23 0 0 0 0-150.226 106.166 106.166 0 0 0-150.226 0L511.963 361.694 181.434 31.165a106.166 106.166 0 0 0-150.258 0 106.23 106.23 0 0 0 0 150.226L361.77 511.952 31.144 842.609a106.23 106.23 0 1 0 150.258 150.226L511.931 662.21l330.625 330.657a105.7 105.7 0 0 0 75.097 31.069 106.23 106.23 0 0 0 75.129-181.295L662.253 512.016z"/>
+            </svg>
+          </div>
+          <div
+              :class="[
                 'button minimize-button',
                 { pressed: minBtnPressed, inactive: focusLost }
             ]"
-            @mousedown="minBtnPressed = true"
-            @mouseup="onMinimize"
-        >
-          <svg ref="minBtn" class="button-hover-img" viewBox="0 0 1024 1024">
-            <path d="M896 416H128c-35.34 0-64 28.66-64 64v64c0 35.34 28.66 64 64 64h768c35.34 0 64-28.66 64-64v-64c0-35.34-28.66-64-64-64z"  />
-          </svg>
-        </div>
-        <div
-            :class="[
+              v-if="props.controlButtons === true ||
+              (typeof props.controlButtons == 'object' && props.controlButtons.includes('min'))"
+              @mousedown="minBtnPressed = true"
+              @mouseup="onMinimize"
+          >
+            <svg ref="minBtn" class="button-hover-img" viewBox="0 0 1024 1024">
+              <path d="M896 416H128c-35.34 0-64 28.66-64 64v64c0 35.34 28.66 64 64 64h768c35.34 0 64-28.66 64-64v-64c0-35.34-28.66-64-64-64z"  />
+            </svg>
+          </div>
+          <div
+              :class="[
                 'button maximize-button',
                 { pressed: maxBtnPressed, inactive: focusLost }
             ]"
-            @mousedown="maxBtnPressed = true"
-            @mouseup="onMaximized"
-            v-if="props.resizable"
-        >
-          <svg ref="maxBtn" class="button-hover-img" viewBox="0 0 200 200">
-            <path d="M50.7,181L181,50.7V181H50.7z M19,19h130.3L19,149.3V19z"/>
-          </svg>
+              v-if="props.resizable && (props.controlButtons === true ||
+              (typeof props.controlButtons == 'object' && props.controlButtons.includes('max')))"
+              @mousedown="maxBtnPressed = true"
+              @mouseup="onMaximized"
+          >
+            <svg ref="maxBtn" class="button-hover-img" viewBox="0 0 200 200">
+              <path d="M50.7,181L181,50.7V181H50.7z M19,19h130.3L19,149.3V19z"/>
+            </svg>
+          </div>
         </div>
-      </div>
-      <!-- 窗口标题 -->
-      <span class="title-name">
+        <!-- 窗口标题 -->
+        <span class="title-name">
         <span v-if="windowIcon">
           <img style="height: 100%; width: 1rem; vertical-align: middle; margin-right: 0.5rem;" :src="windowIcon" alt="Window icon" />
         </span>
@@ -313,22 +328,23 @@ defineExpose({
           <span class="window-title" :key="windowTitle">{{windowTitle}}</span>
         </transition>
       </span>
-    </div>
-    <!-- 窗口内容 -->
-    <div
-        :class="[
+      </div>
+      <!-- 窗口内容 -->
+      <div
+          :class="[
             'widget-client-area-container',
             { inactive: focusLost, maximized: widget.fullscreen.value }
         ]"
-    >
-      <div class="widget-client-area" ref="clientArea">
-        <slot
-            v-if="shouldRender"
-            class="widget-content"
-        />
+      >
+        <div class="widget-client-area" ref="clientArea">
+          <slot
+              v-if="shouldRender"
+              class="widget-content"
+          />
+        </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -338,11 +354,9 @@ defineExpose({
   padding: 0;
 }
 .window-container {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
-  width: 48rem;
-  height: 36rem;
   border: 0.06rem solid #dadada;
   box-shadow: 0 1.5rem 3rem 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.14);
   border-radius: 0.5rem;

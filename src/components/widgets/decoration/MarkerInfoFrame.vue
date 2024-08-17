@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {reactive, ref} from "vue";
-import {ElTooltip} from "element-plus";
+import {ref} from "vue";
+import {ElTooltip, ElScrollbar} from "element-plus";
 
 withDefaults(defineProps<{
   title: string,
@@ -19,11 +19,7 @@ defineEmits<{
   viewCamera: []
 }>();
 const showExitButton = ref<boolean>(false);
-const info = reactive<Record<string, any>>({
-  name: 'ABC',
-  hah: "yea",
-  wtf: 'no'
-});
+const info = defineModel<Record<string, any>>('info', {required: true, default: {}});
 </script>
 
 <template>
@@ -31,7 +27,7 @@ const info = reactive<Record<string, any>>({
     <div class="header" :style="{height: $props.headerHeight}">
       <div class="title">{{$props.title}}</div>
       <div class="icon">
-        <ElTooltip placement="top" content="关闭该窗口">
+        <ElTooltip placement="top" content="关闭该窗口" :show-after="1500">
           <svg
               viewBox="0 0 1024 1024"
               @mouseover="showExitButton = true" @mouseout="showExitButton = false"
@@ -53,14 +49,18 @@ const info = reactive<Record<string, any>>({
         <ElTooltip placement="bottom-end" content="变电站实景" :teleported="false">
           <div class="preview" @click="$emit('viewCamera')" v-if="$props.imagePreview"/>
         </ElTooltip>
-        <div class="rows">
+        <ElScrollbar
+            class="rows" :style="{
+              width: $props.imagePreview ? '60%' : `calc(100% - 10pt)`
+            }"
+        >
           <div
               class="row" v-for="(value, key) in info"
           >
             <div class="key">{{key}}</div>
             <div class="value">{{value}}</div>
           </div>
-        </div>
+        </ElScrollbar>
       </div>
     </transition>
   </div>
@@ -183,20 +183,16 @@ const info = reactive<Record<string, any>>({
     position: absolute;
     top: 5pt;
     left: 10pt;
-    @if str-length(v-bind(imagePreview)) > 0 {
-      width: 60%;
-    } @else {
-      width: calc(100% - 10pt);
-    }
+    height: calc(100% - 3em);
     > :not(:last-child)::after {
       content: '';
-      width: 200%;
+      width: 300%;
       height: 1pt;
       background: linear-gradient(to right, transparent 0%, rgba(1, 181, 255, 0.4) 20% 80%, transparent 100%);
     }
     .row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 2fr;
       padding: 0.1em 0 0.1em 0;
       .key {
         font-weight: bolder;

@@ -106,6 +106,7 @@ onBeforeUnmount(() => {
       <div class="bars">
         <ProgressBar
             title="温度" color="#F44336" :min="-30" :max="50"
+            v-memo="weather.now.temp"
             :value="parseFloat(weather.now.temp)" :formatter="value => value + '℃'"
         >
           <template #prefix>
@@ -114,10 +115,11 @@ onBeforeUnmount(() => {
         </ProgressBar>
         <ProgressBar
             title="湿度" color="#03A9F4"
+            v-memo="weather.now.humidity"
             :value="parseFloat(weather.now.humidity)" :formatter="value => value + '% RH'"
         >
           <template #prefix>
-            <svg viewBox="0 0 1024 1024">
+            <svg viewBox="0 0 1024 1024" v-once>
               <path
                   class="weather"
                   d="M575.8 44.2c-17.4-57.6-107.8-60.2-127.6 0C346.2 359.6 128 445.4 128 667.8 128 864.6 299.8 1024 512 1024s384-159.4 384-356.2c0-223.4-217.8-306.6-320.2-623.6zM320 576c0-35.4 28.6-64 64-64s64 28.6 64 64-28.6 64-64 64-64-28.6-64-64z m99 263.6c-5.6 7-15.6 8-22.4 2.4l-25-20c-6.8-5.6-8-15.6-2.4-22.4l236-295c5.6-6.8 15.6-8 22.4-2.4l25 20c7 5.6 8 15.6 2.4 22.4l-236 295zM640 832c-35.4 0-64-28.6-64-64s28.6-64 64-64 64 28.6 64 64-28.6 64-64 64z"/>

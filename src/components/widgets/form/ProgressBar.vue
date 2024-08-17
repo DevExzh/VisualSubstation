@@ -78,16 +78,7 @@ withDefaults(defineProps<{
   font-weight: bolder;
   color: white;
 }
-@keyframes striped-flow {
-  from {
-    background-position: -100%;
-  }
-  to {
-    background-position: 100%;
-  }
-}
 .bar {
   transition: width 0.3s ease-out;
-  animation: striped-flow 3s linear infinite;
 }
 </style>

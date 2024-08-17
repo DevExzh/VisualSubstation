@@ -2,7 +2,7 @@ import {CanvasRenderer} from "../CanvasRenderer.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {DragControls} from "three/examples/jsm/controls/DragControls.js";
 import * as TWEEN from "@tweenjs/tween.js";
-import {LoadedObject, ModelLoader, ModelObjectLoadEvent} from "../../../../../bounding-box/src/ModelLoader.ts";
+import {LoadedObject, ModelLoader, ModelObjectLoadEvent} from "../../loaders/ModelLoader.ts";
 import {LoadEvent, LoadState} from "../../events/SceneEvents.ts";
 import {AmbientLight, Box3, HemisphereLight, Mesh, Object3D, Vector3} from "three";
 

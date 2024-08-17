@@ -1,5 +1,5 @@
-import {CameraViewType, CanvasSize,} from "../../common/Types.ts";
-import {ModelLoader, ModelObjectLoadEvent} from "../../../../../bounding-box/src/ModelLoader.ts";
+import {CameraViewType, CanvasSize, SceneObject, sceneObjectFromObject3D,} from "../../common/Types.ts";
+import {ModelLoader, ModelObjectLoadEvent} from "../../loaders/ModelLoader.ts";
 import {EdgeHighlighter} from "../../effects/EdgeHighlighter.ts";
 import {TextureLoader} from "../../loaders/TextureLoader.ts";
 import {
@@ -18,7 +18,6 @@ import {
     StaticGeometryGenerator
 } from 'three-mesh-bvh';
 import {Player} from "../../physical/Player.ts";
-import {Flame} from "../../effects/Flame.ts";
 import {
     Mesh,
     SpotLight,
@@ -31,6 +30,8 @@ import {
     RepeatWrapping,
     CircleGeometry, MeshStandardMaterial, Object3D
 } from "three";
+import {loadAsync} from "../../loaders/ModelLoader.ts";
+import {TransformControls} from "three/examples/jsm/controls/TransformControls.js";
 // @ts-ignore
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 // @ts-ignore
@@ -95,7 +96,8 @@ export class ModelRenderer extends CanvasRenderer {
                 default: typeName = '未知'; break;
             }
             this.messageBox({
-                message: `已切换到 ${typeName} 视角`
+                message: `已切换到 ${typeName} 视角`,
+                grouping: true,
             });
             this.dispatchEvent(new CameraViewTypeChangeEvent((evt as CameraViewTypeChangeEvent).viewType));
         });
@@ -142,7 +144,6 @@ export class ModelRenderer extends CanvasRenderer {
             if(event.objects.length === 0) return;
             this.dispatchEvent(new ObjectSelectionEvent(event.selected, event.camera, ...event.objects));
         });
-        this.add(new Flame(this._context));
     }
 
     protected override async pointerDownEvent(event: PointerEvent): Promise<void> {
@@ -241,7 +242,54 @@ export class ModelRenderer extends CanvasRenderer {
         });
     }
 
+    protected _transformController?: TransformControls;
+    protected _attachedUuid?: string;
+    protected _rememberedPosition: Vector3 = new Vector3();
+    protected _added_objects: Record<string, Object3D> = {};
+    public async addObjectWithController(path: string, props?: Record<string, any>): Promise<string | undefined> {
+        if(!this._transformController) {
+            this._transformController = new TransformControls(this._context.camera, this._bodyElement as HTMLElement);
+            this._transformController.addEventListener('change', this.render.bind(this));
+            this.add(this._transformController);
+        }
+        const object: Object3D | undefined =
+            path in this._added_objects ? this._added_objects[path] : await loadAsync(path);
+        if(!object) return undefined;
+        object.position.copy(this._rememberedPosition);
+        this.add(object);
+        Object.assign(object, props);
+        this._transformController.visible = this._transformController.enabled = true;
+        this._controls.isEnabled = this._clickHighlighter.isEnabled = false;
+        this._transformController.attach(object);
+        this._attachedUuid = object.uuid;
+        this.render();
+        this.messageBox({
+            message: '已进入编辑模式',
+            grouping: true,
+        });
+        return object.uuid;
+    }
+    public override removeByUuid(uuid: string) {
+        if(this._transformController && this._attachedUuid === uuid) {
+            this._rememberedPosition.copy(this._scene_obj[uuid].position);
+            this._transformController.detach();
+            this._transformController.visible
+                = this._clickHighlighter.isEnabled
+                = this._transformController.enabled = false;
+            this._controls.isEnabled = true;
+            this.messageBox({
+                message: '已退出编辑模式',
+                grouping: true,
+            });
+        }
+        super.removeByUuid(uuid);
+    }
+    public sceneObjectFromUuid(uuid: string): SceneObject {
+        return sceneObjectFromObject3D(this._scene_obj[uuid]);
+    }
+
     public override [Symbol.dispose] (): void {
         super[Symbol.dispose]();
+        if(this._transformController) this._transformController.dispose();
     }
 }

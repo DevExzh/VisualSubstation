@@ -19,6 +19,7 @@ export class EdgeHighlighter extends EventTarget {
     private readonly rayCaster: Raycaster = new Raycaster();
     public selectionExclusion: string[] = [];
     private canvasSize: CanvasSize = {width: -1, height: -1};
+    public isEnabled: boolean = true;
 
     set pixelRatio(ratio: number) {
         this.composer.setPixelRatio(ratio);
@@ -94,6 +95,11 @@ export class EdgeHighlighter extends EventTarget {
     }
 
     onPointerDown(e: PointerEvent) {
+        if(!this.isEnabled) {
+            this.isOnAnimation = false;
+            this.clickOutlinePass.selectedObjects = [];
+            return;
+        }
         const x = ( e.clientX / this.canvasSize.width ) * 2 - 1;
         const y = - ( e.clientY / this.canvasSize.height ) * 2 + 1;
         this.rayCaster.setFromCamera(new Vector2(x, y), this.context.camera);

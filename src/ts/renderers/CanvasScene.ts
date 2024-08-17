@@ -102,7 +102,10 @@ export abstract class CanvasScene extends EventTarget implements Disposable {
             case 'message-box': {
                 ElMessage({
                     message: event['message'],
-                    customClass: 'msg-box'
+                    customClass: event['className'] ? 'msg-box' : 'msg-box ' + event['className'],
+                    grouping: event['grouping'],
+                    center: event['center'],
+                    type: event['boxType'] ?? 'info',
                 });
                 return true;
             }
