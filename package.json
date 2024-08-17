@@ -37,6 +37,7 @@
     "echarts-gl": "^2.0.9",
     "js-cookie": "^3.0.5",
     "sass": "^1.77.6",
+    "terser": "^5.31.6",
     "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.18.2",
     "unplugin-vue-components": "^0.27.3",

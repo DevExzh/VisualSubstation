@@ -34,6 +34,7 @@ export class ModelObjectLoadEvent extends Event {
 }
 
 const loaders: Record<string, Loader> = {};
+let dracoLoader: DRACOLoader;
 
 /**
  * 3D 模型加载器
@@ -77,10 +78,12 @@ export class ModelLoader extends EventTarget {
                 case '.glb':
                 case '.gltf': {
                     const loader = new GLTFLoader();
-                    const dracoLoader = new DRACOLoader();
-                    dracoLoader.setDecoderPath('/decoder/');
-                    dracoLoader.setDecoderConfig({type: 'wasm'});
-                    dracoLoader.preload();
+                    if(!dracoLoader) {
+                        dracoLoader = new DRACOLoader();
+                        dracoLoader.setDecoderPath('/decoder/');
+                        dracoLoader.setDecoderConfig({type: 'wasm'});
+                        dracoLoader.preload();
+                    }
                     loader.setDRACOLoader(dracoLoader);
                     return loader;
                 }
@@ -120,6 +123,7 @@ export class ModelLoader extends EventTarget {
         const path: FilePath | null = pathOf(modelPath);
         if(!path) return;
         const loader = ModelLoader.loaderFromExtension(path.extension);
+        loader.setPath(path.folder);
         try {
             const model = await loader.loadAsync(path.fullFileName);
             if((model as LoadedModel)?.scene !== undefined && typeof (model as LoadedModel)?.scene === "object") {

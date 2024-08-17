@@ -1,0 +1,15 @@
+{
+  "asset-type": "3D Models",
+  "prefix": "/models/dismantled/",
+  "models": [
+    "transformer.part1.glb",
+    "transformer.part2.glb",
+    "transformer.part3.glb"
+  ],
+  "exclusions": [],
+  "positions": {
+    "transformer.part1.glb": [0, 0, 0],
+    "transformer.part2.glb": [2.3, -1.6, 2.5],
+    "transformer.part3.glb": [-2.3, -1.6, 1.2]
+  }
+}

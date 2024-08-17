@@ -1,0 +1,17 @@
+{
+  "asset-type": "3D Models",
+  "prefix": "/models/dismantled/",
+  "models": [
+    "isolator.part1.glb",
+    "isolator.part2.glb",
+    "isolator.part3.glb",
+    "isolator.part4.glb"
+  ],
+  "exclusions": [],
+  "positions": {
+    "isolator.part1.glb": [0, 0, 0],
+    "isolator.part2.glb": [1, -0.1, 0.1],
+    "isolator.part3.glb": [1, -0.1, -3.49],
+    "isolator.part4.glb": [1, -0.1, -0.1]
+  }
+}
