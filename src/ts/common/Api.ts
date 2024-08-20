@@ -1,6 +1,5 @@
 import * as Types from "./ApiTypes.ts";
 import HTTPService from "./Request.ts";
-import {CurrentChangeInfo} from "./ApiTypes.ts";
 export namespace Api {
   /**
    * 登录
@@ -655,16 +654,28 @@ export namespace Api {
   }
 
   export namespace Sensor {
-    export async function getCurrentChangeHour(): Promise<Types.CurrentChangeInfoResponse> {
-      return HTTPService.get('/api/sensor/current/hourly');
-    }
-
-    export async function getCurrentChangeMinute(): Promise<Types.Response & {data: CurrentChangeInfo}> {
-      return HTTPService.get('/api/sensor/current/tenM');
+    export async function getIntactRate(): Promise<Types.Response & {data: number}> {
+      return HTTPService.get('/api/sensorInfo/intactRate');
     }
 
     export async function getPowerGridLoad(): Promise<Types.PowerGridLoadInfoResponse> {
       return HTTPService.get('/api/sensor/gridLoad/history');
+    }
+
+    export async function getCurrentChangeInfo(): Promise<Types.Response & {value: number[][], predicted: number[][]}> {
+      return HTTPService.get('/api/sensor/current/lastHour');
+    }
+
+    export async function getSensors(queryParams?: Types.QueryOptions): Promise<Types.Response & {total: number, rows: Record<string, any>[]}> {
+      return HTTPService.get('/api/sensorInfo/sensorInfos', {...queryParams});
+    }
+
+    export async function getSensorCount(): Promise<Types.Response & {data: number[][]}> {
+      return HTTPService.get('/api/record/recent');
+    }
+
+    export async function getSensorCountByType(): Promise<Types.Response & {data: number[][]}> {
+      return HTTPService.get('/api/sensorInfo/scale');
     }
   }
 
@@ -674,9 +685,25 @@ export namespace Api {
     }
   }
 
+  export namespace Equipment {
+    export async function getEquipmentScale(): Promise<Types.Response & {data: Record<string, number>}> {
+      return HTTPService.get('/api/equipment/scale');
+    }
+  }
+
+  export namespace Substation {
+    export async function getSubstationByProvince(province: string):
+        Promise<Types.Response & {total: number, rows: Record<string, any>[]}> {
+      return HTTPService.get('/api/substation/byProvince', {province});
+    }
+  }
+
   export namespace Environment {
-    export async function getEnvironmentInfo(): Promise<Types.EnvironmentInfo> {
-      return HTTPService.get('/api/sensor/eim');
+    export async function getNoiseInfo(): Promise<Types.Response & {data: number}> {
+      return HTTPService.get('/api/sensor/noise/lastTenMinutes');
+    }
+    export async function getMagneticFieldInfo(): Promise<Types.Response & {data: number}> {
+      return HTTPService.get('/api/sensor/magneticField/lastTenMinutes');
     }
   }
 

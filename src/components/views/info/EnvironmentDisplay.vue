@@ -83,12 +83,16 @@ use([
   GaugeChart, TooltipComponent, CanvasRenderer,
 ]);
 const syncData = () => {
-  Api.Weather.getWeatherNow(props.location).then(res => {
-    weather.value = res.data;
-  });
-  if(weather.value) {
-    windDirection.value = +weather.value.now.wind360;
+  let location = props.location;
+  if(location.includes(',')) {
+    location = location.split(',').map((component) => parseFloat(component).toFixed(2)).join(',');
   }
+  Api.Weather.getWeatherNow(location).then(res => {
+    weather.value = res.data;
+    if(weather.value) {
+      windDirection.value = +weather.value.now.wind360;
+    }
+  });
 };
 // 每 30 秒请求一次最新数据
 const interval = setInterval(syncData, 30000);

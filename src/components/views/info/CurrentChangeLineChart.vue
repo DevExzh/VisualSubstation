@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import VChart from 'vue-echarts';
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {EChartsOption} from "echarts";
 import {use} from "echarts/core";
 import {CanvasRenderer} from "echarts/renderers";
 import {LineChart} from "echarts/charts";
 import {DataZoomComponent, GridComponent, TooltipComponent} from "echarts/components";
+import Api from "../../../ts/common/Api.ts";
 use([
     CanvasRenderer,
     LineChart,
@@ -13,14 +14,8 @@ use([
     TooltipComponent,
     DataZoomComponent,
 ]);
-let base = +new Date(2024, 3, 9);
-let series1 = [[base, Math.random() * 30]];
-let series2 = [[base, Math.random() * 30]];
-for (let i = 1; i < 200; i++) {
-  let now = new Date((base += 900000));
-  series1.push([+now, Math.round((Math.random() - 0.5) * 20 + series1[i - 1][1])]);
-  series2.push([+now, Math.round((Math.random() - 0.5) * 20 + series1[i - 1][1])]);
-}
+const series1 = ref<number[][]>([]);
+const series2 = ref<number[][]>([]);
 const options = ref<EChartsOption>({
   grid: {
     top: 35,
@@ -30,6 +25,7 @@ const options = ref<EChartsOption>({
   },
   tooltip: {
     trigger: 'axis',
+    appendTo: document.body,
     axisPointer: {
       type: 'cross',
     },
@@ -75,6 +71,7 @@ const options = ref<EChartsOption>({
       },
     }
   ],
+  // @ts-ignore
   series: [
     {
       type: 'line',
@@ -127,6 +124,12 @@ const options = ref<EChartsOption>({
       data: series2,
     },
   ],
+});
+onMounted(() => {
+  Api.Sensor.getCurrentChangeInfo().then(resp => {
+    series1.value = resp.predicted.map(val => [val[0], parseFloat(val[1].toFixed(2))]);
+    series2.value = resp.value.map(val => [val[0], parseFloat(val[1].toFixed(2))]);
+  });
 });
 </script>
 

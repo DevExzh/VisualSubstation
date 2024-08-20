@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import VChart from "vue-echarts";
 import {graphic, use} from "echarts/core";
 import {CanvasRenderer} from "echarts/renderers";
 import {GaugeChart} from "echarts/charts";
+import Api from "../../../ts/common/Api.ts";
 use([
     CanvasRenderer,
     GaugeChart,
@@ -20,6 +21,7 @@ const colorStyle: any = [[1, new graphic.LinearGradient(
       }
     ]
 )]];
+const intactRatio = ref<number>(0);
 const option = ref({
   series: [
     //最外的圆圈（外层刻度）
@@ -217,7 +219,7 @@ const option = ref({
       },
       data: [
         {
-          value: 22.8,
+          value: intactRatio,
           name: '完好率',
           title: {
             offsetCenter: ['0%', '85%'],
@@ -232,6 +234,11 @@ const option = ref({
       ]
     }
   ]
+});
+onMounted(() => {
+  Api.Sensor.getIntactRate().then(resp => {
+    intactRatio.value = resp.data;
+  });
 });
 </script>
 

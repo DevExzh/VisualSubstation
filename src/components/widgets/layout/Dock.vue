@@ -3,9 +3,11 @@ import {onBeforeUnmount, onMounted, provide, ref} from "vue";
 import DockItem from "./DockItem.vue";
 import {iconSizeKey, offsetKey, scaleFactorKey} from "../../../ts/widgets/Dock.ts";
 import {useDockStore, DockSettings} from "../../../ts/store/DockStore.ts";
+import Cookies from "js-cookie";
 
 const props = withDefaults(defineProps<DockSettings>(), {
-  autoHide: false,
+  autoHide: Cookies.get("AUTO_HIDE_DOCK") === 'y',
+  autoHideInterval: parseInt(Cookies.get("AUTO_HIDE_INTERVAL") ?? '3') * 1000,
   iconSize: '4rem',
   offset: 5,
   scaleFactor: 1.75,
@@ -18,8 +20,13 @@ const dockContainer = ref<HTMLDivElement>();
 const invisible = ref<HTMLDivElement>();
 const spacing = ref<string>('');
 let timer: any | undefined;
+const itemHovered = ref<boolean>(false);
 const hideDock = () => {
   if(!dockContainer.value || !props.autoHide) return;
+  if(itemHovered.value) {
+    timer = setTimeout(hideDock, props.autoHideInterval);
+    return;
+  }
   timer = undefined;
   dockContainer.value.style.transform = 'translateY(100%)';
   invisible.value!.style.display = 'inline-block';
@@ -32,12 +39,12 @@ const onEnter = () => {
 };
 const onLeave = () => {
   if(!dockContainer.value || !props.autoHide) return;
-  if(props.autoHide) setTimeout(hideDock, 100);
+  if(props.autoHide) setTimeout(hideDock, props.autoHideInterval);
 };
 const dockItems = ref<HTMLUListElement>();
 onMounted(() => {
   if(!dockContainer.value) return;
-  if(props.autoHide) timer = setTimeout(hideDock, 3000);
+  if(props.autoHide) timer = setTimeout(hideDock, props.autoHideInterval);
   invisible.value!.style.height = props.iconSize as string;
   invisible.value!.style.width = `calc(${props.iconSize} * 2)`;
   spacing.value = typeof props.spacing === "number" ? props.spacing + 'px' : props.spacing;
@@ -57,14 +64,16 @@ onBeforeUnmount(() => {
   <transition name="dock" appear>
     <div
         class="dock-container"
-        @mouseenter="onEnter"
-        @mouseleave="onLeave"
+        @mouseover="onEnter"
+        @mouseout="onLeave"
     >
       <div
           ref="dockContainer"
           class="dock-bar"
           @dragstart.prevent
           @contextmenu.prevent
+          @mouseover="itemHovered = true"
+          @mouseout="itemHovered = false"
       >
         <ul class="dock-items" ref="dockItems">
           <slot class="dock-item" :is="DockItem"/>
@@ -76,7 +85,7 @@ onBeforeUnmount(() => {
           }"
         />
       </div>
-      <div ref="invisible" @mouseenter.native="onEnter" class="invisible" />
+      <div ref="invisible" @mouseenter="onEnter" class="invisible" />
     </div>
   </transition>
 </template>

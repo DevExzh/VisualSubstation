@@ -115,9 +115,10 @@ onBeforeMount(() => {
                   label="传感器类型" :rules="{required: true}"
               >
                 <ElSelect v-model="sensor.type" placeholder="请选择" default-first-option>
-                  <ElOption label="电压" value="voltage"/>
-                  <ElOption label="电流" value="current"/>
-                  <ElOption label="温度" value="temperature"/>
+                  <ElOption label="电流" :value="0"/>
+                  <ElOption label="磁场" :value="1"/>
+                  <ElOption label="响度" :value="2"/>
+                  <ElOption label="功率" :value="3"/>
                 </ElSelect>
               </ElFormItem>
             </ElCol>

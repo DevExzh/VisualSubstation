@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {ElIcon, ElTooltip, ElDialog} from "element-plus";
 import {InfoFilled} from "@element-plus/icons-vue";
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 import DocumentPanel from "../../../widgets/dialog/docs/DocumentPanel.vue";
 import {Section} from "../../../widgets/dialog/docs/DocumentPanel.ts";
 const showReference = ref<boolean>(false);
-const sections = reactive<Section[]>([{
+const sections = ref<Section[]>([{
   name: '语法基础',
   children: [{
     name: '基本数据类型',

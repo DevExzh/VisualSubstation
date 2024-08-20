@@ -1,62 +1,62 @@
+<script setup lang="ts">
+import {onMounted, reactive} from 'vue';
+import Api from "../../../ts/common/Api.ts";
+const data = reactive<Record<string, any>>({
+  running: 0, broken: 0, total: 0, error: 0, extreme: 0,
+  sensors: [],
+});
+onMounted(() => {
+  Api.Sensor.getSensorCountByType().then(resp => {
+    for(const key in resp.data) {
+      data[key] = resp.data[key];
+    }
+  });
+});
+</script>
+
 <template>
   <div class="dashboard">
     <div class="panel">
       <div class="info-box">
         <div class="info-title">总数</div>
         <hr class="divider">
-        <div class="info-data">885</div>
+        <div class="info-data">{{ data.total }}</div>
       </div>
     </div>
     <div class="panel">
       <div class="info-box">
         <div class="info-title">在线</div>
         <hr class="divider">
-        <div class="info-data" style="color: green">{{ onlineCount.toFixed(0) }}</div>
+        <div class="info-data" style="color: green">{{ data.running }}</div>
       </div>
     </div>
     <div class="panel">
       <div class="info-box">
         <div class="info-title">离线</div>
         <hr class="divider">
-        <div class="info-data" style="color: yellow">{{ offlineCount.toFixed(0) }}</div>
+        <div class="info-data" style="color: yellow">{{ data.broken }}</div>
       </div>
     </div>
     <div class="panel">
       <div class="info-box">
         <div class="info-title">告警</div>
         <hr class="divider">
-        <div class="info-data" style="color: red">{{ alertCount.toFixed(0) }}</div>
+        <div class="info-data" style="color: red">{{ data.error }}</div>
       </div>
     </div>
   </div>
   <ElScrollbar style="margin-top: 1rem" height="7rem">
     <div class="status-displays">
-      <div class="display-screen" v-for="screen in screens" :key="screen.title">
+      <div class="display-screen" v-for="sensor in data.sensors" :key="sensor.name">
         <div class="vertical-line"></div>
         <div class="content">
-          <div class="title">{{ screen.title }}</div>
-          <div class="data">{{ screen.value }}</div>
+          <div class="title">{{ sensor.name }}</div>
+          <div class="data">{{ sensor.count }}</div>
         </div>
       </div>
     </div>
   </ElScrollbar>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-
-const onlineCount = ref(Math.random() * 1000);
-const offlineCount = ref(Math.random() * 500);
-const alertCount = ref(Math.random() * 100);
-const screens = ref([
-  { title: '门禁探测器1', value: 100},
-  { title: '门禁探测器2', value: 200 },
-  { title: '水浸探测器', value: 150 },
-  { title: "玻璃破碎探测器", value: 250 },
-  { title: "门禁探测器3", value: 300 },
-  { title: '红外被动探测器', value: 180 }
-]);
-</script>
 
 <style lang="scss" scoped>
 .dashboard {

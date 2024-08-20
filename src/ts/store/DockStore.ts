@@ -2,6 +2,7 @@ import {defineStore} from "pinia";
 
 export interface DockSettings {
     autoHide?: boolean;
+    autoHideInterval?: number;
     iconSize?: number | string;
     offset?: number;
     scaleFactor?: number;

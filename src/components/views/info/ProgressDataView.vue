@@ -10,7 +10,7 @@ const props = withDefaults(
       max?: number,
     }>(), {
       min: 0,
-      max: 1000,
+      max: 500,
     }
 );
 const progress = computed(() => (currentValue.value! / (props.max - props.min) * 100).toString() + '%');

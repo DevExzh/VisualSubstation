@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VChart from 'vue-echarts';
-import {onBeforeUnmount, onMounted, ref} from "vue";
+import {onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import {use} from 'echarts/core';
 import {CanvasRenderer} from "echarts/renderers";
 import {GaugeChart} from "echarts/charts";
@@ -12,6 +12,7 @@ use([
     CanvasRenderer,
     GaugeChart
 ]);
+const val = reactive<{value: number}>({value: 100});
 const options = ref<EChartsOption>({
   series: [
       {
@@ -20,7 +21,7 @@ const options = ref<EChartsOption>({
         startAngle: 180,
         endAngle: 0,
         min: 0,
-        max: 1000,
+        max: 500,
         title: {
           show: false,
         },
@@ -65,11 +66,7 @@ const options = ref<EChartsOption>({
             },
           }
         },
-        data: [
-          {
-            value: 100,
-          }
-        ]
+        data: [val]
       },
   ]
 });
@@ -86,10 +83,7 @@ onMounted(() => {
     todayMax.value = +resp.data.todayMax.toFixed(2);
   });
   ws = new WebSocket(baseURL + '/api/sensor/gridLoad/now');
-  ws.addEventListener('message', evt => {
-    // @ts-ignore
-    options.value.series[0].data[0].value = parseFloat(evt.data as string);
-  });
+  ws.addEventListener('message', evt => val.value = evt.data);
 });
 onBeforeUnmount(() => {
   ws.close();

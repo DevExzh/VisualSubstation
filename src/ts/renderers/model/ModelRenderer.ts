@@ -32,6 +32,7 @@ import {
 } from "three";
 import {loadAsync} from "../../loaders/ModelLoader.ts";
 import {TransformControls} from "three/examples/jsm/controls/TransformControls.js";
+import {Flame} from "../../effects/Flame.ts";
 // @ts-ignore
 BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 // @ts-ignore
@@ -144,6 +145,7 @@ export class ModelRenderer extends CanvasRenderer {
             if(event.objects.length === 0) return;
             this.dispatchEvent(new ObjectSelectionEvent(event.selected, event.camera, ...event.objects));
         });
+        this._context.scene.add(new Flame(this._context));
     }
 
     protected override async pointerDownEvent(event: PointerEvent): Promise<void> {
@@ -286,6 +288,12 @@ export class ModelRenderer extends CanvasRenderer {
     }
     public sceneObjectFromUuid(uuid: string): SceneObject {
         return sceneObjectFromObject3D(this._scene_obj[uuid]);
+    }
+    public setObjectPosition(uuid: string, position: [number, number, number]): void {
+        const obj = this._scene_obj[uuid];
+        if(obj) {
+            obj.position.set(...position);
+        }
     }
 
     public override [Symbol.dispose] (): void {

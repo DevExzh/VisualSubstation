@@ -441,18 +441,6 @@ export interface RecentEventResponse extends Response {
     rows: EventInfo[];
 }
 
-export interface EnvironmentInfo {
-    humidity: number;
-    magnetic_field: number;
-    noise_level: number;
-    temperature: number;
-    wind_speed: number;
-}
-
-export interface EnvironmentInfoResponse extends Response {
-    data: EnvironmentInfo;
-}
-
 export interface CurrentChangeInfo {
     minValue: number;
     maxValue: number;

@@ -50,6 +50,7 @@ onMounted(() => {
   commonStore.set(keySceneOperations, {
     addObjectFunction: path => scene.call('addObjectWithController', true, true, path),
     removeObjectFunction: uuid => scene.call('removeByUuid', false, false, uuid),
+    setObjectPosition: (uuid, position) => scene.call('setObjectPosition', false, false, uuid, position),
   } as ModelSceneOperations);
 
   // soundEffects = new SoundEffects(twin.camera);

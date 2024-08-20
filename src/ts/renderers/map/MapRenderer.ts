@@ -164,10 +164,11 @@ export class MapRenderer extends CanvasRenderer {
         const targetPosFrom = this._controls.target;
         const mainLightFrom = this._mainLight.position;
         const centerPos: [number, number] = object.userData.centerMap;
+        const areaName: string = object.userData.name;
         // 完成动画后，切换到子区域
-        if(!!object.userData.name) {
+        if(!!areaName) {
             object3DFromGeoJson(
-                '/map/' + this._mappings[object.userData.name], {
+                '/map/' + this._mappings[areaName], {
                     areaColor: this._areaColorOnPopUp,
                     borderColor: this._borderColorOnPopUp,
                     lineType: LineType.NormalLine,

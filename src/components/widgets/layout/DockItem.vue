@@ -11,6 +11,8 @@ withDefaults(defineProps<{
   icon: string;
   showWidgetTitle?: boolean;
   showWidgetIcon?: boolean;
+  widgetClientWidth?: string;
+  widgetClientHeight?: string;
 }>(), {
   showWidgetTitle: true,
   showWidgetIcon: false
@@ -65,16 +67,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <teleport v-if="isOpen" to="#app">
-    <Widget
-        ref="bindWidget"
-        :window-title="showWidgetTitle ? $props.name : ''"
-        :window-icon="showWidgetIcon ? $props.icon : ''"
-        @closed="onWidgetClose"
-    >
-      <slot v-if="isOpen"/>
-    </Widget>
-  </teleport>
+  <Widget
+      ref="bindWidget" v-if="isOpen"
+      :window-title="showWidgetTitle ? $props.name : ''"
+      :window-icon="showWidgetIcon ? $props.icon : ''"
+      :width="$props.widgetClientWidth"
+      :height="$props.widgetClientHeight"
+      @closed="onWidgetClose"
+  >
+    <slot v-if="isOpen"/>
+  </Widget>
   <li
       class="dock-item" v-once
       @dragstart.prevent

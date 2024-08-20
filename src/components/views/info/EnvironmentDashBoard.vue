@@ -5,16 +5,14 @@
         <div class="info-title">磁感应强度</div>
         <hr class="divider">
         <div class="info-data">
-          <span class="magnetic" v-if="result">{{result.magnetic_field.toFixed(2)}}</span>
-          v/m
+          <span class="magnetic">{{result?.magnetic?.toFixed(2) ?? '未知'}}&ensp;v/m</span>
         </div>
       </div>
       <div class="info-box">
         <div class="info-title">变电站噪声</div>
         <hr class="divider">
         <div class="info-data">
-          <span class="noise" v-if="result">{{result.noise_level.toFixed(2)}}</span>
-          dB
+          <span class="noise">{{result?.noise?.toFixed(2) ?? '未知'}}&ensp;dB</span>
         </div>
       </div>
     </div>
@@ -23,22 +21,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import HTTPService from "../../../ts/common/Request.ts";
-import {EnvironmentInfo, EnvironmentInfoResponse} from "../../../ts/common/ApiTypes.ts";
+import { reactive, onMounted } from 'vue';
 import EnvironmentDisplay from "./EnvironmentDisplay.vue";
+import Api from "../../../ts/common/Api.ts";
 defineProps<{
   location: string;
 }>();
-const result = ref<EnvironmentInfo>();
+const result = reactive<Record<string, any>>({});
 onMounted(() => {
-  HTTPService.get("/api/sensor/eim", {max_count: 10}).then((response: EnvironmentInfoResponse) => {
-    // 判断一下是不是请求成功了
-    if(response.code == 200) {
-      // 如果成功就赋值
-      result.value = response.data;
-    }
-  });
+  Api.Environment.getMagneticFieldInfo().then(resp => {
+    result.magnetic = resp.data;
+  }).catch(reason => console.error(reason));
+  Api.Environment.getNoiseInfo().then(resp => {
+    result.noise = resp.data;
+  }).catch(reason => console.error(reason));
 });
 </script>
 
@@ -80,7 +76,7 @@ onMounted(() => {
   margin-bottom: 5px;
 }
 .info-data {
-  font-size: 18px;
+  font-size: 0.9em;
   font-weight: bold;
 }
 

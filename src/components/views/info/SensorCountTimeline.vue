@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import VChart from 'vue-echarts'
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import {graphic, use} from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, LineChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent, LegendComponent, DataZoomComponent } from 'echarts/components'
+import { GridComponent, TooltipComponent } from 'echarts/components'
+import Api from "../../../ts/common/Api.ts";
+import {clamp} from "../../../ts/common/Helper.ts";
+import {EChartsOption} from "echarts";
 
 use([
   CanvasRenderer,
@@ -12,45 +15,12 @@ use([
   LineChart,
   GridComponent,
   TooltipComponent,
-  LegendComponent,
-  DataZoomComponent
 ]);
 
-const colors = [
-  "rgba(54, 110, 244, .5)",
-  "rgba(255, 216, 76, .5)",
-  "rgba(0, 177, 230, .5)",
-  "rgba(0, 218, 216, .5)",
-  "rgba(98, 247, 249, .5)"
-];
+const series1 = ref<number[][]>([]);
+const series2 = ref<number[][]>([]);
 
-const colorsChange = [
-  "rgba(0, 177, 230, .1)",
-  "rgba(255, 216, 76, .1)",
-  "rgba(0, 218, 216, .1)",
-  "rgba(0, 177, 230, .1)",
-  "rgba(98, 247, 249, .1)"
-];
-
-const colorsChangeTo = [
-  "rgba(0, 177, 230, 0)",
-  "rgba(255, 216, 76, 0)",
-  "rgba(0, 218, 216, 0)",
-  "rgba(0, 177, 230, 0)",
-  "rgba(98, 247, 249, 0)"
-];
-
-const chartData = {
-  name: ['在线传感器数量', '连接的传感器数量'],
-  label: ['7/17', '7/18', '7/19'],
-  data: {
-    series1: { type: 'bar', data: [10, 20, 30] },
-    series2: { type: 'line', data: [15, 25, 35] },
-  },
-  xAxisTYpe: 'category',
-};
-
-const options = ref({
+const options = ref<EChartsOption>({
   grid: {
     left: '5%',
     right: '5%',
@@ -65,36 +35,25 @@ const options = ref({
       label: { show: true },
       crossStyle: { color: '#999' },
       shadowStyle: { color: "rgba(22, 93, 255, 0.1)" }
-    }
+    },
   },
-  dataZoom: [
-    {
-      type: "inside",
-      startValue: 0,
-      endValue: 100,
-      xAxisIndex: 0,
-      zoomOnMouseWheel: true,
-    },
-  ],
   xAxis: {
-    type: chartData.xAxisTYpe ? chartData.xAxisTYpe : 'category',
-    boundaryGap: true,
-    axisLine: {
-      show: !chartData.xAxisTYpe,
-      lineStyle: { color: "rgba(255, 255, 255, 0.18)" }
-    },
+    type: 'time',
+    splitNumber: 3,
     splitLine: {
-      lineStyle: { color: "rgba(77, 128, 254, 0.18)", type: "line" }
+      lineStyle: { color: "rgba(77, 128, 254, 0.18)", type: "solid" }
     },
-    axisTick: { show: true, alignWithLabel: true },
     axisLabel: {
       show: true,
       color: "rgba(255, 255, 255, 1)",
       fontSize: "12",
       fontFamily: "SourceHanSans",
-      rotate: 0
+      rotate: 0,
+      formatter: (val: number) => {
+        const date = new Date(val);
+        return `${date.getMonth() + 1}/${date.getDate()}`
+      }
     },
-    data: chartData.label,
   },
   yAxis: [
     {
@@ -104,9 +63,6 @@ const options = ref({
           color: 'rgba(110, 184, 229, 0.8)',
         },
       },
-      axisLabel: {
-        formatter: '{value}',
-      },
       splitLine: {
         lineStyle: {
           type: "dashed",
@@ -115,23 +71,24 @@ const options = ref({
       },
     }
   ],
+  // @ts-ignore
   series: [
     {
-      name: chartData.name[0],
-      type: chartData.data.series1.type,
-      data: chartData.data.series1.data,
+      name: '连接的传感器数量',
+      type: 'bar',
+      data: series2,
       smooth: true,
       barMaxWidth: 16,
       areaStyle: {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: colorsChangeTo[0] },
-          { offset: 1, color: colorsChange[0] },
+          { offset: 0, color: "rgba(0, 177, 230, 0)" },
+          { offset: 1, color: "rgba(0, 177, 230, .1)" },
         ]),
       },
       itemStyle: {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: colors[0] },
-          { offset: 1, color: colorsChange[0] },
+          { offset: 0, color: "rgba(54, 110, 244, .5)" },
+          { offset: 1, color: "rgba(0, 177, 230, .1)" },
         ]),
         borderColor: 'rgba(255,255,255,.7)',
         borderWidth: 1,
@@ -139,20 +96,20 @@ const options = ref({
       }
     },
     {
-      name: chartData.name[1],
-      type: chartData.data.series2.type,
-      data: chartData.data.series2.data,
+      name: '在线的传感器数量',
+      type: 'line',
+      data: series1,
       smooth: true,
       areaStyle: {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: colorsChangeTo[1] },
-          { offset: 1, color: colorsChange[1] },
+          { offset: 0, color: "rgba(255, 216, 76, 0)" },
+          { offset: 1, color: "rgba(255, 216, 76, .1)" },
         ]),
       },
       itemStyle: {
         color: new graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: colors[1] },
-          { offset: 1, color: colorsChange[1] },
+          { offset: 0, color: "rgba(255, 216, 76, .5)" },
+          { offset: 1, color: "rgba(255, 216, 76, .1)" },
         ]),
         borderColor: 'rgba(255,255,255,.7)',
         borderWidth: 1,
@@ -160,6 +117,14 @@ const options = ref({
       }
     },
   ],
+});
+
+onMounted(() => {
+  Api.Sensor.getSensorCount().then(resp => {
+    series1.value = resp.data;
+    series2.value = series1.value.map(point =>
+        [point[0], clamp(point[1] - Math.round(Math.random() * 20), 0, Infinity)]);
+  });
 });
 </script>
 

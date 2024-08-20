@@ -1,0 +1,11 @@
+@mixin stripe($opacity) {
+  background: linear-gradient(45deg,
+          rgba(33, 33, 33, $opacity) 12.5%, rgba(255, 235, 59, $opacity) 12.5%,
+          rgba(255, 235, 59, $opacity) 25%, rgba(33, 33, 33, $opacity) 25%,
+          rgba(33, 33, 33, $opacity) 37.5%, rgba(255, 235, 59, $opacity) 37.5%,
+          rgba(255, 235, 59, $opacity) 50%, rgba(33, 33, 33, $opacity) 50%,
+          rgba(33, 33, 33, $opacity) 62.5%, rgba(255, 235, 59, $opacity) 62.5%,
+          rgba(255, 235, 59, $opacity) 75%, rgba(33, 33, 33, $opacity) 75%,
+          rgba(33, 33, 33, $opacity) 87.5%, rgba(255, 235, 59, $opacity) 87.5%,
+          rgba(255, 235, 59, $opacity));
+}
